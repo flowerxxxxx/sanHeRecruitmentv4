@@ -44,7 +44,6 @@ func DataControllerRouter(router *gin.RouterGroup) {
 
 func DataControllerRouterToken(router *gin.RouterGroup) {
 	//dc := DataController{}
-	router.GET("/getVipShowsTest/:pageNum")
 }
 
 // GetOneVipShow 获取一个详细的会员风采信息
