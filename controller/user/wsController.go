@@ -263,10 +263,10 @@ func (ws *WsController) PostPic(c *gin.Context) {
 		_, _ = dao.Redis.Expire(client.ID, time.Hour*24*30*3).Result()
 	} else {
 		c.JSON(http.StatusOK, gin.H{
-			"status": 215,
-			"msg":    "发送失败，服务器逻辑层错误",
+			"status": 209,
+			"msg":    "未连接到服务器，请返回重试",
 		})
-		log.Println("PostPic", err)
+		//log.Println("PostPic", err)
 		return
 	}
 	if err := c.SaveUploadedFile(file, filePath); err != nil {
