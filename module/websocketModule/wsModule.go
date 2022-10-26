@@ -157,7 +157,7 @@ func (ws *WsModule) WsStart() {
 						err := websocketModel.ReceiveMsgManager.Clients[cliMap.ID].
 							Socket.WriteMessage(websocket.TextMessage, checkOnlineMsg)
 						if err != nil {
-							log.Println("Socket.WriteMessage failed,errInfo:", cliMap.ID)
+							//log.Println("Socket.WriteMessage failed,errInfo:", cliMap.ID)
 							return
 						}
 						select {
