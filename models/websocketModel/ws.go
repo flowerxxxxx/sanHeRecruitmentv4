@@ -68,6 +68,7 @@ type Client struct {
 	ToUsername   string
 	Socket       *websocket.Conn
 	Send         chan []byte
+	SocketMutex  sync.Mutex
 }
 
 // 用户登陆后的长连接结构体
@@ -97,12 +98,14 @@ type Broadcast struct {
 
 // 管理用户登录登出回复广告等
 type ClientManager struct {
-	Clients    map[string]*Client
-	ClientsRWM sync.RWMutex
-	Broadcast  chan *Broadcast
-	Reply      chan *Client
-	Register   chan *Client
-	Unregister chan *Client
+	Clients     map[string]*Client
+	ClientCount map[string]int
+	ClientsRWM  sync.RWMutex
+	CliCountRWM sync.RWMutex
+	Broadcast   chan *Broadcast
+	Reply       chan *Client
+	Register    chan *Client
+	Unregister  chan *Client
 }
 
 // 序列化信息
@@ -130,16 +133,18 @@ type PublishMsg struct {
 
 // 管理
 var Manager = ClientManager{
-	Clients:    make(map[string]*Client),
-	Broadcast:  make(chan *Broadcast, 100),
-	Register:   make(chan *Client),
-	Reply:      make(chan *Client),
-	Unregister: make(chan *Client),
+	Clients:     make(map[string]*Client),
+	ClientCount: make(map[string]int),
+	Broadcast:   make(chan *Broadcast, 100),
+	Register:    make(chan *Client),
+	Reply:       make(chan *Client),
+	Unregister:  make(chan *Client),
 }
 
 // websocket用户写入数据
 func (c *Client) Read(host string) {
 	defer func() {
+		close(c.Send)
 		Manager.Unregister <- c
 		_ = c.Socket.Close()
 	}()
@@ -172,7 +177,9 @@ func (c *Client) Read(host string) {
 					Content: "消息数达到限制",
 				}
 				msg, _ := json.Marshal(replyMsg)
+				c.SocketMutex.Lock()
 				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
+				c.SocketMutex.Unlock()
 				continue
 			} else {
 				dao.Redis.Incr(c.ID)
@@ -199,7 +206,9 @@ func (c *Client) Read(host string) {
 				}
 				msg, _ := json.Marshal(replyMsg) //序列化
 				//RWMux.Lock()
+				c.SocketMutex.Lock()
 				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
+				c.SocketMutex.Unlock()
 				//RWMux.Unlock()
 				continue
 			}
@@ -219,7 +228,9 @@ func (c *Client) Read(host string) {
 				}
 				msg, _ := json.Marshal(replyMsg) //序列化
 				//RWMux.Lock()
+				c.SocketMutex.Lock()
 				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
+				c.SocketMutex.Unlock()
 				//RWMux.Unlock()
 			}
 		}
@@ -243,7 +254,9 @@ func (c *Client) Write(host string) {
 		select {
 		case message, ok := <-c.Send:
 			if !ok {
+				c.SocketMutex.Lock()
 				_ = c.Socket.WriteMessage(websocket.CloseMessage, []byte{})
+				c.SocketMutex.Unlock()
 				return
 			}
 			var message2 BroadcastMsg
@@ -260,7 +273,9 @@ func (c *Client) Write(host string) {
 
 			msg, _ := json.Marshal(replyMsg)
 			//RWMux.Lock()
+			c.SocketMutex.Lock()
 			_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
+			c.SocketMutex.Unlock()
 			//RWMux.Unlock()
 		}
 	}
@@ -383,4 +398,30 @@ func DelRecCliCountCli(cliId string) {
 	ReceiveMsgManager.CliCountRWM.Lock()
 	delete(ReceiveMsgManager.ClientCount, cliId)
 	ReceiveMsgManager.CliCountRWM.Unlock()
+}
+
+func ManagerCliCountIncr(connID string) {
+	Manager.CliCountRWM.Lock()
+	Manager.ClientCount[connID] = Manager.ClientCount[connID] + 1
+	Manager.CliCountRWM.Unlock()
+}
+
+func ManagerCliCountCutOne(connID string) {
+	Manager.CliCountRWM.Lock()
+	Manager.ClientCount[connID] = Manager.ClientCount[connID] - 1
+	Manager.CliCountRWM.Unlock()
+}
+
+func ReadCliCount(connID string) (cliCount int, ok bool) {
+	Manager.CliCountRWM.RLock()
+	cliCount, ok = Manager.ClientCount[connID]
+	Manager.CliCountRWM.RUnlock()
+	return
+}
+
+// DelManagerCliCount del manager count cli
+func DelManagerCliCount(connID string) {
+	Manager.CliCountRWM.Lock()
+	delete(Manager.ClientCount, connID)
+	Manager.CliCountRWM.Unlock()
 }

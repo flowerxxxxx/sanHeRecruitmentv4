@@ -45,29 +45,57 @@ func (ws *WsModule) WsStart() {
 			// TODO new conn printer
 			//fmt.Printf("有新连接：%v\n", conn.ID)
 			//fmt.Println(&Manager.Register)
+
+			//注册前检测上一次是否存在
+			//if connLastLive, ok := websocketModel.ReadManClient(conn.ID); ok {
+			//	fmt.Println("check get last live")
+			//	close(connLastLive.Send)
+			//} else {
+			//	fmt.Println("check get last failed")
+			//}
+			//开始注册
 			websocketModel.Manager.ClientsRWM.Lock()
 			websocketModel.Manager.Clients[conn.ID] = conn //将该连接放到用户管理上
+			websocketModel.ManagerCliCountIncr(conn.ID)
 			websocketModel.Manager.ClientsRWM.Unlock()
 			replyMsg := &websocketModel.ReplyMsg{
 				Code:    e.WebsocketSuccess,
 				Content: "服务器连接成功",
 			}
 			msg, _ := json.Marshal(replyMsg)
+			conn.SocketMutex.Lock()
 			_ = conn.Socket.WriteMessage(websocket.TextMessage, msg)
+			conn.SocketMutex.Unlock()
 		case conn := <-websocketModel.Manager.Unregister:
 			//fmt.Printf("连接中断%s\n", conn.ID)
 			//_, ok := websocketModel.Manager.Clients[conn.ID]
-			if _, ok := websocketModel.ReadManClient(conn.ID); ok {
-				replyMsg := &websocketModel.ReplyMsg{
-					Code:    e.WebsocketEnd,
-					Content: "连接中断",
+			cliCount, ok := websocketModel.ReadCliCount(conn.ID)
+			if !ok {
+				log.Println("[May fatal error]Manager Unregister logic maybe err ")
+				return
+			}
+			if cliCount > 1 {
+				websocketModel.ManagerCliCountCutOne(conn.ID)
+			} else if cliCount == 1 {
+				if _, ok := websocketModel.ReadManClient(conn.ID); ok {
+					replyMsg := &websocketModel.ReplyMsg{
+						Code:    e.WebsocketEnd,
+						Content: "连接中断",
+					}
+					msg, _ := json.Marshal(replyMsg)
+					conn.SocketMutex.Lock()
+					_ = conn.Socket.WriteMessage(websocket.TextMessage, msg)
+					conn.SocketMutex.Unlock()
+					//if _, okSend := <-conn.Send; okSend {
+					//	fmt.Println("chec")
+					//	close(conn.Send)
+					//}
+					websocketModel.Manager.ClientsRWM.Lock()
+					delete(websocketModel.Manager.Clients, conn.ID)
+					websocketModel.Manager.ClientsRWM.Unlock()
+					//fmt.Println("Manager del succ")
 				}
-				msg, _ := json.Marshal(replyMsg)
-				_ = conn.Socket.WriteMessage(websocket.TextMessage, msg)
-				websocketModel.Manager.ClientsRWM.Lock()
-				delete(websocketModel.Manager.Clients, conn.ID)
-				websocketModel.Manager.ClientsRWM.Unlock()
-				close(conn.Send)
+				websocketModel.DelManagerCliCount(conn.ID)
 			}
 		case broadcast := <-websocketModel.Manager.Broadcast: //1->2
 			//start := time.Now()

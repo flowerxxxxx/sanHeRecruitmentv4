@@ -18,7 +18,6 @@ import (
 	"sanHeRecruitment/util/uploadUtil"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -44,7 +43,7 @@ func WsControllerRouter(router *gin.RouterGroup) {
 	router.GET("/ws", w.Handler)
 }
 
-var registerMux sync.Mutex
+//var registerMux sync.Mutex
 
 // Handler 聊一聊接口
 func (ws *WsController) Handler(c *gin.Context) {
@@ -91,9 +90,9 @@ func (ws *WsController) Handler(c *gin.Context) {
 		Send:         make(chan []byte),
 	}
 	//用户注册到用户管理上
-	registerMux.Lock()
+	//registerMux.Lock()
 	websocketModel.Manager.Register <- client
-	registerMux.Unlock()
+	//registerMux.Unlock()
 	go client.Read(c.Request.Host)
 	go client.Write(c.Request.Host)
 	go func() {
