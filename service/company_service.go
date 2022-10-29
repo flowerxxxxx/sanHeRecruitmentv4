@@ -14,9 +14,10 @@ type CompanyService struct {
 
 func (cs *CompanyService) TotalCount() (mysqlModel.CompaniesTotal, error) {
 	var ct mysqlModel.CompaniesTotal
-	err := dao.DB.Table("companies").Select("COUNT(*) AS total_nums," +
-		"COUNT( CASE WHEN com_level = 1 THEN 1 ELSE NULL END ) AS companies," +
+	err := dao.DB.Table("companies").Select("COUNT(*) AS total_nums,"+
+		"COUNT( CASE WHEN com_level = 1 THEN 1 ELSE NULL END ) AS companies,"+
 		"COUNT( CASE WHEN com_level = 2 THEN 1 ELSE NULL END ) AS servers").
+		Where("com_status = ?", 1).
 		Find(&ct).Error
 	return ct, err
 }
