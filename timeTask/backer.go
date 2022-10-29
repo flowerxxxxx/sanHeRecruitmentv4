@@ -12,6 +12,9 @@ import (
 
 func backer() {
 	backupModule.Backer()
+}
+
+func expireBackerRemove() {
 	expireBackupRemover(config.BackUpConfig.SavePath)
 }
 
@@ -23,7 +26,7 @@ func expireBackupRemover(backupPath string) {
 		if f.IsDir() {
 			return nil
 		}
-		println(path)
+		//println(path)
 		expireTime := time.Now().AddDate(0, -config.BackerExpireTime, 0)
 		if strings.Index(path, "sanheRec_"+expireTime.Format("20060102")) != -1 {
 			errR := os.Remove(backupPath + "/" + path)
