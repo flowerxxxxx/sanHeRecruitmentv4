@@ -78,12 +78,14 @@ type AddRecoLabelBinder struct {
 type VipStyleAddBinder struct {
 	CoverUrl string `json:"cover_url"`
 	Content  string `json:"content"`
+	Title    string `json:"title"`
 }
 
 type VipStyleEditBinder struct {
 	Id       int    `json:"id"`
 	CoverUrl string `json:"cover_url"`
 	Content  string `json:"content"`
+	Title    string `json:"title"`
 }
 
 type VipStyleDelBinder struct {

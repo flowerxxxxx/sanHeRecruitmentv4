@@ -54,7 +54,7 @@ func (dc *DataController) GetOneVipShow(c *gin.Context) {
 		controller.ErrorResp(c, 201, "参数错误")
 		return
 	}
-	vipShowInfo, err := dc.VipShowService.QueryOneVipShowInfo(vipIdInt)
+	vipShowInfo, err := dc.VipShowService.QueryOneVipShowInfo(vipIdInt, c.Request.Host)
 	if err != nil {
 		c.String(http.StatusNotFound, "404 not found")
 		return
@@ -71,7 +71,7 @@ func (dc *DataController) GetVipShows(c *gin.Context) {
 		controller.ErrorResp(c, 201, "参数错误")
 		return
 	}
-	noticeInfos := dc.VipShowService.QueryVipShowInfos(pageNumInt)
+	noticeInfos := dc.VipShowService.QueryVipShowInfos(pageNumInt, c.Request.Host)
 	noticeTotal := dc.CountService.VipShowInfosTP()
 	c.JSON(http.StatusOK, gin.H{
 		"status":    200,

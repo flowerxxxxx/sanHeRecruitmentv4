@@ -134,7 +134,7 @@ func (dc *DataController) EditVipStyle(c *gin.Context) {
 		controller.ErrorResp(c, 201, "参数绑定失败")
 		return
 	}
-	errAdd := dc.VipShowService.EditVipShowInfo(vipSBinder.Id, vipSBinder.CoverUrl, vipSBinder.Content, tokenUtil.GetUsernameByToken(c))
+	errAdd := dc.VipShowService.EditVipShowInfo(vipSBinder.Id, vipSBinder.CoverUrl, vipSBinder.Content, tokenUtil.GetUsernameByToken(c), vipSBinder.Title)
 	if errAdd != nil {
 		if errAdd == service.NoRecord {
 			controller.ErrorResp(c, 202, "无id对应内容")
@@ -156,7 +156,7 @@ func (dc *DataController) AddVipStyle(c *gin.Context) {
 		controller.ErrorResp(c, 201, "参数绑定失败")
 		return
 	}
-	errAdd := dc.VipShowService.AddVipShowInfo(vipSBinder.CoverUrl, vipSBinder.Content, tokenUtil.GetUsernameByToken(c))
+	errAdd := dc.VipShowService.AddVipShowInfo(vipSBinder.CoverUrl, vipSBinder.Content, tokenUtil.GetUsernameByToken(c), vipSBinder.Title)
 	if errAdd != nil {
 		controller.ErrorResp(c, 211, "会员风采添加失败，服务器错误")
 		log.Println("AddVipStyle failed,err:", errAdd, "\nrequest info:", vipSBinder)

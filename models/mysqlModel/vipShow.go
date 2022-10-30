@@ -11,6 +11,7 @@ type VipShow struct {
 	Clicks     int              `json:"clicks"`
 	Content    string           `json:"content"`
 	Publisher  string           `json:"publisher"`
+	Title      string           `json:"title"`
 }
 
 // VipShowOut 会员风采输出
@@ -21,4 +22,5 @@ type VipShowOut struct {
 	UpdateTime *timeUtil.MyTime `json:"update_time"`
 	Clicks     int              `json:"clicks"`
 	Content    string           `json:"content"`
+	Title      string           `json:"title"`
 }
