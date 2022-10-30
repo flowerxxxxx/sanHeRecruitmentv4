@@ -39,7 +39,7 @@ func DataControllerRouter(router *gin.RouterGroup) {
 	//获取会员风采
 	router.GET("/getVipShows/:pageNum", dc.GetVipShows)
 	//获取一个详细的会员风采信息
-	router.GET("/GetOneVipShow/:vip_id", dc.GetOnePropagandaInfo)
+	router.GET("/GetOneVipShow/:vip_id", dc.GetOneVipShow)
 }
 
 func DataControllerRouterToken(router *gin.RouterGroup) {
