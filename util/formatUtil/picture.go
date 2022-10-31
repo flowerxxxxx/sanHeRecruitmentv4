@@ -1,6 +1,9 @@
 package formatUtil
 
-import "strings"
+import (
+	"errors"
+	"strings"
+)
 
 func GetPicHeaderBody(host, storeUrl string) string {
 	if strings.Index(storeUrl, "uploadPic/") != -1 {
@@ -10,7 +13,10 @@ func GetPicHeaderBody(host, storeUrl string) string {
 	}
 }
 
-func SavePicHeaderCutter(sourceUrl string) string {
+func SavePicHeaderCutter(sourceUrl string) (string, error) {
 	saveFlag := strings.Index(sourceUrl, "uploadPic/")
-	return sourceUrl[saveFlag:]
+	if saveFlag == -1 {
+		return "", errors.New("url err,cut failed")
+	}
+	return sourceUrl[saveFlag:], nil
 }
