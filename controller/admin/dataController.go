@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -532,7 +531,6 @@ func (dc *DataController) DeleteStreamOrPic(c *gin.Context) {
 	streamUrl := DeleteStream.Url
 	pos := strings.Index(streamUrl, "/uploadPic")
 	finalPicUrl := config.PicSaverPath + streamUrl[pos+10:]
-	fmt.Println(finalPicUrl)
 	go func() {
 		err := os.Remove(finalPicUrl)
 		if err != nil {
