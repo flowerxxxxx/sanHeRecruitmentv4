@@ -27,7 +27,9 @@ func (sm *StatisticsModule) UpgradeSliChanger(input []mysqlModel.WaitingUpgradeX
 		} else if x.Qualification == 2 {
 			done = "未通过"
 		}
-
+		if x.Phone == "" {
+			x.Phone = "未填写"
+		}
 		xlsExport = append(xlsExport, &exportModel.UpgradeExporter{
 			CompanyName: x.CompanyName,
 			Phone:       x.Phone,

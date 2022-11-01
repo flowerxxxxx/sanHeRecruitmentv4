@@ -22,7 +22,7 @@ type Resp struct {
 // 参数 content 为上面生成的io.ReadSeeker， fileTag 为返回前端的文件名
 // xls backer
 func ResponseXls(c *gin.Context, content io.ReadSeeker, fileTag string) {
-	fileName := fmt.Sprintf("%s%s%s.xlsx", time.Now().Format("20060102"), `-`, fileTag)
+	fileName := fmt.Sprintf("%s%s%s.xlsx", time.Now().Format("20060102-150405"), `-`, fileTag)
 	c.Writer.Header().Add("Access-Control-Expose-Headers", "content-disposition")
 	c.Writer.Header().Add("Content-Disposition", fmt.Sprintf(`attachment; filename=%s`, fileName))
 	c.Writer.Header().Add("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
