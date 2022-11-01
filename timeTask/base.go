@@ -7,7 +7,6 @@ import (
 
 // InitTimer 定义gin-定时任务
 func InitTimer() {
-	log.Println("Timer Starting...")
 	c := cron.New()
 	//删除即时通讯中的过期信息 执行周期：每个小时
 	errD := c.AddFunc("0 0 0/1 * * ? ", deleteExpiredInfo)

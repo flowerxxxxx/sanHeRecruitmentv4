@@ -17,7 +17,6 @@ func DeletePicSaver(picUrl string) (err error) {
 		log.Printf("%s", err)
 		return
 	} else {
-		log.Println("file remove OK!")
 		return
 	}
 }

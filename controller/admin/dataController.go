@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"sanHeRecruitment/util/formatUtil"
 	"sanHeRecruitment/util/osUtil"
 	"sanHeRecruitment/util/pageUtil"
+	"sanHeRecruitment/util/saveUtil"
 	"sanHeRecruitment/util/timeUtil"
 	"sanHeRecruitment/util/tokenUtil"
 	"sanHeRecruitment/util/uploadUtil"
@@ -116,12 +118,23 @@ func (dc *DataController) DeleteVipStyle(c *gin.Context) {
 		controller.ErrorResp(c, 201, "参数绑定失败")
 		return
 	}
+	oldInfo, errFound := dc.VipShowService.QueryOneVipShowInfo(DelBinder.Id, c.Request.Host)
+	if errFound != nil {
+		controller.ErrorResp(c, 202, "该内容已丢失")
+		return
+	}
 	err = dc.VipShowService.DeleteVipShowInfo(DelBinder.Id)
 	if err != nil {
 		controller.ErrorResp(c, 211, "删除失败，无相关信息或服务器错误")
 		log.Println("DeleteVipStyle failed,err:", err, "\n request info:", DelBinder)
 		return
 	}
+	go func() {
+		ed := saveUtil.DeletePicSaver(oldInfo.Cover)
+		if ed != nil {
+			log.Println("DeleteVipStyle DeletePicSaver failed,err:", ed)
+		}
+	}()
 	controller.SuccessResp(c, "会员风采删除成功")
 	return
 }
@@ -138,6 +151,17 @@ func (dc *DataController) EditVipStyle(c *gin.Context) {
 	if err != nil {
 		controller.ErrorResp(c, 203, "url路径错误")
 		return
+	}
+	oldInfo, errF := dc.VipShowService.QueryOneVipShowInfo(vipSBinder.Id, c.Request.Host)
+	if errF != nil {
+		controller.ErrorResp(c, 204, "无对应内容")
+		return
+	}
+	if newCoverUrl != oldInfo.Cover {
+		ed := saveUtil.DeletePicSaver(oldInfo.Cover)
+		if ed != nil {
+			log.Println("EditVipStyle DeletePicSaver failed,err:", ed)
+		}
 	}
 	errAdd := dc.VipShowService.EditVipShowInfo(vipSBinder.Id, newCoverUrl, vipSBinder.Content, tokenUtil.GetUsernameByToken(c), vipSBinder.Title)
 	if errAdd != nil {
@@ -463,12 +487,23 @@ func (dc *DataController) EditPropagandaContent(c *gin.Context) {
 		return
 	}
 	uploader := tokenUtil.GetUsernameByToken(c)
+	proInfo, errFound := dc.PropagandaService.QueryOneProInfo(edBinder.ID, c.Request.Host)
+	if errFound != nil {
+		controller.ErrorResp(c, 203, "该内容已丢失")
+		return
+	}
 	saveFlag := strings.Index(edBinder.Url, "uploadPic/")
 	if saveFlag == -1 {
-		controller.ErrorResp(c, 203, "url路径错误")
+		controller.ErrorResp(c, 204, "url路径错误")
 		return
 	}
 	url := edBinder.Url[saveFlag:]
+	if url != proInfo.Url {
+		ed := saveUtil.DeletePicSaver(proInfo.Url)
+		if ed != nil {
+			log.Println("EditPropagandaContent DeletePicSaver failed,err:", ed)
+		}
+	}
 	err = dc.PropagandaService.EditProInfo(edBinder.ID,
 		&timeUtil.MyTime{Time: time.Now()}, url,
 		uploader, edBinder.Content, edBinder.Title, edBinder.Type)
@@ -497,6 +532,7 @@ func (dc *DataController) DeleteStreamOrPic(c *gin.Context) {
 	streamUrl := DeleteStream.Url
 	pos := strings.Index(streamUrl, "/uploadPic")
 	finalPicUrl := config.PicSaverPath + streamUrl[pos+10:]
+	fmt.Println(finalPicUrl)
 	go func() {
 		err := os.Remove(finalPicUrl)
 		if err != nil {

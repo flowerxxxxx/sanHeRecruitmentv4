@@ -26,17 +26,24 @@ func (vss *VipShowService) AddVipShowInfo(cover, content, publisher, title strin
 }
 
 func (vss *VipShowService) EditVipShowInfo(id int, cover, content, publisher, title string) (err error) {
-	var vssInfo mysqlModel.VipShow
-	err = dao.DB.Table("vip_shows").Where("id = ?", id).Find(&vssInfo).Error
-	if err != nil {
-		return NoRecord
-	}
-	vssInfo.Cover = cover
-	vssInfo.Content = content
-	vssInfo.Publisher = publisher
-	vssInfo.UpdateTime = timeUtil.GetMyTimeNowPtr()
-	vssInfo.Title = title
-	err = dao.DB.Table("vip_shows").Save(&vssInfo).Error
+	err = dao.DB.Table("vip_shows").Where("id = ?", id).Updates(map[string]interface{}{
+		"cover":       cover,
+		"content":     content,
+		"publisher":   publisher,
+		"update_time": timeUtil.GetMyTimeNowPtr(),
+		"title":       title,
+	}).Error
+	//var vssInfo mysqlModel.VipShow
+	//err = dao.DB.Table("vip_shows").Where("id = ?", id).Find(&vssInfo).Error
+	//if err != nil {
+	//	return NoRecord
+	//}
+	//vssInfo.Cover = cover
+	//vssInfo.Content = content
+	//vssInfo.Publisher = publisher
+	//vssInfo.UpdateTime = timeUtil.GetMyTimeNowPtr()
+	//vssInfo.Title = title
+	//err = dao.DB.Table("vip_shows").Save(&vssInfo).Error
 	return
 }
 
