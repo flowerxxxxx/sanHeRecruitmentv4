@@ -3,6 +3,7 @@ package admin
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/url"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/models/BindModel/adminBind"
 	"sanHeRecruitment/models/websocketModel"
@@ -60,7 +61,7 @@ func (sc StatisticsController) CompanyPubExport(c *gin.Context) {
 	}
 	res := sc.StatisticsModule.ComPubSliChanger(comArtInfo)
 	content := excelUtil.ToExcel([]string{`公司名称`, `公司规模`, `需求标题`, `观看量`, `发布者昵称`, `发布者姓名`, `标签`, `最低报酬`, `最高报酬`, `需求内容`, `需求类型`, `状态`}, res)
-	controller.ResponseXls(c, content, "公司发布一览-"+companyInfo.CompanyName)
+	controller.ResponseXls(c, content, url.QueryEscape("公司发布一览-"+companyInfo.CompanyName))
 }
 
 // WaitingUpgradeExport xls文件导出,审核升级项
