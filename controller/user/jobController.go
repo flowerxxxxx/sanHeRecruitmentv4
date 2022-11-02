@@ -341,10 +341,14 @@ func (jc *JobController) GetRecommendJobInfos(c *gin.Context) {
 	_ = c.BindJSON(&recJson)
 	username := tokenUtil.GetUsernameByToken(c)
 	userInfo, _ := jc.UserService.GetUserInfo(username, c.Request.Host)
+	if userInfo.Intended_position == "" {
+		controller.ErrorResp(c, 201, "请完善个人信息以激活智能推荐")
+		return
+	}
 	labelInfo := jc.LabelService.QueryLabelByContent(userInfo.Intended_position)
 	careerJobId := labelInfo.ID
 	if careerJobId == 0 {
-		controller.ErrorResp(c, 201, "请完善个人信息以激活智能推荐")
+		controller.ErrorResp(c, 201, "目标职位更新，请重新设置")
 		return
 	}
 	careerJobIdStr := strconv.Itoa(careerJobId)
