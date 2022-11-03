@@ -69,9 +69,17 @@ var BackUpConfig = &BackupConf{
 // BackerExpireTime 备份存储时间（单位：月）
 const BackerExpireTime = 2
 
+//------------------------------------------wechat配置
+
+// WechatAppid appid
+const WechatAppid = "wxc4aca753deef16dc"
+
+// WechatSecret secret
+const WechatSecret = "f808d019a853fd07e62301c725b53abe"
+
 //------------------------------------------系统运行配置
 
-// GoroutineNum 主监听线程数
+// GoroutineNum 主监听线程数 含三大处理协程数
 const GoroutineNum = 10
 
 // FirstUnreadMsgNum 对方未回消息用户首次能发的最大消息数-1

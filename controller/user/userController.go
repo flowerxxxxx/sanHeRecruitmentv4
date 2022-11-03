@@ -634,8 +634,8 @@ func (u *UserController) UploadResume(c *gin.Context) {
 // WXLogin 这个函数以 code 作为输入, 返回调用微信接口得到的对象指针和异常情况,作为微信登录的调用函数
 func WXLogin(code string) (*wechatModel.WXLoginResp, error) {
 	url := "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code"
-	appId := "wxc4aca753deef16dc"
-	secret := "f808d019a853fd07e62301c725b53abe"
+	appId := config.WechatAppid
+	secret := config.WechatSecret
 	// 合成url, 这里的appId和secret是在微信公众平台上获取的
 	url = fmt.Sprintf(url, appId, secret, code)
 	// 创建http get请求
