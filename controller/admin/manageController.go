@@ -12,6 +12,7 @@ import (
 	"sanHeRecruitment/util/timeUtil"
 	"sanHeRecruitment/util/tokenUtil"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -295,6 +296,11 @@ func (mc *ManageController) EditLabel(c *gin.Context) {
 		return
 	}
 	//TODO 查重，需要parent_id
+	exist := strings.Index(labelContent, "&")
+	if exist != -1 {
+		controller.ErrorResp(c, 201, "不符合命名规则，不能存在'&'")
+		return
+	}
 	err = mc.LabelService.EditLabel(labelIdInt, labelContent)
 	if err != nil {
 		if err == service.NoRecord {
@@ -567,6 +573,11 @@ func (mc *ManageController) AddLabel(c *gin.Context) {
 	parentLevelInt, err := strconv.Atoi(parentLevel)
 	if err != nil {
 		controller.ErrorResp(c, 201, "parentId参数错误")
+		return
+	}
+	exist := strings.Index(label, "&")
+	if exist != -1 {
+		controller.ErrorResp(c, 201, "不符合命名规则，不能存在'&'")
 		return
 	}
 	RepeatFlag := mc.LabelService.CheckDuplicateLabel(label, labelType, parentIdInt)

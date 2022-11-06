@@ -72,7 +72,8 @@ func DataControllerRouterToken(router *gin.RouterGroup) {
 	//获取公司待审核已经包含的工作/需求标签
 	router.GET("/GetComPubWaitingLabel/:companyName/:type", dataC.GetComPubWaitingLabel)
 	//获取需要审核发布的 all全部，其余为招聘或者需求的类别(如java)
-	router.GET("/getWaitingApply/:com_id/:queryLabel/:labelLevel/:pageNum", dataC.getWaitingApplyCom)
+	//router.GET("/getWaitingApply/:com_id/:queryLabel/:labelLevel/:pageNum", dataC.getWaitingApplyCom)
+	router.GET("/getWaitingApply", dataC.getWaitingApplyCom)
 	//上传宣传栏目内容
 	router.POST("/uploadPropagandaContent", dataC.SavePropagandaContent)
 	//编辑宣传栏内容
@@ -614,10 +615,14 @@ func (dc *DataController) SaveStreamingOrPic(c *gin.Context) {
 
 // GetApplyPubArt 获取需要审核发布的 pageSize = 15 comId = 0 为全部公司
 func (dc *DataController) getWaitingApplyCom(c *gin.Context) {
-	queryLabel := c.Param("queryLabel")
-	pageNum := c.Param("pageNum")
-	labelLevel := c.Param("labelLevel")
-	comId := c.Param("com_id")
+	//queryLabel := c.Param("queryLabel")
+	//pageNum := c.Param("pageNum")
+	//labelLevel := c.Param("labelLevel")
+	//comId := c.Param("com_id")
+	queryLabel := c.Query("queryLabel")
+	pageNum := c.Query("pageNum")
+	labelLevel := c.Query("labelLevel")
+	comId := c.Query("com_id")
 	labelLevelInt, err := strconv.Atoi(labelLevel)
 	comIdInt, err2 := strconv.Atoi(comId)
 	pageNumInt, err3 := strconv.Atoi(pageNum)
