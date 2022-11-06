@@ -270,7 +270,7 @@ func (as *ArticleService) QueryWaitingApply(queryType, host string, pageNum, com
 			"INNER JOIN companies on companies.com_id = articles.company_id ").
 		Where("status = ?", 0)
 	if queryType != "all" {
-		sqlQuery = sqlQuery.Where("articles.art_type = ?", queryType)
+		sqlQuery = sqlQuery.Where("articles.job_label = ?", queryType)
 	}
 	if comId != 0 {
 		sqlQuery = sqlQuery.Where("articles.company_id = ?", comId)

@@ -126,10 +126,10 @@ func (c *CountService) GetInvitedJobsTotalPage(desUsername string) (totalPage in
 func (c *CountService) GetWaitingTotalPage(waitType string, comId int) (totalPage int) {
 	var Total mysqlModel.Count
 	totalQ := dao.DB.Table("articles").Select("COUNT(*) AS total_num").
-		Joins("INNER JOIN labels on articles.career_job_id = labels.id").
+		//Joins("INNER JOIN labels on articles.career_job_id = labels.id").
 		Where("status = ?", 0)
 	if waitType != "all" {
-		totalQ = totalQ.Where("label = ?", waitType)
+		totalQ = totalQ.Where("articles.job_label = ?", waitType)
 	}
 	if comId != 0 {
 		totalQ = totalQ.Where("company_id = ?", comId)

@@ -627,7 +627,7 @@ func (dc *DataController) getWaitingApplyCom(c *gin.Context) {
 	comIdInt, err2 := strconv.Atoi(comId)
 	pageNumInt, err3 := strconv.Atoi(pageNum)
 	if err != nil || err2 != nil || err3 != nil {
-		controller.ErrorResp(c, 201, "页码参数错误")
+		controller.ErrorResp(c, 201, "参数错误")
 		return
 	}
 	if labelLevelInt == 1 {
