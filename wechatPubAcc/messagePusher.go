@@ -22,6 +22,23 @@ func ConversationMessagePush(openid, fromUser, content string) {
 	templatepost(access_token, reqdata, ConversationMessageTemplateID, pubId)
 }
 
+//func ConversationMessagePush(openid, fromUser, content string) {
+//	//获取公众号的token
+//	access_token := getaccesstoken()
+//	if access_token == "" {
+//		//不推送或推送失败
+//		return
+//	}
+//	//获取被推送用户的id
+//	//pubId := mysqlModel.OpenToPub(openid)
+//	//if pubId == "" {
+//	//	//不推送或推送失败
+//	//	return
+//	//}
+//	reqdata := "{\"name1\":{\"value\":\"" + fromUser + "\"}, \"thing3\":{\"value\":\"" + content + "\"}, \"thing4\":{\"value\":\"" + "消息推送" + "\"},\"time5\":{\"value\":\"" + time.Now().Format("2006-01-02 15:04:05") + "\"}}"
+//	templatepost(access_token, reqdata, "NsmDzZKmyMsLlsQDO9X9c62S5vQsFt66rS8NI1EmQcA", openid)
+//}
+
 // DeliveryResumeMessagePush 向退出小程序并关注公众号的招聘者推送招聘简历投递消息
 func DeliveryResumeMessagePush(openid, fromUser, content string) {
 	//获取公众号的token

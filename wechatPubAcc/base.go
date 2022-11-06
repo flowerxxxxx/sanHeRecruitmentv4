@@ -31,8 +31,9 @@ type sentence struct {
 
 // 获取微信accesstoken
 func getaccesstoken() string {
-	//url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/tokenUtil?grant_type=client_credential&appid=%v&secret=%v", APPID, APPSECRET)
 	url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%v&secret=%v", APPID, APPSECRET)
+
+	//url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%v&secret=%v", config.WechatAppid, config.WechatSecret)
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Println("获取微信token失败", err)
@@ -118,3 +119,24 @@ func templatepost(access_token string, reqdata string, templateid string, openid
 	}
 	//fmt.Println("消息发送成功")
 }
+
+//func templatepost(access_token string, reqdata string, templateid string, openid string) {
+//	url := "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" + access_token
+//	reqbody := "{\"touser\":\"" + openid + "\", \"template_id\":\"" + templateid + "\",\"data\": " + reqdata + "}"
+//	//fmt.Println(reqbody)
+//	resp, err := http.Post(url,
+//		"application/x-www-form-urlencoded",
+//		strings.NewReader(string(reqbody)))
+//	if err != nil {
+//		log.Println("httpPostErr:", err)
+//		return
+//	}
+//
+//	defer resp.Body.Close()
+//	body, err := ioutil.ReadAll(resp.Body)
+//	if err != nil {
+//		log.Println("readErr:", body, err)
+//		return
+//	}
+//	//fmt.Println("消息发送成功")
+//}
