@@ -622,7 +622,7 @@ func (dc *DataController) getWaitingApplyCom(c *gin.Context) {
 	queryLabel := c.Query("queryLabel")
 	pageNum := c.Query("pageNum")
 	labelLevel := c.Query("labelLevel")
-	comId := c.Query("com_id")
+	comId := c.Query("comId")
 	labelLevelInt, err := strconv.Atoi(labelLevel)
 	comIdInt, err2 := strconv.Atoi(comId)
 	pageNumInt, err3 := strconv.Atoi(pageNum)
