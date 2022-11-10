@@ -11,6 +11,28 @@ import (
 type VipShowService struct {
 }
 
+func (vss *VipShowService) ChangeVipShowStatus(id, desStatus int) (err error) {
+	var vssInfo mysqlModel.VipShow
+	err = dao.DB.Table("vip_shows").
+		Where("id = ?", id).Find(&vssInfo).Error
+	if err != nil {
+		return NoRecord
+	}
+	vssInfo.Recommend = desStatus
+	err = dao.DB.Table("vip_shows").Save(&vssInfo).Error
+	return err
+}
+
+func (vss *VipShowService) QueryMaxRecommendCount() (maxNum int, err error) {
+	var maxRecCount mysqlModel.MaxRecommendCount
+	err = dao.DB.Table("vip_shows").
+		Select("MAX(recommend) as max_num").Find(&maxRecCount).Error
+	if err != nil {
+		return -1, err
+	}
+	return maxRecCount.MaxNum, nil
+}
+
 func (vss *VipShowService) AddVipShowInfo(cover, content, publisher, title string) (err error) {
 	var vssInfo = mysqlModel.VipShow{
 		Cover:      cover,
@@ -57,7 +79,7 @@ func (vss *VipShowService) QueryVipShowInfos(pageNum int, host string) []mysqlMo
 	var VipShowInfos []mysqlModel.VipShowOut
 	sqlPage := sqlUtil.PageNumToSqlPage(pageNum, pageSize)
 	dao.DB.Table("vip_shows").Select("*").
-		Order("id desc").Offset(sqlPage).Limit(pageSize).Find(&VipShowInfos)
+		Order("recommend desc,id desc").Offset(sqlPage).Limit(pageSize).Find(&VipShowInfos)
 	for i, j := 0, len(VipShowInfos); i < j; i++ {
 		VipShowInfos[i].Cover = formatUtil.GetPicHeaderBody(host, VipShowInfos[i].Cover)
 	}

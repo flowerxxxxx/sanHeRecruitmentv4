@@ -12,6 +12,7 @@ type VipShow struct {
 	Content    string           `json:"content"`
 	Publisher  string           `json:"publisher"`
 	Title      string           `json:"title"`
+	Recommend  int              `json:"recommend"`
 }
 
 // VipShowOut 会员风采输出
@@ -23,4 +24,5 @@ type VipShowOut struct {
 	Clicks     int              `json:"clicks"`
 	Content    string           `json:"content"`
 	Title      string           `json:"title"`
+	Recommend  int              `json:"recommend"`
 }

@@ -108,6 +108,94 @@ func DataControllerRouterToken(router *gin.RouterGroup) {
 	router.POST("/EditVipStyle", dataC.EditVipStyle)
 	//删除会员风采
 	router.POST("/DeleteVipStyle", dataC.DeleteVipStyle)
+	//admin获取公司信息
+	router.GET("/getCompanyInfo/:companyName", dataC.QueryCompanyInfo)
+	//admin获取职位详细页面信息
+	router.GET("/getRecruitInfo/:art_id", dataC.GetRecruitInfo)
+
+}
+
+// ChangeLabelRecommend 标记推荐标签
+func (dc *DataController) ChangeLabelRecommend(c *gin.Context) {
+	var RecoBinder adminBind.AddRecoLabelBinder
+	err := c.ShouldBind(&RecoBinder)
+	if err != nil {
+		controller.ErrorResp(c, 201, "参数绑定失败")
+		return
+	}
+	if RecoBinder.DesReco == 1 {
+		maxCount, err := dc.LabelService.QueryMaxRecommendCount()
+		if err != nil {
+			log.Println("ChangeLabelRecommend QueryMaxRecommendCount failed,err:", RecoBinder)
+			controller.ErrorResp(c, 211, "无发布内容")
+			return
+		}
+		errX := dc.LabelService.ChangeLabelRecommend(RecoBinder.Id, maxCount+1)
+		if errX != nil {
+			if err == service.NoRecord {
+				controller.ErrorResp(c, 202, "无该内容相关信息")
+				return
+			} else {
+				log.Println("ChangeLabelRecommend ChangeLabelRecommend failed,err:", RecoBinder)
+				controller.ErrorResp(c, 212, "服务器错误")
+				return
+			}
+		}
+	} else {
+		errX := dc.LabelService.ChangeLabelRecommend(RecoBinder.Id, 0)
+		if errX != nil {
+			if err == service.NoRecord {
+				controller.ErrorResp(c, 202, "无该内容相关信息")
+				return
+			} else {
+				log.Println("ChangeLabelRecommend ChangeLabelRecommend failed,err:", RecoBinder)
+				controller.ErrorResp(c, 213, "服务器错误")
+				return
+			}
+		}
+	}
+	controller.SuccessResp(c, "置顶状态修改成功")
+	return
+
+	//err = dc.LabelService.ChangeLabelRecommend(RecoBinder.Id, RecoBinder.DesReco)
+	//if err != nil {
+	//	if err == service.NoRecord {
+	//		controller.ErrorResp(c, 202, "无该标签相关信息")
+	//		return
+	//	} else {
+	//		log.Println("AddRecommendLabel failed,err:", RecoBinder)
+	//		controller.ErrorResp(c, 212, "服务器错误")
+	//		return
+	//	}
+	//}
+	//controller.SuccessResp(c, "标签导航信息修改成功")
+	//return
+}
+
+// GetRecruitInfo 获取详细的招聘信息
+func (dc *DataController) GetRecruitInfo(c *gin.Context) {
+	artId := c.Param("art_id")
+	_, err := strconv.Atoi(artId)
+	if err != nil {
+		controller.ErrorResp(c, 201, "页码参数格式错误")
+		return
+	}
+	artInfo, err := dc.JobService.GetOneArtInfoAdmin(artId, c.Request.Host)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"data":   artInfo,
+		"msg":    "文章信息获取成功",
+	})
+}
+
+func (dc *DataController) QueryCompanyInfo(c *gin.Context) {
+	companyName := c.Param("companyName")
+	companyBasicInfo, err := dc.CompanyService.QueryCompanyBasicInfoByName(companyName, c.Request.Host)
+	if err != nil {
+		controller.ErrorResp(c, 201, "该公司不存在")
+		return
+	}
+	controller.SuccessResp(c, "公司信息查找成功", companyBasicInfo)
 }
 
 // DeleteVipStyle 删除会员风采
@@ -216,29 +304,6 @@ func (dc *DataController) FuzzyQueryJobInfos(c *gin.Context) {
 		"totalPage": TotalPageNum,
 		"msg":       "模糊招聘信息获取成功",
 	})
-}
-
-// ChangeLabelRecommend 标记推荐标签
-func (dc *DataController) ChangeLabelRecommend(c *gin.Context) {
-	var RecoBinder adminBind.AddRecoLabelBinder
-	err := c.ShouldBind(&RecoBinder)
-	if err != nil {
-		controller.ErrorResp(c, 201, "参数绑定失败")
-		return
-	}
-	err = dc.LabelService.ChangeLabelRecommend(RecoBinder.Id, RecoBinder.DesReco)
-	if err != nil {
-		if err == service.NoRecord {
-			controller.ErrorResp(c, 202, "无该标签相关信息")
-			return
-		} else {
-			log.Println("AddRecommendLabel failed,err:", RecoBinder)
-			controller.ErrorResp(c, 212, "服务器错误")
-			return
-		}
-	}
-	controller.SuccessResp(c, "标签导航信息修改成功")
-	return
 }
 
 // DeletePlaDescription 删除平台简介

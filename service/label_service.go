@@ -168,10 +168,10 @@ func (ls *LabelService) QueryLabelInfoByLabel(fatherName string) (labelInfos mys
 	return LabelInfo, err
 }
 
-func (ls *LabelService) QueryRecommendLabels(recommendFlag int) ([]mysqlModel.RecommendLabel, error) {
+func (ls *LabelService) QueryRecommendLabels() ([]mysqlModel.RecommendLabel, error) {
 	var LabelInfos []mysqlModel.RecommendLabel
-	err := dao.DB.Table("labels").Select("id,label,`type`").
-		Where("recommend = ?", recommendFlag).Find(&LabelInfos).Error
+	err := dao.DB.Table("labels").Select("id,label,`type`,recommend").
+		Where("recommend != ?", 0).Order("recommend desc").Find(&LabelInfos).Error
 	return LabelInfos, err
 }
 
@@ -185,4 +185,14 @@ func (ls *LabelService) ChangeLabelRecommend(id, desReco int) (err error) {
 	LabelInfo.Recommend = desReco
 	err = dao.DB.Table("labels").Save(&LabelInfo).Error
 	return err
+}
+
+func (ls *LabelService) QueryMaxRecommendCount() (maxNum int, err error) {
+	var maxRecCount mysqlModel.MaxRecommendCount
+	err = dao.DB.Table("labels").
+		Select("MAX(recommend) as max_num").Find(&maxRecCount).Error
+	if err != nil {
+		return -1, err
+	}
+	return maxRecCount.MaxNum, nil
 }

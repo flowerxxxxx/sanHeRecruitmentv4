@@ -26,6 +26,9 @@ type ManageController struct {
 	*service.DailySaverService
 	*service.VoucherService
 	*service.MassSendService
+	*service.PropagandaService
+	*service.NoticeService
+	*service.VipShowService
 }
 
 func ManageControllerRouter(router *gin.RouterGroup) {
@@ -77,8 +80,143 @@ func ManageControllerRouterToken(router *gin.RouterGroup) {
 	router.POST("/batchPubAdmit", mc.BatchPubAdmit)
 	//删除 公司/机构 人员的 企业/服务机构 身份
 	router.POST("/DeleteComUser", mc.DeleteComUser)
-	//置顶发布
+	//置顶需求发布
 	router.POST("/ChangeTopPubStatus", mc.TopPub)
+	//置顶焦点
+	router.POST("/ChangePropagandaStatus", mc.TopPropaganda)
+	//置顶公告
+	router.POST("/ChangeNoticeStatus", mc.TopNotice)
+	//置顶会员风采
+	router.POST("/ChangeVipShowStatus", mc.TopVipShow)
+}
+
+// TopVipShow 置顶会员风采
+func (mc *ManageController) TopVipShow(c *gin.Context) {
+	var TopBinder adminBind.TopPub
+	err := c.ShouldBind(&TopBinder)
+	if err != nil {
+		controller.ErrorResp(c, 201, "参数绑定失败")
+		return
+	}
+	if TopBinder.DesStatus == 1 {
+		maxCount, err := mc.VipShowService.QueryMaxRecommendCount()
+		if err != nil {
+			log.Println("TopVipShow QueryMaxRecommendCount failed,err:", TopBinder)
+			controller.ErrorResp(c, 211, "无发布内容")
+			return
+		}
+		errX := mc.VipShowService.ChangeVipShowStatus(TopBinder.Id, maxCount+1)
+		if errX != nil {
+			if err == service.NoRecord {
+				controller.ErrorResp(c, 202, "无该内容相关信息")
+				return
+			} else {
+				log.Println("TopVipShow ChangeTopNoticeStatus failed,err:", TopBinder)
+				controller.ErrorResp(c, 212, "服务器错误")
+				return
+			}
+		}
+	} else {
+		errX := mc.VipShowService.ChangeVipShowStatus(TopBinder.Id, 0)
+		if errX != nil {
+			if err == service.NoRecord {
+				controller.ErrorResp(c, 202, "无该内容相关信息")
+				return
+			} else {
+				log.Println("TopVipShow ChangeTopNoticeStatus failed,err:", TopBinder)
+				controller.ErrorResp(c, 213, "服务器错误")
+				return
+			}
+		}
+	}
+	controller.SuccessResp(c, "置顶状态修改成功")
+	return
+}
+
+// TopNotice 置顶公告
+func (mc *ManageController) TopNotice(c *gin.Context) {
+	var TopBinder adminBind.TopPub
+	err := c.ShouldBind(&TopBinder)
+	if err != nil {
+		controller.ErrorResp(c, 201, "参数绑定失败")
+		return
+	}
+	if TopBinder.DesStatus == 1 {
+		maxCount, err := mc.NoticeService.QueryMaxRecommendCount()
+		if err != nil {
+			log.Println("TopNotice QueryMaxRecommendCount failed,err:", TopBinder)
+			controller.ErrorResp(c, 211, "无发布内容")
+			return
+		}
+		errX := mc.NoticeService.ChangeTopNoticeStatus(TopBinder.Id, maxCount+1)
+		if errX != nil {
+			if err == service.NoRecord {
+				controller.ErrorResp(c, 202, "无该内容相关信息")
+				return
+			} else {
+				log.Println("TopNotice ChangeTopNoticeStatus failed,err:", TopBinder)
+				controller.ErrorResp(c, 212, "服务器错误")
+				return
+			}
+		}
+	} else {
+		errX := mc.NoticeService.ChangeTopNoticeStatus(TopBinder.Id, 0)
+		if errX != nil {
+			if err == service.NoRecord {
+				controller.ErrorResp(c, 202, "无该内容相关信息")
+				return
+			} else {
+				log.Println("TopNotice ChangeTopNoticeStatus failed,err:", TopBinder)
+				controller.ErrorResp(c, 213, "服务器错误")
+				return
+			}
+		}
+	}
+	controller.SuccessResp(c, "置顶状态修改成功")
+	return
+}
+
+// TopPropaganda 置顶焦点
+func (mc *ManageController) TopPropaganda(c *gin.Context) {
+	var TopBinder adminBind.TopPub
+	err := c.ShouldBind(&TopBinder)
+	if err != nil {
+		controller.ErrorResp(c, 201, "参数绑定失败")
+		return
+	}
+	if TopBinder.DesStatus == 1 {
+		maxCount, err := mc.PropagandaService.QueryMaxRecommendCount()
+		if err != nil {
+			log.Println("TopPropaganda QueryMaxRecommendCount failed,err:", TopBinder)
+			controller.ErrorResp(c, 211, "无发布内容")
+			return
+		}
+		errX := mc.PropagandaService.ChangeTopProStatus(TopBinder.Id, maxCount+1)
+		if errX != nil {
+			if err == service.NoRecord {
+				controller.ErrorResp(c, 202, "无该内容相关信息")
+				return
+			} else {
+				log.Println("TopPropaganda ChangeTopProStatus failed,err:", TopBinder)
+				controller.ErrorResp(c, 212, "服务器错误")
+				return
+			}
+		}
+	} else {
+		errX := mc.PropagandaService.ChangeTopProStatus(TopBinder.Id, 0)
+		if errX != nil {
+			if err == service.NoRecord {
+				controller.ErrorResp(c, 202, "无该内容相关信息")
+				return
+			} else {
+				log.Println("TopPropaganda ChangeTopProStatus failed,err:", TopBinder)
+				controller.ErrorResp(c, 213, "服务器错误")
+				return
+			}
+		}
+	}
+	controller.SuccessResp(c, "置顶状态修改成功")
+	return
 }
 
 // TopPub 置顶发布
@@ -93,7 +231,7 @@ func (mc *ManageController) TopPub(c *gin.Context) {
 		maxCount, err := mc.ArticleService.QueryMaxRecommendCount()
 		if err != nil {
 			log.Println("TopPub QueryMaxRecommendCount failed,err:", TopBinder)
-			controller.ErrorResp(c, 211, "服务器错误")
+			controller.ErrorResp(c, 211, "无发布内容")
 			return
 		}
 		errX := mc.ArticleService.ChangeTopPubStatus(TopBinder.Id, maxCount+1)
@@ -122,7 +260,6 @@ func (mc *ManageController) TopPub(c *gin.Context) {
 	}
 	controller.SuccessResp(c, "置顶状态修改成功")
 	return
-
 }
 
 // DeleteComUser 删除 公司/机构 人员的 企业/服务机构 身份

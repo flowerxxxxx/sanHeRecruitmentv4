@@ -116,6 +116,25 @@ func (j *JobService) GetOneArtInfo(artId, host string) (artInfo mysqlModel.OneAr
 	oneArt.CreateTimeOut = oneArt.CreateTime.Format("2006-01-02")
 	oneArt.HeadPic = formatUtil.GetPicHeaderBody(host, oneArt.HeadPic)
 	oneArt.PicUrl = formatUtil.GetPicHeaderBody(host, oneArt.PicUrl)
+	if oneArt.ArtType == "request" {
+		oneArt.CompanyName = fmt.Sprintf("%v*****", string([]rune(oneArt.CompanyName)[:1]))
+	}
+	return oneArt, nil
+}
+
+func (j *JobService) GetOneArtInfoAdmin(artId, host string) (artInfo mysqlModel.OneArticleOut, err error) {
+	var oneArt mysqlModel.OneArticleOut
+	err = dao.DB.Table("articles").Select("articles.art_type,companies.com_level,president,job_label,tags,career_job_id,art_id,title,com_id,pic_url,content,`view`,boss_id,nickname,head_pic,company_name,salary_min,salary_max,region,person_scale,create_time").
+		Joins("INNER JOIN users on articles.boss_id = users.user_id").
+		Joins("INNER JOIN companies on companies.com_id = articles.company_id").
+		Where("art_id = ?", artId).Scan(&oneArt).Error
+	if err != nil {
+		return oneArt, err
+	}
+	oneArt.TagsOut = sqlUtil.SqlStringToSli(oneArt.Tags)
+	oneArt.CreateTimeOut = oneArt.CreateTime.Format("2006-01-02")
+	oneArt.HeadPic = formatUtil.GetPicHeaderBody(host, oneArt.HeadPic)
+	oneArt.PicUrl = formatUtil.GetPicHeaderBody(host, oneArt.PicUrl)
 	return oneArt, nil
 }
 

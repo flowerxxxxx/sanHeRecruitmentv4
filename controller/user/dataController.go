@@ -82,7 +82,7 @@ func (dc *DataController) GetVipShows(c *gin.Context) {
 }
 
 func (dc *DataController) getRecommendLabels(c *gin.Context) {
-	labelInfos, _ := dc.LabelService.QueryRecommendLabels(1)
+	labelInfos, _ := dc.LabelService.QueryRecommendLabels()
 	controller.SuccessResp(c, "recommend gets success", labelInfos)
 	return
 }

@@ -10,6 +10,28 @@ import (
 type NoticeService struct {
 }
 
+func (ns *NoticeService) ChangeTopNoticeStatus(id, desStatus int) (err error) {
+	var ProInfo mysqlModel.Propaganda
+	err = dao.DB.Table("notices").
+		Where("id = ?", id).Find(&ProInfo).Error
+	if err != nil {
+		return NoRecord
+	}
+	ProInfo.Recommend = desStatus
+	err = dao.DB.Table("notices").Save(&ProInfo).Error
+	return err
+}
+
+func (ns *NoticeService) QueryMaxRecommendCount() (maxNum int, err error) {
+	var maxRecCount mysqlModel.MaxRecommendCount
+	err = dao.DB.Table("notices").
+		Select("MAX(recommend) as max_num").Find(&maxRecCount).Error
+	if err != nil {
+		return -1, err
+	}
+	return maxRecCount.MaxNum, nil
+}
+
 // SaveNotice 保存公告信息
 func (ns *NoticeService) SaveNotice(content, uploader, title string, uploadTime *timeUtil.MyTime) (err error) {
 	var noticeSaver mysqlModel.Notice
@@ -40,8 +62,8 @@ func (ns *NoticeService) EditNotice(id int, content, title string, updateTime *t
 func (ns *NoticeService) QueryNoticesInfos(pageNum int) []mysqlModel.NoticeOutHead {
 	var noticeInfos []mysqlModel.NoticeOutHead
 	sqlPage := sqlUtil.PageNumToSqlPage(pageNum, pageSize)
-	dao.DB.Table("notices").Select("id,title,upload_time,update_time").
-		Order("id desc").Offset(sqlPage).Limit(pageSize).Find(&noticeInfos)
+	dao.DB.Table("notices").Select("id,title,upload_time,update_time,recommend").
+		Order("recommend desc,id desc").Offset(sqlPage).Limit(pageSize).Find(&noticeInfos)
 	return noticeInfos
 }
 

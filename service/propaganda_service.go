@@ -10,6 +10,28 @@ import (
 type PropagandaService struct {
 }
 
+func (ps *PropagandaService) QueryMaxRecommendCount() (maxNum int, err error) {
+	var maxRecCount mysqlModel.MaxRecommendCount
+	err = dao.DB.Table("propagandas").
+		Select("MAX(recommend) as max_num").Find(&maxRecCount).Error
+	if err != nil {
+		return -1, err
+	}
+	return maxRecCount.MaxNum, nil
+}
+
+func (ps *PropagandaService) ChangeTopProStatus(id, desStatus int) (err error) {
+	var ProInfo mysqlModel.Propaganda
+	err = dao.DB.Table("propagandas").
+		Where("id = ?", id).Find(&ProInfo).Error
+	if err != nil {
+		return NoRecord
+	}
+	ProInfo.Recommend = desStatus
+	err = dao.DB.Table("propagandas").Save(&ProInfo).Error
+	return err
+}
+
 // AddProInfo 添加宣传的内容
 func (ps *PropagandaService) AddProInfo(
 	uploadTime *timeUtil.MyTime, url, uploader, content, title string, uploadType int) (err error) {
@@ -46,7 +68,7 @@ func (ps *PropagandaService) EditProInfo(id int,
 func (ps *PropagandaService) QueryProInfos(host string) ([]mysqlModel.PropagandaOutHead, error) {
 	var proInfos []mysqlModel.PropagandaOutHead
 	err := dao.DB.Table("propagandas").
-		Order("id desc").Find(&proInfos).Error
+		Order("recommend desc,id desc").Find(&proInfos).Error
 	for i, m := 0, len(proInfos); i < m; i++ {
 		proInfos[i].Url = formatUtil.GetPicHeaderBody(host, proInfos[i].Url)
 	}

@@ -57,7 +57,7 @@ func JobControllerRouter(router *gin.RouterGroup) {
 	router.GET("/fuzzyQueryAll/:fuzzyName", j.FuzzyQuery)
 	//获取公司已经包含的工作/需求标签
 	router.GET("/getCompanyPubLabel/:companyName/:type", j.QueryCompanyPubLabel)
-	//获取公司信息 TODO 缺乏公司信息描述
+	//获取公司信息
 	router.GET("/getCompanyInfo/:companyName", j.QueryCompanyInfo)
 	//模糊获取工作信息
 	router.POST("/FuzzyQueryJobInfos", j.FuzzyQueryJobInfos)
@@ -189,6 +189,10 @@ func (jc *JobController) QueryCompanyInfo(c *gin.Context) {
 	companyBasicInfo, err := jc.CompanyService.QueryCompanyBasicInfoByName(companyName, c.Request.Host)
 	if err != nil {
 		controller.ErrorResp(c, 201, "该公司不存在")
+		return
+	}
+	if companyBasicInfo.ComLevel == 2 {
+		controller.ErrorResp(c, 202, "禁止访问该信息")
 		return
 	}
 	controller.SuccessResp(c, "公司信息查找成功", companyBasicInfo)

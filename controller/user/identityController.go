@@ -323,14 +323,18 @@ func (bc *IdentityController) SaveCompanyInfo(c *gin.Context) {
 		return
 	}
 	UpdateTime := timeUtil.GetNowTimeFormat()
+	if exist := strings.Index(companyName, "/"); exist != -1 || len(companyName) == 0 {
+		controller.ErrorResp(c, 202, "公司名不符合规则")
+		return
+	}
 	companyInfo, err := bc.CompanyService.QueryCompanyInfoByName(companyName)
 	if err == nil {
-		controller.ErrorResp(c, 201, "公司已存在", companyInfo)
+		controller.ErrorResp(c, 203, "公司已存在", companyInfo)
 		return
 	}
 	saveFlag := strings.Index(comHeadPic, "uploadPic/")
 	if saveFlag == -1 {
-		controller.ErrorResp(c, 203, "图片路径错误")
+		controller.ErrorResp(c, 204, "图片路径错误")
 		return
 	}
 	newComHeadPic := comHeadPic[saveFlag:]
