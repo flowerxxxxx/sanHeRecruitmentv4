@@ -144,17 +144,17 @@ func (mc *ManageController) TopNotice(c *gin.Context) {
 	if TopBinder.DesStatus == 1 {
 		maxCount, err := mc.NoticeService.QueryMaxRecommendCount()
 		if err != nil {
-			log.Println("TopNotice QueryMaxRecommendCount failed,err:", TopBinder)
+			log.Println("TopNotice QueryMaxRecommendCount failed,err:", err, "\n reqInfo:", TopBinder)
 			controller.ErrorResp(c, 211, "无发布内容")
 			return
 		}
 		errX := mc.NoticeService.ChangeTopNoticeStatus(TopBinder.Id, maxCount+1)
 		if errX != nil {
-			if err == service.NoRecord {
+			if errX == service.NoRecord {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
-				log.Println("TopNotice ChangeTopNoticeStatus failed,err:", TopBinder)
+				log.Println("TopNotice ChangeTopNoticeStatus failed,err:", errX, "\n reqInfo:", TopBinder)
 				controller.ErrorResp(c, 212, "服务器错误")
 				return
 			}
@@ -166,7 +166,7 @@ func (mc *ManageController) TopNotice(c *gin.Context) {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
-				log.Println("TopNotice ChangeTopNoticeStatus failed,err:", TopBinder)
+				log.Println("TopNotice ChangeTopNoticeStatus failed,err:", err, "\n reqInfo:", TopBinder)
 				controller.ErrorResp(c, 213, "服务器错误")
 				return
 			}

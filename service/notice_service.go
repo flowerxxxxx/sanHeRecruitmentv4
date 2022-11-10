@@ -11,14 +11,14 @@ type NoticeService struct {
 }
 
 func (ns *NoticeService) ChangeTopNoticeStatus(id, desStatus int) (err error) {
-	var ProInfo mysqlModel.Propaganda
+	var noticeInfo mysqlModel.Notice
 	err = dao.DB.Table("notices").
-		Where("id = ?", id).Find(&ProInfo).Error
+		Where("id = ?", id).Find(&noticeInfo).Error
 	if err != nil {
 		return NoRecord
 	}
-	ProInfo.Recommend = desStatus
-	err = dao.DB.Table("notices").Save(&ProInfo).Error
+	noticeInfo.Recommend = desStatus
+	err = dao.DB.Table("notices").Save(&noticeInfo).Error
 	return err
 }
 
