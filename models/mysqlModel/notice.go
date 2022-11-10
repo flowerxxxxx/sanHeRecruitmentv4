@@ -9,6 +9,7 @@ type Notice struct {
 	UpdateTime *timeUtil.MyTime `json:"update_time"`
 	Uploader   string           `json:"uploader"`
 	Title      string           `json:"title"`
+	Recommend  int              `json:"recommend"`
 }
 
 type NoticeOutHead struct {
@@ -16,6 +17,7 @@ type NoticeOutHead struct {
 	UploadTime *timeUtil.MyTime `json:"upload_time"`
 	UpdateTime *timeUtil.MyTime `json:"update_time"`
 	Title      string           `json:"title"`
+	Recommend  int              `json:"recommend"`
 }
 
 type NoticeOutContent struct {
