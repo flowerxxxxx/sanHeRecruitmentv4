@@ -226,7 +226,26 @@ func (c *CountService) UserCollectTotal(username string) int {
 	return Total.TotalNum
 }
 
-func (c *CountService) CompanyPubTotal(companyName, JobReqType, getType string, status int) int {
+func (c *CountService) CompanyPubTotal(JobReqType, getType string, companyId, status int) int {
+	var Total mysqlModel.Count
+	totalQ := dao.DB.Table("articles").Select("COUNT(*) AS total_num").
+		Joins("INNER JOIN companies on companies.com_id = articles.company_id "+
+			"INNER JOIN labels ON articles.career_job_id = labels.id").
+		Where("articles.company_id = ?", companyId).
+		Where("`status`=?", status).
+		Where("`show` = ?", 1)
+	if JobReqType != "" {
+		totalQ = totalQ.Where("`job_label` = ?", JobReqType)
+	} else {
+		if getType != "" {
+			totalQ = totalQ.Where("labels.`type` = ?", getType)
+		}
+	}
+	totalQ.Find(&Total)
+	return getTotalPage(Total)
+}
+
+func (c *CountService) CompanyPubTotalAdmin(companyName, JobReqType, getType string, status int) int {
 	var Total mysqlModel.Count
 	totalQ := dao.DB.Table("articles").Select("COUNT(*) AS total_num").
 		Joins("INNER JOIN companies on companies.com_id = articles.company_id "+

@@ -56,7 +56,7 @@ func JobControllerRouter(router *gin.RouterGroup) {
 	//首页模糊检索职位 招聘和需求可单独做
 	router.GET("/fuzzyQueryAll/:fuzzyName", j.FuzzyQuery)
 	//获取公司已经包含的工作/需求标签
-	router.GET("/getCompanyPubLabel/:companyName/:type", j.QueryCompanyPubLabel)
+	router.GET("/getCompanyPubLabel/:companyId/:type", j.QueryCompanyPubLabel)
 	//获取公司信息
 	router.GET("/getCompanyInfo/:companyName", j.QueryCompanyInfo)
 	//模糊获取工作信息
@@ -199,17 +199,22 @@ func (jc *JobController) QueryCompanyInfo(c *gin.Context) {
 }
 
 func (jc *JobController) QueryCompanyPubLabel(c *gin.Context) {
-	companyName := c.Param("companyName")
+	companyId := c.Param("companyId")
 	jobLabel := c.Param("type")
-	companyLabel := jc.LabelService.QueryCompanyLabel(companyName, jobLabel, 1)
-	controller.SuccessResp(c, companyName+"["+jobLabel+"]标签查询成功", companyLabel)
+	companyIdInt, err := strconv.Atoi(companyId)
+	if err != nil {
+		controller.ErrorResp(c, 201, "id 格式错误 ")
+		return
+	}
+	companyLabel := jc.LabelService.QueryCompanyLabel(jobLabel, companyIdInt, 1)
+	controller.SuccessResp(c, "["+jobLabel+"]标签查询成功", companyLabel)
 }
 
 // GetCompanyPub 获取改公司所属的职位或者需求 全部职业或者需求为 ""
 func (jc *JobController) GetCompanyPub(c *gin.Context) {
 	recJson := map[string]interface{}{}
 	_ = c.BindJSON(&recJson)
-	companyName := recJson["companyName"].(string)
+	companyId := recJson["companyId"].(string)
 	JobReqType := recJson["jobReqType"].(string)
 	pageNum := recJson["pageNum"].(string)
 	getType := recJson["type"].(string)
@@ -218,8 +223,13 @@ func (jc *JobController) GetCompanyPub(c *gin.Context) {
 		controller.ErrorResp(c, 201, "页码参数错误")
 		return
 	}
-	comArtInfo := jc.JobService.GetCompanyJobInfo(companyName, JobReqType, getType, c.Request.Host, pageNumInt, 1)
-	Total := jc.CountService.CompanyPubTotal(companyName, JobReqType, getType, 1)
+	companyIdInt, err := strconv.Atoi(companyId)
+	if err != nil {
+		controller.ErrorResp(c, 201, "公司id参数错误")
+		return
+	}
+	comArtInfo := jc.JobService.GetCompanyJobInfo(JobReqType, getType, c.Request.Host, companyIdInt, pageNumInt, 1)
+	Total := jc.CountService.CompanyPubTotal(JobReqType, getType, companyIdInt, 1)
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
 		"msg":    "查询成功",

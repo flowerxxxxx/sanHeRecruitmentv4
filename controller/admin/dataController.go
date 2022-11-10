@@ -736,7 +736,7 @@ func (dc *DataController) getWaitingApplyCom(c *gin.Context) {
 func (dc *DataController) GetComPubWaitingLabel(c *gin.Context) {
 	companyName := c.Param("companyName")
 	jobLabel := c.Param("type")
-	companyLabel := dc.LabelService.QueryCompanyLabel(companyName, jobLabel, 0)
+	companyLabel := dc.LabelService.QueryCompanyLabelAdmin(companyName, jobLabel, 0)
 	controller.SuccessResp(c, companyName+"["+jobLabel+"]标签查询成功", companyLabel)
 }
 
@@ -752,8 +752,8 @@ func (dc *DataController) GetComPubWaiting(c *gin.Context) {
 		controller.ErrorResp(c, 201, "页码参数错误")
 		return
 	}
-	comArtInfo := dc.JobService.GetCompanyJobInfo(companyName, JobReqType, "", c.Request.Host, pageNumInt, 0)
-	Total := dc.CountService.CompanyPubTotal(companyName, JobReqType, "", 0)
+	comArtInfo := dc.JobService.GetCompanyJobInfoAdmin(companyName, JobReqType, "", c.Request.Host, pageNumInt, 0)
+	Total := dc.CountService.CompanyPubTotalAdmin(companyName, JobReqType, "", 0)
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
 		"msg":    "查询成功",

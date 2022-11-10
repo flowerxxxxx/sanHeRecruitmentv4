@@ -220,7 +220,39 @@ func (j *JobService) QueryArtWeight(artId string) (aw mysqlModel.ArtWeightCount)
 	return
 }
 
-func (j *JobService) GetCompanyJobInfo(companyName, JobReqType, getType, host string, pageNumInt, status int) []mysqlModel.UserComArticle {
+func (j *JobService) GetCompanyJobInfo(JobReqType, getType, host string, companyId, pageNumInt, status int) []mysqlModel.UserComArticle {
+	var comArt []mysqlModel.UserComArticle
+	sqlPage := sqlUtil.PageNumToSqlPage(pageNumInt, 10)
+	sqlQuery := dao.DB.Table("articles").
+		Select("art_id,title,com_level,`view`,boss_id,nickname,head_pic," +
+			"company_name,salary_min,job_label,tags,salary_max,region,person_scale,articles.art_type").
+		Joins(" INNER JOIN users on articles.boss_id = users.user_id  " +
+			"INNER JOIN companies on companies.com_id = articles.company_id ")
+	sqlQuery = sqlQuery.Where("articles.company_id = ?", companyId).
+		Where("`status`=?", status).
+		Where("`show` = ?", 1).
+		Order("art_id desc")
+	if JobReqType != "" {
+		sqlQuery = sqlQuery.Where("`job_label` = ?", JobReqType)
+	} else {
+		if getType != "" {
+			//sqlQuery = sqlQuery.Joins("INNER JOIN labels on articles.career_job_id = labels.id").
+			//	Where("labels.`type` = ?", getType)
+			sqlQuery = sqlQuery.Where("articles.art_type = ?", getType)
+		}
+	}
+	sqlQuery.Limit(10).Offset(sqlPage).Find(&comArt)
+	for i, ul := 0, len(comArt); i < ul; i++ {
+		if comArt[i].ComLevel == 2 || getType == "request" {
+			comArt[i].CompanyName = fmt.Sprintf("%v*****", string([]rune(comArt[i].CompanyName)[:1]))
+		}
+		comArt[i].TagsOut = sqlUtil.SqlStringToSli(comArt[i].Tags)
+		comArt[i].HeadPic = formatUtil.GetPicHeaderBody(host, comArt[i].HeadPic)
+	}
+	return comArt
+}
+
+func (j *JobService) GetCompanyJobInfoAdmin(companyName, JobReqType, getType, host string, pageNumInt, status int) []mysqlModel.UserComArticle {
 	var comArt []mysqlModel.UserComArticle
 	sqlPage := sqlUtil.PageNumToSqlPage(pageNumInt, 10)
 	sqlQuery := dao.DB.Table("articles").
