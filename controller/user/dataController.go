@@ -1,9 +1,12 @@
 package user
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"sanHeRecruitment/controller"
+	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/service"
 	"strconv"
@@ -163,10 +166,33 @@ func (dc *DataController) GetOnePropagandaInfo(c *gin.Context) {
 
 // GetPropagandaInfos 获取宣传栏信息（0图片 1视频）
 func (dc *DataController) GetPropagandaInfos(c *gin.Context) {
-	proInfos, err := dc.PropagandaService.QueryProInfos(c.Request.Host)
-	if err != nil {
-		c.String(http.StatusNotFound, "not found")
+	redisGet := dao.Redis.Get("PropagandaInfo").Val()
+	if redisGet == "" {
+		proInfos, err := dc.PropagandaService.QueryProInfos(c.Request.Host)
+		if err != nil {
+			c.String(http.StatusNotFound, "not found")
+			return
+		}
+		controller.SuccessResp(c, "propaganda infos ok", proInfos)
+		byteJson, errMar := json.Marshal(proInfos)
+		if errMar != nil {
+			log.Println("GetPropagandaInfos json marshal failed,err:", errMar)
+			return
+		}
+		dao.Redis.Do("SET", "PropagandaInfo", byteJson)
 		return
 	}
-	controller.SuccessResp(c, "propaganda infos ok", proInfos)
+	marshalInfo := []mysqlModel.PropagandaOutHeadRedis{}
+	errUnMar := json.Unmarshal([]byte(redisGet), &marshalInfo)
+	if errUnMar != nil {
+		log.Println("GetPropagandaInfos json unmarshal failed,err:", errUnMar)
+		proInfos, err := dc.PropagandaService.QueryProInfos(c.Request.Host)
+		if err != nil {
+			c.String(http.StatusNotFound, "not found")
+			return
+		}
+		controller.SuccessResp(c, "propaganda infos ok", proInfos)
+		return
+	}
+	controller.SuccessResp(c, "propaganda infos ok", marshalInfo)
 }
