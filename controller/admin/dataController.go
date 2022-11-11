@@ -7,6 +7,7 @@ import (
 	"os"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/controller"
+	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/BindModel/adminBind"
 	"sanHeRecruitment/models/BindModel/userBind"
 	"sanHeRecruitment/module/controllerModule"
@@ -513,6 +514,7 @@ func (dc *DataController) DeletePropagandaContent(c *gin.Context) {
 		return
 	}
 	go osUtil.DeleteFile(WaitDeleteInfo.Url)
+	dao.Redis.Del("PropagandaInfo")
 	controller.SuccessResp(c, "删除成功")
 }
 
@@ -582,6 +584,7 @@ func (dc *DataController) EditPropagandaContent(c *gin.Context) {
 			return
 		}
 	}
+	dao.Redis.Del("PropagandaInfo")
 	controller.SuccessResp(c, "宣传栏目内容上传成功")
 
 }
@@ -630,6 +633,7 @@ func (dc *DataController) SavePropagandaContent(c *gin.Context) {
 		log.Println("SavePropagandaContent err:", err, "\n requestBody:", propagandaBinder)
 		return
 	}
+	dao.Redis.Del("PropagandaInfo")
 	controller.SuccessResp(c, "宣传栏目内容上传成功")
 }
 

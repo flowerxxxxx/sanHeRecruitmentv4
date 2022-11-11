@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"sanHeRecruitment/controller"
+	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/BindModel/adminBind"
 	"sanHeRecruitment/module/websocketModule"
 	"sanHeRecruitment/service"
@@ -215,6 +216,7 @@ func (mc *ManageController) TopPropaganda(c *gin.Context) {
 			}
 		}
 	}
+	dao.Redis.Del("PropagandaInfo")
 	controller.SuccessResp(c, "置顶状态修改成功")
 	return
 }

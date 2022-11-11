@@ -28,6 +28,18 @@ type PropagandaOutHead struct {
 	Recommend int    `json:"recommend"`
 }
 
+type PropagandaOutHeadRedis struct {
+	Id         int    `json:"id" gorm:"primary_key"`
+	Uploader   string `json:"-"`
+	Url        string `json:"url"`
+	UploadTime string `json:"upload_time"`
+	//流媒体类型 0图片 1视频
+	Type      int    `json:"type"`
+	Load      bool   `json:"load"`
+	Title     string `json:"title"`
+	Recommend int    `json:"recommend"`
+}
+
 // PropagandaOutContent 详细 焦点
 type PropagandaOutContent struct {
 	PropagandaOutHead
