@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -86,9 +85,6 @@ func (boc *BossController) SavePicVouchersCom(c *gin.Context) {
 		c.String(http.StatusBadRequest, "请求参数错误")
 		return
 	}
-
-	uploadType := c.PostForm("uploadType")
-	fmt.Println(uploadType)
 	fileFormat := file.Filename[strings.Index(file.Filename, "."):]
 	//if fileFormat != ".jpg" && fileFormat != ".png" {
 	//	controller.ErrorResp(c, 202, "仅支持jpg、png格式")
