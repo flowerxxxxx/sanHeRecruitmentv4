@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/util/formatUtil"
@@ -35,11 +36,18 @@ func (m *MsgObjService) DeleteMsg(msgId int, username string) error {
 
 // BatchRead msgobjs 内最新消息设置已读
 func (m *MsgObjService) BatchRead(FromUsername, ToUsername string) {
-	var msgObj mysqlModel.Msgobj
-	err := dao.DB.Where("from_username=?", FromUsername).Where("to_username=?", ToUsername).Find(&msgObj).Error
+	//var msgObj mysqlModel.Msgobj
+	//err := dao.DB.Where("from_username=?", FromUsername).Where("to_username=?", ToUsername).Find(&msgObj).Error
+	//if err != nil {
+	//	return
+	//}
+	//msgObj.Read = 1
+	//dao.DB.Save(&msgObj)
+	err := dao.DB.Table("msgobjs").Model(&mysqlModel.Msgobj{}).
+		Where("from_username=?", FromUsername).Where("to_username=?", ToUsername).
+		UpdateColumn(map[string]interface{}{"read": 1}).Error
 	if err != nil {
+		log.Println("ws BatchRead failed,err:", err)
 		return
 	}
-	msgObj.Read = 1
-	dao.DB.Save(&msgObj)
 }

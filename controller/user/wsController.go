@@ -96,7 +96,10 @@ func (ws *WsController) Handler(c *gin.Context) {
 	go client.Read(c.Request.Host)
 	go client.Write(c.Request.Host)
 	go func() {
-		ws.ChatService.BatchRead(toUid, uid)
+		//将trainers内的所有read设为已读
+		//ws.ChatService.BatchRead(toUid, uid)
+
+		//将msgobjs的read设为已读
 		ws.MsgObjService.BatchRead(uid, toUid)
 	}()
 }
