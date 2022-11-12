@@ -134,3 +134,5 @@ requestMethod:GET
 [logTool]2022/11/12 20:17:48 server.go:3230: http: TLS handshake error from 127.0.0.1:55777: remote error: tls: unknown certificate
 [logTool]2022/11/12 20:19:29 identityController.go:281: file remove OK!
 [logTool]2022/11/12 20:19:49 identityController.go:281: file remove OK!
+[logTool]2022/11/12 21:05:05 article_service.go:24: AddArtView failed,err: Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'view`` = `view`+?  WHERE (art_id=?)' at line 1
+[logTool]2022/11/12 21:06:19 article_service.go:24: AddArtView failed,err: Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'view`` = `view`+ ?  WHERE (art_id=?)' at line 1

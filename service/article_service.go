@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/jinzhu/gorm"
+	"log"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/mysqlModel"
 	"strconv"
@@ -13,10 +14,15 @@ type ArticleService struct {
 
 // AddArtView 增加文章阅读量
 func (as *ArticleService) AddArtView(artId int) {
-	var ArtInfo mysqlModel.Article
-	dao.DB.Where("art_id=?", artId).Find(&ArtInfo)
-	ArtInfo.View += 1
-	dao.DB.Save(&ArtInfo)
+	//var ArtInfo mysqlModel.Article
+	//dao.DB.Where("art_id=?", artId).Find(&ArtInfo)
+	//ArtInfo.View += 1
+	//dao.DB.Save(&ArtInfo)
+	err := dao.DB.Table("articles").Where("art_id=?", artId).
+		Update("view", gorm.Expr("`view`+ ?", 1)).Error
+	if err != nil {
+		log.Println("AddArtView failed,err:", err)
+	}
 }
 
 // AddDeliveryNum 增加简历投递量
@@ -80,10 +86,15 @@ func (as *ArticleService) AdminDeletePubInfo(artId int) error {
 
 // UpdateArtWeight 更新招聘/需求权值
 func (as *ArticleService) UpdateArtWeight(artId int, artWeight float64) {
-	var artInfo mysqlModel.Article
-	dao.DB.Where("art_id=?", artId).Find(&artInfo)
-	artInfo.Weight = artWeight
-	dao.DB.Save(&artInfo)
+	//var artInfo mysqlModel.Article
+	//dao.DB.Where("art_id=?", artId).Find(&artInfo)
+	//artInfo.Weight = artWeight
+	//dao.DB.Save(&artInfo)
+	err := dao.DB.Table("articles").Where("art_id=?", artId).Model(&mysqlModel.Article{}).
+		UpdateColumn(map[string]interface{}{"weight": artWeight}).Error
+	if err != nil {
+		log.Println("UpdateArtWeight failed,err:", err)
+	}
 }
 
 func (as *ArticleService) QueryArtByID(artID int) (artInfo mysqlModel.Article, err error) {
