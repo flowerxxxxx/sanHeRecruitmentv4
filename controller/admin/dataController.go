@@ -599,6 +599,10 @@ func (dc *DataController) DeleteStreamOrPic(c *gin.Context) {
 	}
 	streamUrl := DeleteStream.Url
 	pos := strings.Index(streamUrl, "/uploadPic")
+	if pos == -1 {
+		controller.ErrorResp(c, 202, "流媒体路径错误")
+		return
+	}
 	finalPicUrl := config.PicSaverPath + streamUrl[pos+10:]
 	go func() {
 		err := os.Remove(finalPicUrl)

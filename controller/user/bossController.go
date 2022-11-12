@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -9,11 +10,13 @@ import (
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/module/websocketModule"
 	"sanHeRecruitment/service"
+	"sanHeRecruitment/util/formatUtil"
 	"sanHeRecruitment/util/messageUtil"
 	"sanHeRecruitment/util/saveUtil"
 	"sanHeRecruitment/util/sqlUtil"
 	"sanHeRecruitment/util/timeUtil"
 	"sanHeRecruitment/util/tokenUtil"
+	"sanHeRecruitment/util/uploadUtil"
 	"strconv"
 	"strings"
 	"time"
@@ -72,6 +75,35 @@ func BossControllerRouterToken(router *gin.RouterGroup) {
 	router.GET("/resumeDeliveries/:type/:pageNum", boc.QueryResumeDeliveries)
 	// boss 查看简历设置已读
 	router.POST("/bossReadResume", boc.BossReadResume)
+	//上传照片到服务器
+	router.POST("/uploadComHead", boc.SavePicVouchersCom)
+}
+
+// SavePicVouchersCom 上传照片凭证（公司照片，凭证）
+func (boc *BossController) SavePicVouchersCom(c *gin.Context) {
+	file, err := c.FormFile("pic_voucher")
+	if err != nil {
+		c.String(http.StatusBadRequest, "请求参数错误")
+		return
+	}
+
+	uploadType := c.PostForm("uploadType")
+	fmt.Println(uploadType)
+	fileFormat := file.Filename[strings.Index(file.Filename, "."):]
+	//if fileFormat != ".jpg" && fileFormat != ".png" {
+	//	controller.ErrorResp(c, 202, "仅支持jpg、png格式")
+	//	return
+	//}
+	if formatFlag := uploadUtil.FormatJudge(fileFormat, ".jpg", ".png", ".jpeg", ".webp"); !formatFlag {
+		controller.ErrorResp(c, 202, "图片格式不支持")
+		return
+	}
+	fileUrl, fileAddr := uploadUtil.SaveFormat(fileFormat, c.Request.Host)
+	if err := c.SaveUploadedFile(file, fileAddr); err != nil {
+		c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
+		return
+	}
+	controller.SuccessResp(c, "照片凭证上传成功", formatUtil.GetPicHeaderBody(c.Request.Host, fileUrl))
 }
 
 // BossReadResume boss 查看简历设置已读
@@ -144,8 +176,8 @@ func (boc *BossController) UpdateCompanyHeadPic(c *gin.Context) {
 	pic_url := recJson["pic_url"].(string)
 	userInfo, err := boc.UserService.GetUserInfo(username, c.Request.Host)
 	if err != nil {
-		controller.ErrorResp(c, 213, "服务器错误")
-		log.Println("UpdateCompanyHeadPic", err, "recJson:", recJson)
+		controller.ErrorResp(c, 201, "未查询到用户信息")
+		log.Println("UpdateCompanyHeadPic GetUserInfo", err, "recJson:", recJson)
 		return
 	}
 	companyInfo, err := boc.CompanyService.QueryCompanyInfoById(userInfo.CompanyID, c.Request.Host)
@@ -159,6 +191,10 @@ func (boc *BossController) UpdateCompanyHeadPic(c *gin.Context) {
 		_ = saveUtil.DeletePicSaver(companyInfo.PicUrl)
 	}()
 	saveFlag := strings.Index(pic_url, "uploadPic/")
+	if saveFlag == -1 {
+		controller.ErrorResp(c, 201, "上传路径错误")
+		return
+	}
 	pic_url = pic_url[saveFlag:]
 	err = boc.CompanyService.UpdateCompanyHeadPic(companyInfo.ComId, pic_url, username)
 	if err != nil {

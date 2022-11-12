@@ -34,6 +34,7 @@ func IdentityControllerRouter(router *gin.RouterGroup) {
 	bc := IdentityController{}
 	//上传照片到服务器
 	router.POST("/uploadPicVoucher", bc.SavePicVouchers)
+
 	// 根据url删除本地已经上传的照片凭证
 	router.POST("/deletePicVoucher", bc.DeletePicVoucher)
 	//实时根据现有参数模糊查询公司名称
@@ -265,8 +266,12 @@ func (bc *IdentityController) DeletePicVoucher(c *gin.Context) {
 	recJson := map[string]interface{}{}
 	_ = c.BindJSON(&recJson)
 	picUrl := recJson["picUrl"].(string)
-	pos := strings.Index(picUrl, "/uploadPic")
-	finalPicUrl := config.PicSaverPath + picUrl[pos+10:]
+	posIndex := strings.Index(picUrl, "/uploadPic")
+	posVoucher := strings.Index(picUrl, "voucher")
+	if posIndex == -1 || posVoucher == -1 {
+		controller.ErrorResp(c, 201, "图片路径错误")
+	}
+	finalPicUrl := config.PicSaverPath + picUrl[posIndex+10:]
 	go func() {
 		err := os.Remove(finalPicUrl)
 		if err != nil {
@@ -374,7 +379,7 @@ func (bc *IdentityController) SavePicVouchers(c *gin.Context) {
 		controller.ErrorResp(c, 202, "图片格式不支持")
 		return
 	}
-	fileUrl, fileAddr := uploadUtil.SaveFormat(fileFormat, c.Request.Host)
+	fileUrl, fileAddr := uploadUtil.SaveFormat("voucher"+fileFormat, c.Request.Host)
 	if err := c.SaveUploadedFile(file, fileAddr); err != nil {
 		c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
 		return

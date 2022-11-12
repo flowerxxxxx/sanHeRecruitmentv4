@@ -96,3 +96,41 @@
 [logTool]2022/10/28 16:18:41 base.go:10: Timer Starting...
 [logTool]2022/11/06 17:33:25 server.go:3230: http: TLS handshake error from 127.0.0.1:56955: read tcp 127.0.0.1:9090->127.0.0.1:56955: wsarecv: An established connection was aborted by the software in your host machine.
 [logTool]2022/11/06 17:33:25 server.go:3230: http: TLS handshake error from 127.0.0.1:50717: read tcp 127.0.0.1:9090->127.0.0.1:50717: wsarecv: An established connection was aborted by the software in your host machine.
+[logTool]2022/11/12 20:00:06 identityController.go:277: file remove OK!
+[logTool]2022/11/12 20:03:12 bossController.go:243: BossGetCompanyInfo record not found
+[logTool]2022/11/12 20:03:12 basicReturn.go:63: {215 服务器错误 []} 
+RequestUrl:/boss/getCompanyInfo 
+clientIp:127.0.0.1 
+requestMethod:GET
+[logTool]2022/11/12 20:03:16 bossController.go:243: BossGetCompanyInfo record not found
+[logTool]2022/11/12 20:03:16 basicReturn.go:63: {215 服务器错误 []} 
+RequestUrl:/boss/getCompanyInfo 
+clientIp:127.0.0.1 
+requestMethod:GET
+[logTool]2022/11/12 20:03:41 bossController.go:243: BossGetCompanyInfo record not found
+[logTool]2022/11/12 20:03:41 basicReturn.go:63: {215 服务器错误 []} 
+RequestUrl:/boss/getCompanyInfo 
+clientIp:127.0.0.1 
+requestMethod:GET
+[logTool]2022/11/12 20:04:27 bossController.go:243: BossGetCompanyInfo record not found
+[logTool]2022/11/12 20:04:27 basicReturn.go:63: {215 服务器错误 []} 
+RequestUrl:/boss/getCompanyInfo 
+clientIp:127.0.0.1 
+requestMethod:GET
+[logTool]2022/11/12 20:04:30 bossController.go:243: BossGetCompanyInfo record not found
+[logTool]2022/11/12 20:04:30 basicReturn.go:63: {215 服务器错误 []} 
+RequestUrl:/boss/getCompanyInfo 
+clientIp:127.0.0.1 
+requestMethod:GET
+[logTool]2022/11/12 20:07:00 delete.go:19: file remove Error!
+[logTool]2022/11/12 20:07:00 delete.go:20: remove D:\uploadPicSaver/2b60576f-d0c5-4fdd-9526-9019578de8f21665848566-1665848566.jpg: The system cannot find the file specified.
+[logTool]2022/11/12 20:14:36 server.go:3230: http: TLS handshake error from 127.0.0.1:55606: remote error: tls: unknown certificate
+[logTool]2022/11/12 20:14:36 server.go:3230: http: TLS handshake error from 127.0.0.1:55603: remote error: tls: unknown certificate
+[logTool]2022/11/12 20:16:10 identityController.go:281: file remove OK!
+[logTool]2022/11/12 20:16:21 identityController.go:281: file remove OK!
+[logTool]2022/11/12 20:17:45 server.go:3230: http: TLS handshake error from 127.0.0.1:55772: remote error: tls: unknown certificate
+[logTool]2022/11/12 20:17:45 server.go:3230: http: TLS handshake error from 127.0.0.1:55773: remote error: tls: unknown certificate
+[logTool]2022/11/12 20:17:48 server.go:3230: http: TLS handshake error from 127.0.0.1:55776: remote error: tls: unknown certificate
+[logTool]2022/11/12 20:17:48 server.go:3230: http: TLS handshake error from 127.0.0.1:55777: remote error: tls: unknown certificate
+[logTool]2022/11/12 20:19:29 identityController.go:281: file remove OK!
+[logTool]2022/11/12 20:19:49 identityController.go:281: file remove OK!
