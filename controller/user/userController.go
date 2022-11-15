@@ -1,15 +1,21 @@
 package user
 
 import (
+	"bufio"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
+	"path"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/models/loginModel"
@@ -20,6 +26,7 @@ import (
 	"sanHeRecruitment/module/recommendModule"
 	"sanHeRecruitment/service"
 	"sanHeRecruitment/util"
+	"sanHeRecruitment/util/saveUtil"
 	"sanHeRecruitment/util/tokenUtil"
 	"strconv"
 	"strings"
@@ -428,7 +435,25 @@ func (u *UserController) UploadHeadPic(c *gin.Context) {
 	newFileName := uuid + "-" + strconv.Itoa(int(time.Now().Unix())) + fileFormat
 	HeadPic := "uploadPic/" + newFileName
 	fileAddr := config.PicSaverPath + "/" + newFileName
-	if err := c.SaveUploadedFile(file, fileAddr); err != nil {
+	//if err := c.SaveUploadedFile(file, fileAddr); err != nil {
+	//	c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
+	//	log.Println("Upload pic failed，err:", err)
+	//	return
+	//}
+	//fileContent, eo := file.Open()
+	//if eo != nil {
+	//	fmt.Println("file.Open failed,err:", eo)
+	//}
+	//byteContainer, err := ioutil.ReadAll(fileContent)
+	//afterResize, err := saveUtil.Compress(byteContainer)
+	//defer fileContent.Close()
+	////保存到新文件中
+	//errxx := ioutil.WriteFile(fileAddr, afterResize, 0644)
+	//if errxx != nil {
+	//	fmt.Println("111111111", errxx)
+	//}
+	es := saveUtil.SaveCompressFile(file, fileAddr)
+	if es != nil {
 		c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
 		log.Println("Upload pic failed，err:", err)
 		return
@@ -446,6 +471,18 @@ func (u *UserController) UploadHeadPic(c *gin.Context) {
 		"status": 200,
 		"msg":    "头像上传成功",
 	})
+}
+
+func FileToImage(header *multipart.FileHeader) (image image.Image, err error) {
+	file, err := header.Open()
+	ext := strings.ToLower(path.Ext(header.Filename))
+	switch ext {
+	case "jpeg", "jpg":
+		image, err = jpeg.Decode(bufio.NewReader(file))
+	case "png":
+		image, err = png.Decode(bufio.NewReader(file))
+	}
+	return image, err
 }
 
 // PersonalResumeEdu 获取个人教育经历-Token

@@ -95,7 +95,11 @@ func (boc *BossController) SavePicVouchersCom(c *gin.Context) {
 		return
 	}
 	fileUrl, fileAddr := uploadUtil.SaveFormat(fileFormat, c.Request.Host)
-	if err := c.SaveUploadedFile(file, fileAddr); err != nil {
+	//if err := c.SaveUploadedFile(file, fileAddr); err != nil {
+	//	c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
+	//	return
+	//}
+	if err := saveUtil.SaveCompressFile(file, fileAddr); err != nil {
 		c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
 		return
 	}
