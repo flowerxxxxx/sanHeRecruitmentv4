@@ -3,15 +3,14 @@ package saveUtil
 import (
 	"bytes"
 	"errors"
-	"github.com/nfnt/resize"
 	"image"
 	"image/jpeg"
 	"image/png"
 )
 
 func Compress(buf []byte) ([]byte, error) {
-	var width uint = 200
-	var height uint = 200
+	//var width uint = 200
+	//var height uint = 200
 
 	//文件压缩
 	decodeBuf, layout, err := image.Decode(bytes.NewReader(buf))
@@ -19,13 +18,13 @@ func Compress(buf []byte) ([]byte, error) {
 		return nil, err
 	}
 	// 修改图片的大小
-	set := resize.Resize(width, height, decodeBuf, resize.Lanczos3)
+	//set := resize.Resize(width, height, decodeBuf, resize.Lanczos3)
 	NewBuf := bytes.Buffer{}
 	switch layout {
 	case "png":
-		err = png.Encode(&NewBuf, set)
+		err = png.Encode(&NewBuf, decodeBuf)
 	case "jpeg", "jpg":
-		err = jpeg.Encode(&NewBuf, set, &jpeg.Options{Quality: 80})
+		err = jpeg.Encode(&NewBuf, decodeBuf, &jpeg.Options{Quality: 80})
 	default:
 		return nil, errors.New("该图片格式不支持压缩")
 	}
