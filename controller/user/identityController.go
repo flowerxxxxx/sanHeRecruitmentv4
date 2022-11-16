@@ -343,18 +343,22 @@ func (bc *IdentityController) SaveCompanyInfo(c *gin.Context) {
 		return
 	}
 	newComHeadPic := comHeadPic[saveFlag:]
-	err = bc.CompanyService.AddCompanyInfo(username, newComHeadPic, companyName, description,
-		scaleTag, personScale, address, phone, UpdateTime, TargetLevelInt)
-	newCompanyInfo, err := bc.CompanyService.QueryCompanyInfoByName(companyName)
-	TimeId := time.Now().Unix()
-	err = bc.UpgradeService.AddUpgradeInfo(username, TargetLevelInt, newCompanyInfo.ComId, 0, UpdateTime, TimeId)
-	go func() {
-		errx := bc.UserService.ModifyPersonalPresident(username, userPresident)
-		if errx != nil {
-			log.Println("SaveCompanyInfo ModifyPersonalPresident err.info:", recJson)
-		}
-	}()
-	if err != nil {
+	//err = bc.CompanyService.AddCompanyInfo(username, newComHeadPic, companyName, description,
+	//	scaleTag, personScale, address, phone, UpdateTime, TargetLevelInt)
+	//newCompanyInfo, err := bc.CompanyService.QueryCompanyInfoByName(companyName)
+	//TimeId := time.Now().Unix()
+	//err = bc.UpgradeService.AddUpgradeInfo(username, TargetLevelInt, newCompanyInfo.ComId, 0, UpdateTime, TimeId)
+	//go func() {
+	//	errx := bc.UserService.ModifyPersonalPresident(username, userPresident)
+	//	if errx != nil {
+	//		log.Println("SaveCompanyInfo ModifyPersonalPresident err.info:", recJson)
+	//	}
+	//}()
+
+	ea := bc.CompanyService.AddCompanyInfoTX(username, newComHeadPic, companyName, description,
+		scaleTag, personScale, address, phone, userPresident, UpdateTime, TargetLevelInt)
+
+	if ea != nil {
 		controller.ErrorResp(c, 215, "服务器错误，公司信息上传失败")
 		log.Println("SaveCompanyInfo", err, "recJson:", recJson)
 		return

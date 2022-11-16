@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/jinzhu/gorm"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/util/formatUtil"
@@ -75,12 +76,74 @@ func (cs *CompanyService) AddCompanyInfo(username, comHeadPic, companyName, desc
 		Vip:          0,
 		ComStatus:    0,
 		ScaleLevel:   scaleLevel,
+		Applicant:    username,
 	}
 	err := dao.DB.Save(&companyInfo).Error
 	if err != nil {
 		return err
 	}
 	return err
+}
+
+func (cs *CompanyService) AddCompanyInfoTX(username, comHeadPic, companyName, description, scaleTag, personScale, address, phone, userPresident string,
+	updateTime time.Time, TargetLevelInt int) (err error) {
+	err = dao.DB.Transaction(func(tx *gorm.DB) error {
+		// 在事务中执行一些 db 操作
+		scaleLevel, ok := sqlUtil.CompanyScLevels[personScale]
+		if !ok {
+			scaleLevel = 1
+		}
+		var companyInfo = mysqlModel.Company{
+			PicUrl:       comHeadPic,
+			CompanyName:  companyName,
+			Description:  description,
+			ScaleTag:     scaleTag,
+			PersonScale:  personScale,
+			UpdatePerson: username,
+			UpdateTime:   updateTime,
+			Address:      address,
+			ComLevel:     TargetLevelInt,
+			Phone:        phone,
+			Vip:          0,
+			ComStatus:    0,
+			ScaleLevel:   scaleLevel,
+			Applicant:    username,
+		}
+		if err := tx.Table("companies").Save(&companyInfo).Error; err != nil {
+			return err
+		}
+
+		var comNewInfo mysqlModel.Company
+		err := tx.Table("companies").Where("company_name=?", companyName).Find(&comNewInfo).Error
+		if err != nil {
+			return err
+		}
+
+		var UpgradeInfo = mysqlModel.Upgrade{
+			Qualification: 0,
+			TargetLevel:   TargetLevelInt,
+			FromUsername:  username,
+			CompanyId:     comNewInfo.ComId,
+			ApplyTime:     updateTime,
+			CompanyExist:  0,
+			Show:          0,
+			TimeId:        time.Now().Unix(),
+		}
+		if err := tx.Table("upgrades").Save(&UpgradeInfo).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Table("users").Where("username = ?", username).
+			UpdateColumns(map[string]interface{}{
+				"president": userPresident,
+			}).
+			Error; err != nil {
+			// 返回任何错误都会回滚事务
+			return err
+		}
+		return nil
+	})
+	return
 }
 
 // FuzzyQueryCompanies 模糊查找

@@ -362,7 +362,7 @@ func (jc *JobController) GetRecommendJobInfos(c *gin.Context) {
 	labelInfo := jc.LabelService.QueryLabelByContent(userInfo.Intended_position)
 	careerJobId := labelInfo.ID
 	if careerJobId == 0 {
-		controller.ErrorResp(c, 201, "目标职位更新，请重新设置")
+		controller.ErrorResp(c, 201, "目标职位类别更新，请重新设置")
 		return
 	}
 	careerJobIdStr := strconv.Itoa(careerJobId)

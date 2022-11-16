@@ -18,6 +18,7 @@ type Company struct {
 	Phone        string    `json:"phone"`
 	ComStatus    int       `json:"com_status"`
 	ScaleLevel   int       `json:"scale_level"`
+	Applicant    string    `json:"-"`
 }
 
 type CompanyName struct {
