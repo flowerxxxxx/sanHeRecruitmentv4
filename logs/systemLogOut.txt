@@ -146,3 +146,4 @@ requestMethod:GET
 [logTool]2022/11/15 21:57:24 server.go:3230: http: TLS handshake error from 127.0.0.1:59162: remote error: tls: unknown certificate
 [logTool]2022/11/15 21:57:20 server.go:3230: http: TLS handshake error from 127.0.0.1:59141: remote error: tls: revoked certificate
 [logTool]2022/11/15 21:57:24 server.go:3230: http: TLS handshake error from 127.0.0.1:59162: remote error: tls: unknown certificate
+[logTool]2022/11/16 17:17:54 server.go:3230: http: TLS handshake error from 127.0.0.1:54609: remote error: tls: bad certificate

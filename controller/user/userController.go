@@ -426,33 +426,17 @@ func (u *UserController) UploadHeadPic(c *gin.Context) {
 		})
 		return
 	}
-	oldHeadPicAddr := userInfo.Head_pic
-	if oldHeadPicAddr != "" {
-		oldHeadPicAddr = oldHeadPicAddr[strings.LastIndex(oldHeadPicAddr, "/")+1:]
-		_ = os.Remove(config.PicSaverPath + "/" + oldHeadPicAddr)
-	}
 	uuid := util.GetUUID()
 	newFileName := uuid + "-" + strconv.Itoa(int(time.Now().Unix())) + fileFormat
 	HeadPic := "uploadPic/" + newFileName
 	fileAddr := config.PicSaverPath + "/" + newFileName
-	//if err := c.SaveUploadedFile(file, fileAddr); err != nil {
+	//es := saveUtil.SaveCompressFile(file, fileAddr)
+	//if es != nil {
 	//	c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
 	//	log.Println("Upload pic failed，err:", err)
 	//	return
 	//}
-	//fileContent, eo := file.Open()
-	//if eo != nil {
-	//	fmt.Println("file.Open failed,err:", eo)
-	//}
-	//byteContainer, err := ioutil.ReadAll(fileContent)
-	//afterResize, err := saveUtil.Compress(byteContainer)
-	//defer fileContent.Close()
-	////保存到新文件中
-	//errxx := ioutil.WriteFile(fileAddr, afterResize, 0644)
-	//if errxx != nil {
-	//	fmt.Println("111111111", errxx)
-	//}
-	es := saveUtil.SaveCompressFile(file, fileAddr)
+	es := saveUtil.SaveCompressCutImg(file, fileAddr)
 	if es != nil {
 		c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
 		log.Println("Upload pic failed，err:", err)
@@ -466,6 +450,11 @@ func (u *UserController) UploadHeadPic(c *gin.Context) {
 		})
 		log.Println("UploadHeadPic", err)
 		return
+	}
+	oldHeadPicAddr := userInfo.Head_pic
+	if oldHeadPicAddr != "" {
+		oldHeadPicAddr = oldHeadPicAddr[strings.LastIndex(oldHeadPicAddr, "/")+1:]
+		_ = os.Remove(config.PicSaverPath + "/" + oldHeadPicAddr)
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,

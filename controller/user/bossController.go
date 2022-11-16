@@ -99,7 +99,7 @@ func (boc *BossController) SavePicVouchersCom(c *gin.Context) {
 	//	c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
 	//	return
 	//}
-	if err := saveUtil.SaveCompressFile(file, fileAddr); err != nil {
+	if err := saveUtil.SaveCompressCutImg(file, fileAddr); err != nil {
 		c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
 		return
 	}

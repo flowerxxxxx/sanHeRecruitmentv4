@@ -11,6 +11,7 @@ import (
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/service"
 	"sanHeRecruitment/util/formatUtil"
+	"sanHeRecruitment/util/saveUtil"
 	"sanHeRecruitment/util/timeUtil"
 	"sanHeRecruitment/util/tokenUtil"
 	"sanHeRecruitment/util/uploadUtil"
@@ -32,9 +33,10 @@ type IdentityController struct {
 // IdentityControllerRouter 身份控制台
 func IdentityControllerRouter(router *gin.RouterGroup) {
 	bc := IdentityController{}
-	//上传照片到服务器
+	//上传凭证照片到服务器
 	router.POST("/uploadPicVoucher", bc.SavePicVouchers)
-
+	//上传新公司照片到服务器
+	router.POST("/uploadComHeadVoucher", bc.SavePicHeadVouchers)
 	// 根据url删除本地已经上传的照片凭证
 	router.POST("/deletePicVoucher", bc.DeletePicVoucher)
 	//实时根据现有参数模糊查询公司名称
@@ -359,6 +361,30 @@ func (bc *IdentityController) SaveCompanyInfo(c *gin.Context) {
 	}
 	controller.SuccessResp(c, "公司信息上传成功")
 	return
+}
+
+// SavePicHeadVouchers 上传照片凭证（公司照片，凭证）
+func (bc *IdentityController) SavePicHeadVouchers(c *gin.Context) {
+	file, err := c.FormFile("pic_voucher")
+	if err != nil {
+		c.String(http.StatusBadRequest, "请求参数错误")
+		return
+	}
+	fileFormat := file.Filename[strings.Index(file.Filename, "."):]
+	//if fileFormat != ".jpg" && fileFormat != ".png" {
+	//	controller.ErrorResp(c, 202, "仅支持jpg、png格式")
+	//	return
+	//}
+	if formatFlag := uploadUtil.FormatJudge(fileFormat, ".jpg", ".png", ".jpeg"); !formatFlag {
+		controller.ErrorResp(c, 202, "图片格式不支持")
+		return
+	}
+	fileUrl, fileAddr := uploadUtil.SaveFormat("voucher"+fileFormat, c.Request.Host)
+	if err := saveUtil.SaveCompressCutImg(file, fileAddr); err != nil {
+		c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
+		return
+	}
+	controller.SuccessResp(c, "照片凭证上传成功", formatUtil.GetPicHeaderBody(c.Request.Host, fileUrl))
 }
 
 // SavePicVouchers 上传照片凭证（公司照片，凭证）

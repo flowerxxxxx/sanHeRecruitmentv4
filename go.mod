@@ -3,6 +3,7 @@ module sanHeRecruitment
 go 1.19
 
 require (
+	github.com/disintegration/imaging v1.6.2
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis v6.15.9+incompatible
@@ -11,7 +12,6 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/juju/ratelimit v1.0.2
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
@@ -48,6 +48,7 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
 	golang.org/x/text v0.3.7 // indirect

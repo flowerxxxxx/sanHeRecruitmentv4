@@ -1,6 +1,9 @@
 package saveUtil
 
 import (
+	"bytes"
+	"github.com/disintegration/imaging"
+	"image"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
@@ -49,6 +52,32 @@ func SaveCompressFile(file *multipart.FileHeader, fileAddr string) error {
 	if ei != nil {
 		log.Println("SaveFile Compress failed,err:", eo)
 		return ei
+	}
+	return nil
+}
+
+func SaveCompressCutImg(file *multipart.FileHeader, fileAddr string) error {
+	fileContent, eo := file.Open()
+	if eo != nil {
+		log.Println("SaveCompressCutImg file.Open failed,err:", eo)
+		return eo
+	}
+	defer fileContent.Close()
+	byteContainer, er := ioutil.ReadAll(fileContent)
+	if er != nil {
+		log.Println("SaveCompressCutImg ioutil.ReadAll failed,err:", er)
+		return er
+	}
+	decodeBuf, _, eid := image.Decode(bytes.NewReader(byteContainer))
+	if eid != nil {
+		log.Println("SaveCompressCutImg  image.Decode failed,err:", eid)
+		return eid
+	}
+	dsc := imaging.Fill(decodeBuf, 300, 300, imaging.Center, imaging.Lanczos)
+	es := imaging.Save(dsc, fileAddr)
+	if es != nil {
+		log.Println("SaveCompressCutImg Save failed,err:", es)
+		return eid
 	}
 	return nil
 }
