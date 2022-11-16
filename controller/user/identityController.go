@@ -277,8 +277,6 @@ func (bc *IdentityController) DeletePicVoucher(c *gin.Context) {
 		if err != nil {
 			log.Println("file remove Error!")
 			log.Printf("%s", err)
-		} else {
-			log.Println("file remove OK!")
 		}
 	}()
 	controller.SuccessResp(c, "图片凭证删除成功")
