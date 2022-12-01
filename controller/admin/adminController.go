@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-//本文件的router包含管理员的的相关身份管理
+//本文件的router包含管理员的的相关身份管理1
 
 type AdminController struct {
 	*service.UserService
