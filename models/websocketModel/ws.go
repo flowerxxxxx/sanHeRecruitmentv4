@@ -3,6 +3,7 @@ package websocketModel
 import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
+	"log"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/util/e"
@@ -343,6 +344,10 @@ func deleteMsgPusher(cliRec *ClientRecMsg) (flag bool) {
 		//log.Println("[CutLogger]",cliRec.ID,"msgCount cut one")
 		return false
 	} else {
+		rdErr := dao.RedisDF.Del(cliRec.ID + "_PushOnline").Err()
+		if rdErr != nil {
+			log.Println("_PushOnline del failed,err", rdErr)
+		}
 		ReceiveMsgManager.CliCountRWM.Lock()
 		delete(ReceiveMsgManager.ClientCount, cliRec.ID)
 		ReceiveMsgManager.CliCountRWM.Unlock()

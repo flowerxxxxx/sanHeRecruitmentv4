@@ -14,5 +14,14 @@ func (ws *WsService) AddOnlineUserToRedis(username, coordinate string, AddType i
 		adder = username + "_PushOnline"
 	}
 	return dao.RedisDF.Do("SET", adder, coordinate).Err()
+}
 
+func (ws *WsService) DelOnlineUserToRedis(username string, AddType int) (err error) {
+	adder := ""
+	if AddType == 1 {
+		adder = username + "_TalkOnline"
+	} else if AddType == 2 {
+		adder = username + "_PushOnline"
+	}
+	return dao.RedisDF.Del(adder).Err()
 }

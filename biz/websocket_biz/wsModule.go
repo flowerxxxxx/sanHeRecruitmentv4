@@ -13,6 +13,7 @@ import (
 )
 
 var userSer *service.UserService
+var wsSer *service.WsService
 
 type WsModule struct {
 }
@@ -91,6 +92,10 @@ func (ws *WsModule) WsStart() {
 					//	fmt.Println("chec")
 					//	close(conn.Send)
 					//}
+					wdErr := wsSer.DelOnlineUserToRedis(conn.ID, 1)
+					if wdErr != nil {
+						log.Println("DelOnlineUserToRedis talk failed,err:", wdErr)
+					}
 					websocketModel.Manager.ClientsRWM.Lock()
 					delete(websocketModel.Manager.Clients, conn.ID)
 					websocketModel.Manager.ClientsRWM.Unlock()
