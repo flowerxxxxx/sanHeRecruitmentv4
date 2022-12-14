@@ -7,11 +7,11 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"sanHeRecruitment/biz/websocket_biz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/websocketModel"
-	"sanHeRecruitment/module/websocketModule"
 	"sanHeRecruitment/service"
 	"sanHeRecruitment/util"
 	"sanHeRecruitment/util/tokenUtil"
@@ -24,7 +24,7 @@ import (
 type WsController struct {
 	*service.UserService
 	*service.ChatService
-	*websocketModule.WsModule
+	*websocket_biz.WsModule
 	*service.MsgObjService
 }
 
@@ -200,7 +200,7 @@ func (ws *WsController) MsgPublisherLogout(c *gin.Context) {
 	if msgClient == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 201,
-			"msg":    "websocket msg publisher close failed,user doesn't exist",
+			"msg":    "websocket_biz msg publisher close failed,user doesn't exist",
 		})
 		return
 	}
@@ -209,7 +209,7 @@ func (ws *WsController) MsgPublisherLogout(c *gin.Context) {
 	//websocketModel.RecUnregisterMux.Unlock()
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
-		"msg":    "websocket msg publisher close success",
+		"msg":    "websocket_biz msg publisher close success",
 	})
 	return
 }

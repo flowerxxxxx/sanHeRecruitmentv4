@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sanHeRecruitment/config"
-	"sanHeRecruitment/controller/admin"
 	"sanHeRecruitment/controller/user"
 	"sanHeRecruitment/middleware"
 	"time"
@@ -47,47 +46,24 @@ func SetupRouter() *gin.Engine {
 	TokenNoUse := r.Group("/")
 	TokenNoUse.Use()
 	{
-		user.UserControllerRouter(TokenNoUse)
 		user.WsControllerRouter(TokenNoUse)
-		user.JobControllerRouter(TokenNoUse)
-		user.IdentityControllerRouter(TokenNoUse)
-		user.BossControllerRouter(TokenNoUse)
-		user.DataControllerRouter(TokenNoUse)
 	}
 
 	UserTokenUse := r.Group("/")
 	UserTokenUse.Use(middleware.WeChatAppCheckToken())
 	{
-		user.UserControllerRouterToken(UserTokenUse)
 		user.WsControllerRouterToken(UserTokenUse)
-		user.JobControllerRouterToken(UserTokenUse)
-		user.IdentityControllerRouterToken(UserTokenUse)
-		user.DataControllerRouterToken(UserTokenUse)
 	}
 
-	BossTokenUse := r.Group("/boss")
-	BossTokenUse.Use(middleware.WeChatAppCheckToken(), middleware.BossCheckTokenRole()) //,
-	{
-		user.BossControllerRouterToken(BossTokenUse)
-	}
-
-	AdminTokenNoUse := r.Group("/adminMange")
-	AdminTokenNoUse.Use()
-	{
-		admin.AdminControllerRouter(AdminTokenNoUse)
-		admin.ManageControllerRouter(AdminTokenNoUse)
-		admin.DataControllerRouter(AdminTokenNoUse)
-	}
-
-	AdminTokenUse := r.Group("/adminMange")
-	//AdminTokenUse.Use(middleware.JWTAuth())
-	AdminTokenUse.Use(middleware.JWTAuth(), middleware.AdminCheckTokenRole())
-	{
-		admin.AdminControllerRouterToken(AdminTokenUse)
-		admin.ManageControllerRouterToken(AdminTokenUse)
-		admin.DataControllerRouterToken(AdminTokenUse)
-		admin.StatisticsControllerRouterToken(AdminTokenUse)
-	}
+	//AdminTokenUse := r.Group("/adminMange")
+	////AdminTokenUse.Use(middleware.JWTAuth())
+	//AdminTokenUse.Use(middleware.JWTAuth(), middleware.AdminCheckTokenRole())
+	//{
+	//	admin.AdminControllerRouterToken(AdminTokenUse)
+	//	admin.ManageControllerRouterToken(AdminTokenUse)
+	//	admin.DataControllerRouterToken(AdminTokenUse)
+	//	admin.StatisticsControllerRouterToken(AdminTokenUse)
+	//}
 
 	//性能调优监视 TODO Gin自主隐藏，待优化
 	authStr := fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(config.ProducerUsername+":"+config.ProducerPassword)))

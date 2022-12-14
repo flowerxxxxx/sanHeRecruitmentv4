@@ -9,10 +9,10 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sanHeRecruitment/biz/nsq_biz"
+	"sanHeRecruitment/biz/websocket_biz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/dao"
-	"sanHeRecruitment/models/websocketModel"
-	"sanHeRecruitment/module/websocketModule"
 	"sanHeRecruitment/router"
 	"sanHeRecruitment/timeTask"
 	"sanHeRecruitment/util/logUtil"
@@ -21,7 +21,7 @@ import (
 )
 
 // var MysqlModels = []interface{}{&mysqlModel.User{}}
-var ws *websocketModule.WsModule
+var ws *websocket_biz.WsModule
 
 func main() {
 	//main 主项
@@ -30,29 +30,22 @@ func main() {
 
 	logUtil.LogOutInit()
 	//nsq开启生产者
-	_ = websocketModel.InitProducer()
+	_ = nsq_biz.InitProducer()
 	//nsq开启消费者
-	websocketModel.Consumer()
-
-	//将http写入config
-	//logfile, err := os.Create("./gin_http.log")
-	//if err != nil {
-	//	fmt.Println("Could not create log file")
-	//}
-	//gin.SetMode(gin.DebugMode)
-	//gin.DefaultWriter = io.MultiWriter(logfile)
-
+	nsq_biz.InitConsumer()
 	//开启定时任务
 	timeTask.InitTimer()
+
 	//开启监听 双线程监听
 	for i := 0; i < config.GoroutineNum; i++ {
 		//websocket监听及处理线程
 		go ws.WsStart()
 		//开启接收消费者动作的处理
-		go websocketModel.ReceiveToInsert()
+		go nsq_biz.ReceiveToInsert()
 		//开启消息推送的管理线程
 		go ws.RecMsgStart()
 	}
+
 	//连接数据库
 	err := dao.InitMySQL()
 	if err != nil {
@@ -67,7 +60,7 @@ func main() {
 	//模型绑定
 	//dao.DB.AutoMigrate(MysqlModels...)
 	r := router.SetupRouter()
-	err = websocketModule.InitSystemAdminer()
+	err = websocket_biz.InitSystemAdminer()
 	if err != nil {
 		panic(any(err))
 	}

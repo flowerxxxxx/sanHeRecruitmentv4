@@ -323,10 +323,10 @@ func (c *ClientRecMsg) CheckOnline() {
 		msg, _ := json.Marshal(PushMsg)
 		err := c.Socket.WriteMessage(websocket.TextMessage, msg)
 		if err != nil {
-			//fmt.Println("[CheckLogger]check websocket close")
+			//fmt.Println("[CheckLogger]check websocket_biz close")
 			break
 		}
-		//fmt.Println("[HeartbeatLogger]websocket heartbeat")
+		//fmt.Println("[HeartbeatLogger]websocket_biz heartbeat")
 		time.Sleep(10 * time.Second)
 	}
 }
@@ -348,6 +348,54 @@ func deleteMsgPusher(cliRec *ClientRecMsg) (flag bool) {
 		ReceiveMsgManager.CliCountRWM.Unlock()
 		return true
 	}
+}
+
+// sql优化，不用in
+// SELECT * FROM `trainers` where userid = 'oZ65W5TklL3gWTCLTllMfiXu97ig->20062111' UNION ALL SELECT * FROM `trainers` where userid = '20062111->oZ65W5TklL3gWTCLTllMfiXu97ig'  ORDER BY id desc LIMIT 0,5
+func FindMany(sendID, id, host string, pageNum int) (results []Result, err error) {
+	pageSize := 5
+	pageSizeStr := strconv.Itoa(pageSize)
+	pageNumStr := strconv.Itoa((pageNum - 1) * pageSize)
+	var resultAll []Trainer //存放id和sendid的一些信息
+	sql := "SELECT * FROM `trainers` where userid = ? UNION ALL SELECT * FROM `trainers` where userid = ?  ORDER BY id desc  LIMIT ?,?"
+	//sql := "SELECT * FROM `trainers` where userid in ('" + id + "','" + sendID + "') ORDER BY id desc LIMIT " + pageNumStr + "," + pageSizeStr
+	//fmt.Println(sql)
+	dao.DB.Raw(sql, id, sendID, pageNumStr, pageSizeStr).Scan(&resultAll)
+	for i, m := 0, len(resultAll); i < m; i++ {
+		if resultAll[i].Message_type == 1 {
+			resultAll[i].Content = formatUtil.GetPicHeaderBody(host, resultAll[i].Content)
+		}
+	}
+	results, _ = AppendAndSort(resultAll, sendID, id)
+	return
+}
+
+func AppendAndSort(resultAll []Trainer, sendID, id string) (results []Result, err error) {
+	for _, r := range resultAll {
+		start_time := time.Unix(r.Start_time, 0).Format("2006-01-02 15:04:05")
+		sendSort := SendSortMsg{ //构造返回的msg
+			Content:     r.Content,
+			Read:        r.Read,
+			CreatAt:     start_time,
+			MessageType: r.Message_type,
+		}
+		var result Result
+		if r.Userid == id {
+			result = Result{ //构造返回所有的内容，包括传送者
+				Start_time: r.Start_time,
+				Msg:        sendSort,
+				From:       "me",
+			}
+		} else {
+			result = Result{ //构造返回所有的内容，包括传送者
+				Start_time: r.Start_time,
+				Msg:        sendSort,
+				From:       "you",
+			}
+		}
+		results = append(results, result)
+	}
+	return
 }
 
 // ReadRecManCliCount read the RecManCliCount where is sync safe

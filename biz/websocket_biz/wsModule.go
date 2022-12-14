@@ -1,9 +1,10 @@
-package websocketModule
+package websocket_biz
 
 import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"log"
+	"sanHeRecruitment/biz/nsq_biz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service"
@@ -142,7 +143,7 @@ func (ws *WsModule) WsStart() {
 					FromUsername: broadcast.Client.FromUsername,
 					ToUsername:   broadcast.Client.ToUsername,
 				}
-				go websocketModel.Producer(newInsert)
+				go nsq_biz.Producer(newInsert)
 			} else {
 				//fmt.Println("对方不在线")
 				replyMsg := &websocketModel.ReplyMsg{
@@ -205,7 +206,7 @@ func (ws *WsModule) WsStart() {
 						wechatPubAcc.ConversationMessagePush(broadcast.Client.ToUsername, fromUserNickname, content)
 					}
 				}(broadcast.Client.FromUsername, message.Message, message.MessageType)
-				go websocketModel.Producer(newInsert)
+				go nsq_biz.Producer(newInsert)
 			}
 		}
 	}

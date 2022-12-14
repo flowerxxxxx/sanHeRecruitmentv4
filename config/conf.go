@@ -13,7 +13,7 @@ const AdminPassword = "sanHeRecAdmin"
 
 // TLSConfig tls配置
 var TLSConfig = &TLSConf{
-	Addr:     ":9090", //开启端口
+	Addr:     ":9091", //开启端口
 	CertFile: "./ssl/server.pem",
 	KeyFile:  "./ssl/server.key",
 }
@@ -46,10 +46,19 @@ var RedisConfig = &RedisConf{
 // NsqConfig Nsq配置
 var NsqConfig = &NsqConf{
 	ProducerAddr:    "127.0.0.1:4150",
-	ProducerTopic:   "websocket",
+	ProducerTopic:   "websocket_biz",
 	ConsumerAddr:    "127.0.0.1:4150",
-	ConsumerTopic:   "websocket",
-	ConsumerChannel: "websocketChannel",
+	ConsumerTopic:   "websocket_biz",
+	ConsumerChannel: "websocketChannel-9091",
+}
+
+// NsqConfigMsgPusher Nsq配置
+var NsqConfigMsgPusher = &NsqConf{
+	ProducerAddr:    "127.0.0.1:4150",
+	ProducerTopic:   "msgPusher",
+	ConsumerAddr:    "127.0.0.1:4150",
+	ConsumerTopic:   "msgPusher",
+	ConsumerChannel: "msgPusherChannel-9091",
 }
 
 //------------------------------------------数据存储配置

@@ -1,8 +1,9 @@
-package websocketModule
+package websocket_biz
 
 import (
 	"encoding/json"
 	"log"
+	"sanHeRecruitment/biz/nsq_biz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service"
@@ -60,7 +61,7 @@ func SysMsgPusher(toUsername, sendMsg string) {
 			FromUsername: msgCast.Client.FromUsername,
 			ToUsername:   msgCast.Client.ToUsername,
 		}
-		go websocketModel.Producer(newInsert)
+		go nsq_biz.Producer(newInsert)
 	} else {
 		newInsert := websocketModel.InsertMysql{
 			Id:           id,
@@ -105,7 +106,7 @@ func SysMsgPusher(toUsername, sendMsg string) {
 				wechatPubAcc.ConversationMessagePush(msgCast.Client.ToUsername, fromUserNickname, content)
 			}
 		}(msgCast.Client.FromUsername, message.Message, message.MessageType)
-		go websocketModel.Producer(newInsert)
+		go nsq_biz.Producer(newInsert)
 
 	}
 }

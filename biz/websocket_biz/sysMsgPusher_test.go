@@ -1,4 +1,4 @@
-package websocketModule
+package websocket_biz
 
 import (
 	"testing"
