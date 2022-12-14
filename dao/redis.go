@@ -6,7 +6,8 @@ import (
 )
 
 var (
-	Redis *redis.Client
+	Redis   *redis.Client
+	RedisDF *redis.Client //redis db 1
 )
 
 func InitRedis() (err error) {
@@ -20,5 +21,17 @@ func InitRedis() (err error) {
 	if err != nil {
 		return err
 	}
+
+	RedisDF = redis.NewClient(&redis.Options{
+		Addr:     config.RedisConfig.Addr,
+		Password: config.RedisConfig.Password, // no password set
+		//Password:"123456",
+		DB: 1, // use default DB
+	})
+	_, err = RedisDF.Ping().Result()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -43,22 +43,26 @@ var RedisConfig = &RedisConf{
 
 //------------------------------------------消费队列配置
 
-// NsqConfig Nsq配置
+// NsqConfig Nsq配置 //本地消息处理
 var NsqConfig = &NsqConf{
 	ProducerAddr:    "127.0.0.1:4150",
-	ProducerTopic:   "websocket_biz",
+	ProducerTopic:   "websocket",
 	ConsumerAddr:    "127.0.0.1:4150",
-	ConsumerTopic:   "websocket_biz",
+	ConsumerTopic:   "websocket",
 	ConsumerChannel: "websocketChannel-9091",
 }
 
-// NsqConfigMsgPusher Nsq配置
+// NsqConfigMsgPusher Nsq配置 //web服务广播订阅
 var NsqConfigMsgPusher = &NsqConf{
-	ProducerAddr:    "127.0.0.1:4150",
-	ProducerTopic:   "msgPusher",
 	ConsumerAddr:    "127.0.0.1:4150",
 	ConsumerTopic:   "msgPusher",
 	ConsumerChannel: "msgPusherChannel-9091",
+}
+
+// NsqConfigWsBroadcast Nsq配置 //跨区域消息队列
+var NsqConfigWsBroadcast = &NsqConf{
+	ProducerAddr:  "127.0.0.1:4150",
+	ProducerTopic: "WsBroadcast-9091",
 }
 
 //------------------------------------------数据存储配置

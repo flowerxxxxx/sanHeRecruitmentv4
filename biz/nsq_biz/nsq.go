@@ -1,10 +1,8 @@
 package nsq_biz
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/nsqio/go-nsq"
-	"log"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service"
@@ -18,7 +16,8 @@ var RM = ReceiveMessage{
 	InsertContent: make(chan *websocketModel.InsertMysql),
 }
 
-var producer *nsq.Producer
+var producer *nsq.Producer            //会话消息 -> 消息队列 -> 数据库
+var wsBroadcastProducer *nsq.Producer //单独抽象 -> ws服务器广播
 
 //
 ////var nsqInsertMux sync.Mutex
@@ -29,47 +28,29 @@ func InitProducer() (err error) {
 		fmt.Printf("create producer failed, err:%v\n", err)
 		panic(any(err))
 	}
-	return err
-}
 
-// Producer nsq发布消息
-func Producer(msg websocketModel.InsertMysql) {
-	data, _ := json.Marshal(msg)
-	if err := producer.Publish(config.NsqConfig.ProducerTopic, data); err != nil { // 发布消息
-		log.Println("[fatal Info]nsq_biz publish err :", err)
+	wsBroadcastProducer, err = nsq.NewProducer(config.NsqConfigWsBroadcast.ProducerAddr, nsq.NewConfig()) // 新建生产者
+	if err != nil {
+		fmt.Printf("create producer failed, err:%v\n", err)
+		panic(any(err))
 	}
-}
 
-// ConsumerT nsq订阅消息
-type ConsumerT struct{}
-
-// HandleMessage nsq消费者处理函数
-func (*ConsumerT) HandleMessage(msg *nsq.Message) error {
-	//TODO receive msg printer
-	//fmt.Println("---获取消息---")
-	//fmt.Println(string(msg.Body))
-	var insertMsg *websocketModel.InsertMysql
-	_ = json.Unmarshal(msg.Body, &insertMsg)
-	//fmt.Println(insertMsg)
-	//nsqInsertMux.Lock()
-	RM.InsertContent <- insertMsg
-	//nsqInsertMux.Unlock()
-	return nil
+	return err
 }
 
 // InitConsumer nsq消费者函数
 func InitConsumer() {
-	// TODO "---消息队列---"
-	//log.Println("---消息队列---")
-	c, err := nsq.NewConsumer(config.NsqConfig.ConsumerTopic, config.NsqConfig.ConsumerChannel, nsq.NewConfig()) // 新建一个消费者
+	//producer 消费者
+	c_producer, err := nsq.NewConsumer(config.NsqConfig.ConsumerTopic, config.NsqConfig.ConsumerChannel, nsq.NewConfig()) // 新建一个消费者
 	if err != nil {
 		panic(any(err))
 	}
-	c.AddHandler(&ConsumerT{})                                             // 添加消息处理
-	if err := c.ConnectToNSQD(config.NsqConfig.ConsumerAddr); err != nil { // 建立连接
+	c_producer.AddHandler(&ConsumerT{})                                             // 添加消息处理
+	if err := c_producer.ConnectToNSQD(config.NsqConfig.ConsumerAddr); err != nil { // 建立连接
 		panic(any(err))
 	}
 
+	//NsqConfigMsgPusher消费者
 	cmsg, err := nsq.NewConsumer(config.NsqConfigMsgPusher.ConsumerTopic, config.NsqConfigMsgPusher.ConsumerChannel, nsq.NewConfig()) // 新建一个消费者
 	if err != nil {
 		panic(any(err))
@@ -78,6 +59,7 @@ func InitConsumer() {
 	if err := cmsg.ConnectToNSQD(config.NsqConfigMsgPusher.ConsumerAddr); err != nil { // 建立连接
 		panic(any(err))
 	}
+
 }
 
 // ReceiveToInsert 处理nsq消费者接收函数

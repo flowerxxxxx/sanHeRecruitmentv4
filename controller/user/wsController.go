@@ -26,6 +26,7 @@ type WsController struct {
 	*service.ChatService
 	*websocket_biz.WsModule
 	*service.MsgObjService
+	*service.WsService
 }
 
 func WsControllerRouterToken(router *gin.RouterGroup) {
@@ -89,16 +90,20 @@ func (ws *WsController) Handler(c *gin.Context) {
 		Socket:       conn,
 		Send:         make(chan []byte),
 	}
+	//用户注册到缓存上
+	er := ws.WsService.AddOnlineUserToRedis(ws.WsModule.CreateID(uid, toUid), "9091", 1)
+	if er != nil {
+		controller.ErrorResp(c, 211, "服务器错误")
+		log.Println("AddOnlineUserToRedis failed,err:", er)
+		return
+	}
 	//用户注册到用户管理上
-	//registerMux.Lock()
 	websocketModel.Manager.Register <- client
-	//registerMux.Unlock()
 	go client.Read(c.Request.Host)
 	go client.Write(c.Request.Host)
 	go func() {
 		//将trainers内的所有read设为已读
 		//ws.ChatService.BatchRead(toUid, uid)
-
 		//将msgobjs的read设为已读
 		ws.MsgObjService.BatchRead(uid, toUid)
 	}()
@@ -180,6 +185,15 @@ func (ws *WsController) ReceiveMsgWebsocket(c *gin.Context) {
 	}
 	ws.WsModule.AddMsgPusher(username, recClient)
 	//models.ReceiveMsgManager.Clients[username] = recClient
+
+	//用户注册到缓存上
+	er := ws.WsService.AddOnlineUserToRedis(username, "9091", 2)
+	if er != nil {
+		controller.ErrorResp(c, 211, "服务器错误")
+		log.Println("AddOnlineUserToRedis failed,err:", er)
+		return
+	}
+
 	go recClient.PushMsg()
 	go recClient.CheckOnline()
 }
