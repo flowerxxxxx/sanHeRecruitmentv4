@@ -28,8 +28,10 @@ func expireBackupRemover(backupPath string) {
 		}
 		//println(path)
 		expireTime := time.Now().AddDate(0, -config.BackerExpireTime, 0)
-		if strings.Index(path, "sanheRec_"+expireTime.Format("20060102")) != -1 {
-			errR := os.Remove(backupPath + "/" + path)
+		expireTimeEx := time.Now().AddDate(0, -config.BackerExpireTime-1, 0)
+		if strings.Index(path, "backer_"+expireTime.Format("20060102")) != -1 ||
+			strings.Index(path, "backer_"+expireTimeEx.Format("20060102")) != -1 {
+			errR := os.Remove(path)
 			if errR != nil {
 				log.Println("timeTask expireBackupRemover failed,err", errR)
 			}
