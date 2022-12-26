@@ -17,7 +17,7 @@ func deleteExpiredInfo() {
 	nowUnix := time.Now().Unix()
 	nowUnixStr := strconv.Itoa(int(nowUnix))
 	PicData := chatService.FindExpiredChatPic(nowUnixStr)
-	if len(PicData) == 0 {
+	if len(PicData) != 0 {
 		timeTaskModule.DeleteExpiredMsgPic(PicData)
 	}
 	err := chatService.DeleteExpiredMsg(nowUnixStr)
