@@ -23,7 +23,5 @@ func deleteExpiredInfo() {
 	err := chatService.DeleteExpiredMsg(nowUnixStr)
 	if err != nil {
 		log.Println("timeTask delete MSG error:", err)
-	} else {
-		//log.Println("timeTask delete MSG success,msgCount:",len(PicData))
 	}
 }
