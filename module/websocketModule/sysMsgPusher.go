@@ -35,17 +35,13 @@ func SysMsgPusher(toUsername, sendMsg string) {
 	message2, _ := json.Marshal(message)
 	SendId := msgCast.Client.SendID //2->1
 	flag := false                   //默认对方是不在线的
+
 	//去用户管理里寻找sendid，如果有则证明是该被发送者是在线的，如果没有则不在线
 	conn, ok := websocketModel.ReadManClient(SendId)
 	if ok {
-		select {
-		case conn.Send <- message2:
+		if conn.SendOpen {
+			conn.Send <- message2
 			flag = true
-		default:
-			websocketModel.Manager.ClientsRWM.Lock()
-			delete(websocketModel.Manager.Clients, conn.ID)
-			websocketModel.Manager.ClientsRWM.Unlock()
-			close(conn.Send)
 		}
 	}
 

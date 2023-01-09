@@ -45,8 +45,10 @@ func (ws *WsModule) WsStart() {
 
 			//开始注册
 			websocketModel.Manager.ClientsRWM.Lock()
+			//conn.Wg.Add(1)
 			websocketModel.Manager.Clients[conn.ID] = conn //将该连接放到用户管理上
-			websocketModel.ManagerCliCountIncr(conn.ID)    //用户对应重连count + 1
+			//conn.Wg.Done()
+			websocketModel.ManagerCliCountIncr(conn.ID) //用户对应重连count + 1
 			websocketModel.Manager.ClientsRWM.Unlock()
 			//生成消息
 			replyMsg := &websocketModel.ReplyMsg{
@@ -96,10 +98,13 @@ func (ws *WsModule) WsStart() {
 			flag := false                     //默认对方是不在线的
 
 			//去用户管理里寻找sendid，如果有则证明是该被发送者是在线的，如果没有则不在线
+			//TODO 用户的send已经关闭 但是还能搜到用户
 			conn, ok := websocketModel.ReadManClient(SendId)
 			if ok {
-				conn.Send <- message2
-				flag = true
+				if conn.SendOpen {
+					conn.Send <- message2
+					flag = true
+				}
 			}
 
 			id := broadcast.Client.ID //1->2

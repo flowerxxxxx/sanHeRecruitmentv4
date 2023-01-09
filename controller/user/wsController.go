@@ -89,6 +89,7 @@ func (ws *WsController) Handler(c *gin.Context) {
 		ToUsername:   toUid,
 		Socket:       conn,
 		Send:         make(chan []byte),
+		SendOpen:     true,
 	}
 
 	//用户注册到用户管理上

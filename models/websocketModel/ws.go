@@ -69,6 +69,8 @@ type Client struct {
 	Socket       *websocket.Conn
 	Send         chan []byte
 	SocketMutex  sync.Mutex
+	//Wg           sync.WaitGroup //切换socket wg
+	SendOpen bool
 }
 
 // 用户登陆后的长连接结构体
@@ -267,6 +269,7 @@ func (c *Client) Write(host string) {
 		select {
 		case message, ok := <-c.Send:
 			if !ok {
+				c.SendOpen = false
 				return
 			}
 			var message2 BroadcastMsg
@@ -286,7 +289,6 @@ func (c *Client) Write(host string) {
 			c.SocketMutex.Lock()
 			_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
 			c.SocketMutex.Unlock()
-
 		}
 	}
 }
