@@ -12,6 +12,7 @@ const (
 	WebsocketOfflineReply   = 50005 //不在线应答
 	WebsocketLimit          = 50006
 	WebsocketHistoryMsg     = 50007 //历史消息
+	WebsocketUpdate         = 50008 //ws更新
 )
 
 func (c Code) Msg() string {

@@ -42,61 +42,48 @@ func (ws *WsModule) WsStart() {
 		//log.Println("---监听管道通信---")
 		select {
 		case conn := <-websocketModel.Manager.Register:
-			// TODO new conn printer
-			//fmt.Printf("有新连接：%v\n", conn.ID)
-			//fmt.Println(&Manager.Register)
 
-			//注册前检测上一次是否存在
-			//if connLastLive, ok := websocketModel.ReadManClient(conn.ID); ok {
-			//	fmt.Println("check get last live")
-			//	close(connLastLive.Send)
-			//} else {
-			//	fmt.Println("check get last failed")
-			//}
 			//开始注册
 			websocketModel.Manager.ClientsRWM.Lock()
 			websocketModel.Manager.Clients[conn.ID] = conn //将该连接放到用户管理上
-			websocketModel.ManagerCliCountIncr(conn.ID)
+			websocketModel.ManagerCliCountIncr(conn.ID)    //用户对应重连count + 1
 			websocketModel.Manager.ClientsRWM.Unlock()
+			//生成消息
 			replyMsg := &websocketModel.ReplyMsg{
 				Code:    e.WebsocketSuccess,
 				Content: "服务器连接成功",
 			}
 			msg, _ := json.Marshal(replyMsg)
+			//写入
 			conn.SocketMutex.Lock()
 			_ = conn.Socket.WriteMessage(websocket.TextMessage, msg)
 			conn.SocketMutex.Unlock()
+
 		case conn := <-websocketModel.Manager.Unregister:
-			//fmt.Printf("连接中断%s\n", conn.ID)
-			//_, ok := websocketModel.Manager.Clients[conn.ID]
+			//检测存储状态
 			cliCount, ok := websocketModel.ReadCliCount(conn.ID)
 			if !ok {
 				log.Println("[May fatal error]Manager Unregister logic maybe err ")
 				continue
 			}
-			if cliCount > 1 {
+
+			if cliCount > 1 { //存在重复连接
 				websocketModel.ManagerCliCountCutOne(conn.ID)
-			} else if cliCount == 1 {
+				close(conn.Send)
+			} else if cliCount == 1 { //正常注销
 				if _, ok := websocketModel.ReadManClient(conn.ID); ok {
-					replyMsg := &websocketModel.ReplyMsg{
-						Code:    e.WebsocketEnd,
-						Content: "连接中断",
-					}
-					msg, _ := json.Marshal(replyMsg)
-					conn.SocketMutex.Lock()
-					_ = conn.Socket.WriteMessage(websocket.TextMessage, msg)
-					conn.SocketMutex.Unlock()
-					//if _, okSend := <-conn.Send; okSend {
-					//	fmt.Println("chec")
-					//	close(conn.Send)
-					//}
+
 					websocketModel.Manager.ClientsRWM.Lock()
 					delete(websocketModel.Manager.Clients, conn.ID)
+					close(conn.Send)
 					websocketModel.Manager.ClientsRWM.Unlock()
-					//fmt.Println("Manager del succ")
+
 				}
 				websocketModel.DelManagerCliCount(conn.ID)
+			} else {
+				log.Printf("[May fatal error]Manager cliCount unnormal: %v \n", cliCount)
 			}
+
 		case broadcast := <-websocketModel.Manager.Broadcast: //1->2
 			//start := time.Now()
 			broadcastMessage := string(broadcast.Message)
@@ -107,17 +94,12 @@ func (ws *WsModule) WsStart() {
 			message2, _ := json.Marshal(message)
 			SendId := broadcast.Client.SendID //2->1
 			flag := false                     //默认对方是不在线的
+
 			//去用户管理里寻找sendid，如果有则证明是该被发送者是在线的，如果没有则不在线
 			conn, ok := websocketModel.ReadManClient(SendId)
 			if ok {
-				select {
-				case conn.Send <- message2:
-					flag = true
-				default:
-					websocketModel.Manager.ClientsRWM.Lock()
-					delete(websocketModel.Manager.Clients, conn.ID)
-					websocketModel.Manager.ClientsRWM.Unlock()
-				}
+				conn.Send <- message2
+				flag = true
 			}
 
 			id := broadcast.Client.ID //1->2
@@ -129,9 +111,11 @@ func (ws *WsModule) WsStart() {
 					Content: "对方在线应答",
 				}
 				msg, _ := json.Marshal(replyMsg)
-				//RWMux.Lock()
+
+				broadcast.Client.SocketMutex.Lock()
 				_ = broadcast.Client.Socket.WriteMessage(websocket.TextMessage, msg)
-				//RWMux.Unlock()
+				broadcast.Client.SocketMutex.Unlock()
+
 				newInsert := websocketModel.InsertMysql{
 					Id:           id,
 					Content:      message.Message,
@@ -149,9 +133,11 @@ func (ws *WsModule) WsStart() {
 					Content: "对方不在线回答",
 				}
 				msg, _ := json.Marshal(replyMsg)
-				//RWMux.Lock()
+
+				broadcast.Client.SocketMutex.Lock()
 				_ = broadcast.Client.Socket.WriteMessage(websocket.TextMessage, msg)
-				//RWMux.Unlock()
+				broadcast.Client.SocketMutex.Unlock()
+
 				newInsert := websocketModel.InsertMysql{
 					Id:           id,
 					Content:      message.Message,

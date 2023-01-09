@@ -144,9 +144,9 @@ var Manager = ClientManager{
 // websocket用户写入数据
 func (c *Client) Read(host string) {
 	defer func() {
-		close(c.Send)
 		Manager.Unregister <- c
 		_ = c.Socket.Close()
+		//close(c.Send)
 	}()
 
 	for {
@@ -154,12 +154,25 @@ func (c *Client) Read(host string) {
 		sendMSg := new(SendMsg)
 		err := c.Socket.ReadJSON(&sendMSg)
 		if err != nil {
-			//TODO ws conn close reason printer
-			//fmt.Println("数据格式不正确", err)
-			//Manager.Unregister <- c
-			//_ = c.Socket.Close()
 			break
 		}
+
+		if client, ok := ReadManClient(c.ID); ok {
+			equal := client.Socket == c.Socket
+			//fmt.Println("equal:", equal)
+			if equal == false {
+				replyMsg := &ReplyMsg{
+					Code:    e.WebsocketUpdate,
+					Content: "连接已更新",
+				}
+				msg, _ := json.Marshal(replyMsg)
+				c.SocketMutex.Lock()
+				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
+				c.SocketMutex.Unlock()
+				return
+			}
+		}
+
 		if sendMSg.Type == 1 {
 			r1 := dao.Redis.Get(c.ID).Val()     // 1->2
 			r2 := dao.Redis.Get(c.SendID).Val() // 2->1
@@ -205,11 +218,11 @@ func (c *Client) Read(host string) {
 					Content: "到底了",
 				}
 				msg, _ := json.Marshal(replyMsg) //序列化
-				//RWMux.Lock()
+
 				c.SocketMutex.Lock()
 				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
 				c.SocketMutex.Unlock()
-				//RWMux.Unlock()
+
 				continue
 			}
 			if pageNum == 1 {
@@ -227,11 +240,11 @@ func (c *Client) Read(host string) {
 					//Msg:  result.Msg,
 				}
 				msg, _ := json.Marshal(replyMsg) //序列化
-				//RWMux.Lock()
+
 				c.SocketMutex.Lock()
 				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
 				c.SocketMutex.Unlock()
-				//RWMux.Unlock()
+
 			}
 		}
 	}
@@ -248,15 +261,12 @@ func ReverseResults(s []Result) []Result {
 // websocket向用户写入数据
 func (c *Client) Write(host string) {
 	defer func() {
-		_ = c.Socket.Close()
+		//_ = c.Socket.Close()
 	}()
 	for {
 		select {
 		case message, ok := <-c.Send:
 			if !ok {
-				c.SocketMutex.Lock()
-				_ = c.Socket.WriteMessage(websocket.CloseMessage, []byte{})
-				c.SocketMutex.Unlock()
 				return
 			}
 			var message2 BroadcastMsg
@@ -272,11 +282,11 @@ func (c *Client) Write(host string) {
 			}
 
 			msg, _ := json.Marshal(replyMsg)
-			//RWMux.Lock()
+
 			c.SocketMutex.Lock()
 			_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
 			c.SocketMutex.Unlock()
-			//RWMux.Unlock()
+
 		}
 	}
 }

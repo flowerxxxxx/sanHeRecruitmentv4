@@ -80,6 +80,7 @@ func (ws *WsController) Handler(c *gin.Context) {
 		http.NotFound(c.Writer, c.Request)
 		return
 	}
+
 	//创建一个用户实例
 	client := &websocketModel.Client{
 		ID:           ws.WsModule.CreateID(uid, toUid), //1->2
@@ -89,10 +90,10 @@ func (ws *WsController) Handler(c *gin.Context) {
 		Socket:       conn,
 		Send:         make(chan []byte),
 	}
+
 	//用户注册到用户管理上
-	//registerMux.Lock()
 	websocketModel.Manager.Register <- client
-	//registerMux.Unlock()
+
 	go client.Read(c.Request.Host)
 	go client.Write(c.Request.Host)
 	go func() {
