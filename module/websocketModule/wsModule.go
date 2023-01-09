@@ -72,7 +72,7 @@ func (ws *WsModule) WsStart() {
 			cliCount, ok := websocketModel.ReadCliCount(conn.ID)
 			if !ok {
 				log.Println("[May fatal error]Manager Unregister logic maybe err ")
-				return
+				continue
 			}
 			if cliCount > 1 {
 				websocketModel.ManagerCliCountCutOne(conn.ID)
@@ -117,7 +117,6 @@ func (ws *WsModule) WsStart() {
 					websocketModel.Manager.ClientsRWM.Lock()
 					delete(websocketModel.Manager.Clients, conn.ID)
 					websocketModel.Manager.ClientsRWM.Unlock()
-					close(conn.Send)
 				}
 			}
 
