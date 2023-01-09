@@ -9,3 +9,4 @@
 [logTool]2023/01/09 23:00:00 expiredManage.go:22: expire msg file remove Error!,err: remove D:\uploadPicSaver/9938aabb-be1d-48ec-8693-80650b838376-1668672255.png: The system cannot find the path specified.
 [logTool]2023/01/09 23:00:00 expiredManage.go:22: expire msg file remove Error!,err: remove D:\uploadPicSaver/06bef1f1-a75a-45d1-815c-5addfd0047f6-1668672268.png: The system cannot find the path specified.
 [logTool]2023/01/09 23:00:00 expiredManage.go:22: expire msg file remove Error!,err: remove D:\uploadPicSaver/46689fc8-e38f-4cce-bf79-8a794abb004d-1668672272.png: The system cannot find the path specified.
+[logTool]2023/01/10 02:00:00 backer.go:28: windows backup fileCopy failed err, CreateFile D:\uploadPicSaver: The system cannot find the file specified.

@@ -159,21 +159,22 @@ func (c *Client) Read(host string) {
 			break
 		}
 
-		if client, ok := ReadManClient(c.ID); ok {
-			equal := client.Socket == c.Socket
-			//fmt.Println("equal:", equal)
-			if equal == false {
-				replyMsg := &ReplyMsg{
-					Code:    e.WebsocketUpdate,
-					Content: "连接已更新",
-				}
-				msg, _ := json.Marshal(replyMsg)
-				c.SocketMutex.Lock()
-				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
-				c.SocketMutex.Unlock()
-				return
-			}
-		}
+		//检测是否重置连接
+		//if client, ok := ReadManClient(c.ID); ok {
+		//	equal := client.Socket == c.Socket
+		//	//fmt.Println("equal:", equal)
+		//	if equal == false {
+		//		replyMsg := &ReplyMsg{
+		//			Code:    e.WebsocketUpdate,
+		//			Content: "连接已更新",
+		//		}
+		//		msg, _ := json.Marshal(replyMsg)
+		//		c.SocketMutex.Lock()
+		//		_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
+		//		c.SocketMutex.Unlock()
+		//		return
+		//	}
+		//}
 
 		if sendMSg.Type == 1 {
 			r1 := dao.Redis.Get(c.ID).Val()     // 1->2
