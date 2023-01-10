@@ -146,6 +146,7 @@ var Manager = ClientManager{
 // websocket用户写入数据
 func (c *Client) Read(host string) {
 	defer func() {
+		c.SendOpen = false
 		Manager.Unregister <- c
 		_ = c.Socket.Close()
 		//close(c.Send)
@@ -270,7 +271,7 @@ func (c *Client) Write(host string) {
 		select {
 		case message, ok := <-c.Send:
 			if !ok {
-				c.SendOpen = false
+				//c.SendOpen = false
 				return
 			}
 			var message2 BroadcastMsg
