@@ -3,15 +3,15 @@
 
  Source Server         : sanheRec
  Source Server Type    : MySQL
- Source Server Version : 50737
+ Source Server Version : 50737 (5.7.37-log)
  Source Host           : 39.99.155.73:3306
  Source Schema         : sanheRec
 
  Target Server Type    : MySQL
- Target Server Version : 50737
+ Target Server Version : 50737 (5.7.37-log)
  File Encoding         : 65001
 
- Date: 16/11/2022 20:34:55
+ Date: 18/01/2023 17:51:10
 */
 
 SET NAMES utf8mb4;
@@ -30,8 +30,8 @@ CREATE TABLE `articles`  (
   `company_id` int(11) NULL DEFAULT NULL,
   `title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
-  `create_time` datetime(0) NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `create_time` datetime NULL DEFAULT NULL,
+  `update_time` datetime NULL DEFAULT NULL,
   `collect` int(11) NULL DEFAULT NULL,
   `view` int(11) NULL DEFAULT NULL,
   `delivery_num` int(11) NULL DEFAULT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE `articles`  (
   `art_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`art_id`) USING BTREE,
   INDEX `recommend`(`recommend`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 302 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 303 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for collections
@@ -57,7 +57,7 @@ CREATE TABLE `collections`  (
   `art_id` int(11) NULL DEFAULT NULL,
   `classification` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 232 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 234 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for companies
@@ -71,7 +71,7 @@ CREATE TABLE `companies`  (
   `scale_tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `person_scale` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` datetime NULL DEFAULT NULL,
   `update_person` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `com_level` int(11) NULL DEFAULT NULL,
   `vip` int(11) NULL DEFAULT NULL,
@@ -91,8 +91,8 @@ CREATE TABLE `connections`  (
   `des_person` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `connect` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `upload_time` datetime(0) NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `upload_time` datetime NULL DEFAULT NULL,
+  `update_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
@@ -107,7 +107,7 @@ CREATE TABLE `dailysavers`  (
   `day_delivery` int(11) NULL DEFAULT NULL,
   `date` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1303 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1413 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for deliveries
@@ -120,7 +120,7 @@ CREATE TABLE `deliveries`  (
   `from_username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `qualification` int(11) NULL DEFAULT NULL,
   `read` int(11) NULL DEFAULT NULL,
-  `delivery_time` datetime(0) NULL DEFAULT NULL,
+  `delivery_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 157 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
@@ -132,8 +132,8 @@ CREATE TABLE `descriptions`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `module` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
-  `upload_time` datetime(0) NULL DEFAULT NULL,
+  `update_time` datetime NULL DEFAULT NULL,
+  `upload_time` datetime NULL DEFAULT NULL,
   `uploader` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
@@ -148,12 +148,12 @@ CREATE TABLE `docks`  (
   `boss_id` int(11) NULL DEFAULT NULL,
   `user_id` int(11) NULL DEFAULT NULL,
   `art_id` int(11) NULL DEFAULT NULL,
-  `dock_time` datetime(0) NULL DEFAULT NULL,
+  `dock_time` datetime NULL DEFAULT NULL,
   `boss_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `user_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `pub_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 455 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 457 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for educations
@@ -180,7 +180,7 @@ CREATE TABLE `invitations`  (
   `art_id` int(11) NULL DEFAULT NULL,
   `boss_username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `des_username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `invite_time` datetime(0) NULL DEFAULT NULL,
+  `invite_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
@@ -206,11 +206,11 @@ DROP TABLE IF EXISTS `mass_sends`;
 CREATE TABLE `mass_sends`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `publish_username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `publish_time` datetime(0) NULL DEFAULT NULL,
+  `publish_time` datetime NULL DEFAULT NULL,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `des_role` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1421 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1424 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for msgobjs
@@ -235,8 +235,8 @@ CREATE TABLE `notices`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
-  `upload_time` datetime(0) NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `upload_time` datetime NULL DEFAULT NULL,
+  `update_time` datetime NULL DEFAULT NULL,
   `uploader` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `recommend` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
@@ -261,8 +261,8 @@ CREATE TABLE `propagandas`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uploader` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `upload_time` datetime(0) NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `upload_time` datetime NULL DEFAULT NULL,
+  `update_time` datetime NULL DEFAULT NULL,
   `type` int(11) NULL DEFAULT NULL,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
@@ -285,7 +285,7 @@ CREATE TABLE `trainers`  (
   `from_username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `to_username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 120884 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 123319 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for upgrades
@@ -297,7 +297,7 @@ CREATE TABLE `upgrades`  (
   `target_level` int(11) NULL DEFAULT NULL,
   `qualification` int(11) NULL DEFAULT NULL,
   `from_username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `apply_time` datetime(0) NULL DEFAULT NULL,
+  `apply_time` datetime NULL DEFAULT NULL,
   `company_exist` int(11) NULL DEFAULT NULL,
   `show` int(11) NULL DEFAULT NULL,
   `time_id` int(11) NULL DEFAULT NULL,
@@ -329,7 +329,7 @@ CREATE TABLE `users`  (
   `personal_resume` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `intended_position` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `president` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `make_time` datetime(0) NULL DEFAULT NULL,
+  `make_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`) USING BTREE,
   INDEX `username`(`username`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 72 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
@@ -342,8 +342,8 @@ CREATE TABLE `vip_shows`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `create_time` datetime(0) NULL DEFAULT NULL,
-  `update_time` datetime(0) NULL DEFAULT NULL,
+  `create_time` datetime NULL DEFAULT NULL,
+  `update_time` datetime NULL DEFAULT NULL,
   `clicks` int(11) NULL DEFAULT NULL,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
   `publisher` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
