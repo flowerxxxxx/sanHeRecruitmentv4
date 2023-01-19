@@ -1,5 +1,7 @@
 #sanHeRecruitment
 ##项目结构
+阅读时不要打开预览模式，以编辑模式阅读
+
 -sanHeRecruitment
 --config  //配置层
 --controller //接口层
@@ -41,4 +43,6 @@ control-module（简单逻辑可在control直接实现）-service
 接口和逻辑  复杂逻辑                         数据库交互
 注意websocketmodel 和 wsModule 不要相互引用结构体，会导致循环引用
 目前及时通讯已调制到最佳状态，尽量不要修改主逻辑，可添加其他逻辑
+
+main层中关闭了调试模式，将main主项中的文件注释即可开启调试模式
 
