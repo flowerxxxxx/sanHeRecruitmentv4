@@ -10,3 +10,9 @@
 [logTool]2023/01/09 23:00:00 expiredManage.go:22: expire msg file remove Error!,err: remove D:\uploadPicSaver/06bef1f1-a75a-45d1-815c-5addfd0047f6-1668672268.png: The system cannot find the path specified.
 [logTool]2023/01/09 23:00:00 expiredManage.go:22: expire msg file remove Error!,err: remove D:\uploadPicSaver/46689fc8-e38f-4cce-bf79-8a794abb004d-1668672272.png: The system cannot find the path specified.
 [logTool]2023/01/10 02:00:00 backer.go:28: windows backup fileCopy failed err, CreateFile D:\uploadPicSaver: The system cannot find the file specified.
+[logTool]2023/01/17 16:40:33 server.go:3230: http: TLS handshake error from 127.0.0.1:50848: remote error: tls: unknown certificate
+[logTool]2023/01/17 16:40:33 server.go:3230: http: TLS handshake error from 127.0.0.1:50849: remote error: tls: unknown certificate
+[logTool]2023/01/17 16:40:38 server.go:3230: http: TLS handshake error from 127.0.0.1:50854: remote error: tls: unknown certificate
+[logTool]2023/01/17 16:40:38 server.go:3230: http: TLS handshake error from 127.0.0.1:50855: remote error: tls: unknown certificate
+[logTool]2023/01/17 16:41:35 server.go:3230: http: TLS handshake error from 127.0.0.1:50845: EOF
+[logTool]2023/01/17 16:41:37 server.go:3230: http: TLS handshake error from [::1]:50911: remote error: tls: bad certificate

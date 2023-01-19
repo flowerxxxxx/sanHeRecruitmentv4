@@ -14,13 +14,13 @@ func InitTimer() {
 		log.Println("cron deleteExpiredInfo work failed,err:", errD)
 	}
 
-	//系统对数据库和即时通讯消息进行备份 执行周期：每日凌晨2点
-	errB := c.AddFunc("0 0 2 * * ? ", backer)
+	//系统对数据库和即时通讯消息进行备份 执行周期：每日凌晨2点  //5天一次
+	errB := c.AddFunc("0 0 3 1/5 * ?  ", backer)
 	if errB != nil {
 		log.Println("cron backer work failed,err:", errB)
 	}
 
-	errExpireRemove := c.AddFunc("0 0 3 * * ? ", expireBackerRemove)
+	errExpireRemove := c.AddFunc("0 0 3 1/5 * ? ", expireBackerRemove)
 	if errExpireRemove != nil {
 		log.Println("cron errExpireRemove work failed,err:", errB)
 	}
