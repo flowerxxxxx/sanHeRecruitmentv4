@@ -246,7 +246,8 @@ func (dc *DataController) EditVipStyle(c *gin.Context) {
 		controller.ErrorResp(c, 204, "无对应内容")
 		return
 	}
-	if newCoverUrl != oldInfo.Cover {
+	oldCoveUrl, _ := formatUtil.SavePicHeaderCutter(oldInfo.Cover)
+	if newCoverUrl != oldCoveUrl {
 		ed := saveUtil.DeletePicSaver(oldInfo.Cover)
 		if ed != nil {
 			log.Println("EditVipStyle DeletePicSaver failed,err:", ed)
@@ -565,7 +566,8 @@ func (dc *DataController) EditPropagandaContent(c *gin.Context) {
 		return
 	}
 	url := edBinder.Url[saveFlag:]
-	if url != proInfo.Url {
+	oldSaveFlag := strings.Index(proInfo.Url, "uploadPic/")
+	if url != proInfo.Url[oldSaveFlag:] {
 		ed := saveUtil.DeletePicSaver(proInfo.Url)
 		if ed != nil {
 			log.Println("EditPropagandaContent DeletePicSaver failed,err:", ed)
