@@ -7,15 +7,16 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sanHeRecruitment/config"
 	"strings"
 )
 
 var (
-	APPID     = "wx5f80a46aee1c9bdd"
-	APPSECRET = "c1acfdce44c49c34b77ad88c5b690d16"
+	APPID     = config.WechatPublicAppid
+	APPSECRET = config.WechatPublicSecret
 	//SentTemplateID = "Al8FCd4p2gIFx1KrrlTJprM_twK6Fzn7CItzrHHXgvU" //每日一句的模板ID，替换成自己的
-	ConversationMessageTemplateID = "sUor3v4Ve_0T3QnuiYSjUkc6wB5oqdW7L4vuOjzvJ2k" //消息通知模板id
-	DeliveryResumeTemplateID      = "xmmR-qPCuwX28cxos4acpXdRzjSVceJpEnrnBMrg7_0"
+	ConversationMessageTemplateID = config.WechatConversationMessageTemplateID //消息通知模板id
+	DeliveryResumeTemplateID      = config.WechatDeliveryResumeTemplateID
 )
 
 type token struct {
