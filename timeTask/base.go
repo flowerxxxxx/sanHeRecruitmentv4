@@ -14,7 +14,7 @@ func InitTimer() {
 		log.Println("cron deleteExpiredInfo work failed,err:", errD)
 	}
 
-	//系统对数据库和即时通讯消息进行备份 执行周期：每日凌晨2点
+	//系统对数据库和即时通讯消息进行备份 执行周期：每隔四日凌晨两点备份
 	errB := c.AddFunc("0 0 2 1/5 * ? ", backer)
 	if errB != nil {
 		log.Println("cron backer work failed,err:", errB)

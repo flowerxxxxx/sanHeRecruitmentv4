@@ -6,7 +6,6 @@ import (
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service"
-	"sanHeRecruitment/wechatPubAcc"
 )
 
 //互斥锁
@@ -94,11 +93,12 @@ func SysMsgPusher(toUsername, sendMsg string) {
 			}
 			if findFlag == 0 {
 				//微信公众号推送
-				if messageType == 1 {
-					content = "[图片]"
-				}
-				fromUserNickname := userSer.QueryUserNickByUsername(fromUser)
-				wechatPubAcc.ConversationMessagePush(msgCast.Client.ToUsername, fromUserNickname, content)
+				//TODO 暂时关闭公众号推送
+				//if messageType == 1 {
+				//	content = "[图片]"
+				//}
+				//fromUserNickname := userSer.QueryUserNickByUsername(fromUser)
+				//wechatPubAcc.ConversationMessagePush(msgCast.Client.ToUsername, fromUserNickname, content)
 			}
 		}(msgCast.Client.FromUsername, message.Message, message.MessageType)
 		go websocketModel.Producer(newInsert)
