@@ -13,6 +13,7 @@ import (
 	"sanHeRecruitment/module/controllerModule"
 	"sanHeRecruitment/service"
 	"sanHeRecruitment/util/formatUtil"
+	"sanHeRecruitment/util/hostInfoUtil"
 	"sanHeRecruitment/util/osUtil"
 	"sanHeRecruitment/util/pageUtil"
 	"sanHeRecruitment/util/saveUtil"
@@ -113,7 +114,30 @@ func DataControllerRouterToken(router *gin.RouterGroup) {
 	router.GET("/getCompanyInfo/:companyName", dataC.QueryCompanyInfo)
 	//admin获取职位详细页面信息
 	router.GET("/getRecruitInfo/:art_id", dataC.GetRecruitInfo)
+	//获取内存信息
+	router.GET("/hostMemInfo", dataC.HostMemInfo)
+	//获取磁盘信息
+	router.GET("/hostStorageInfo", dataC.HostStorageInfo)
+	//获取cpu
+	router.GET("/hostCpuInfo", dataC.HostCpuInfo)
+}
 
+// HostStorageInfo 获取磁盘信息
+func (dc *DataController) HostStorageInfo(c *gin.Context) {
+	storageInfo := hostInfoUtil.GetStorageInfo()
+	controller.SuccessResp(c, "storage success", storageInfo)
+}
+
+// HostMemInfo 获取内存信息
+func (dc *DataController) HostMemInfo(c *gin.Context) {
+	memInfo := hostInfoUtil.GetMemInfo()
+	controller.SuccessResp(c, "memory success", memInfo)
+}
+
+// HostCpuInfo 获cpu信息
+func (dc *DataController) HostCpuInfo(c *gin.Context) {
+	cpuUsePercent := hostInfoUtil.GetCpuPercent()
+	controller.SuccessResp(c, "cpu占用率获取成功", cpuUsePercent)
 }
 
 // ChangeLabelRecommend 标记推荐标签
