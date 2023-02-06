@@ -6,6 +6,8 @@ import "sanHeRecruitment/util/timeUtil"
 type User struct {
 	User_id  int    `json:"user_id" map:"user_id" gorm:"primary_key" `
 	Username string `json:"username" map:"username"`
+	MsgPush  int    `json:"msg_push" map:"msg_push"`
+	Unionid  string `json:"unionid" map:"unionid"`
 	Password string `json:"-"`
 	Email    string `json:"email" map:"email"`
 	Head_pic string `json:"head_pic" map:"head_pic"`
