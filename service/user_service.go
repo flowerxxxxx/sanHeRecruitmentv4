@@ -165,10 +165,10 @@ func (us *UserService) ModifyPersonalInfo(username, email, gender, intended_posi
 	dao.DB.Save(&userInfo)
 }
 
-func (us *UserService) QueryUserNickByUsername(username string) (nickname string) {
+func (us *UserService) QueryUserNickByUsername(username string) string {
 	var userInfo mysqlModel.User
-	sql := "select nickname from users where username = '" + username + "'"
-	dao.DB.Raw(sql).Scan(&userInfo)
+	sql := "select nickname from `users` where username = ?"
+	dao.DB.Raw(sql, username).Scan(&userInfo)
 	return userInfo.Nickname
 }
 

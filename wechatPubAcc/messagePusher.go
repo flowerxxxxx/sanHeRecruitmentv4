@@ -1,25 +1,35 @@
 package wechatPubAcc
 
 import (
+	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/mysqlModel"
+	"time"
 )
 
 // ConversationMessagePush 向退出小程序并关注公众号的用户推送会话消息
 func ConversationMessagePush(openid, fromUser, content string) {
 	//获取公众号的token
-	access_token := getaccesstoken()
+	access_token := dao.Redis.Get("wechat_public_access_token").Val()
 	if access_token == "" {
-		//不推送或推送失败
-		return
+		access_token = getaccesstoken()
+		if access_token == "" {
+			//不推送或推送失败
+			return
+		}
 	}
 	//获取被推送用户的id
-	pubId := mysqlModel.OpenToPub(openid)
-	if pubId == "" {
-		//不推送或推送失败
-		return
-	}
-	reqdata := "{\"fromUser\":{\"value\":\"" + "来自" + fromUser + "发送的消息" + "\", \"color\":\"#0000CD\"}, \"message\":{\"value\":\"" + "消息内容:" + content + "\"}, \"intention\":{\"value\":\"" + "请前往小程序查看消息" + "\"}}"
-	templatepost(access_token, reqdata, ConversationMessageTemplateID, pubId)
+	//pubId := mysqlModel.OpenToPub(openid)
+	//if pubId == "" {
+	//	//不推送或推送失败
+	//	return
+	//}
+	reqdata := "{\"first\":{\"value\":\"" + "您好，您收到一个人选意向沟通请查看。" + "\", \"color\":\"#0000CD\"}," +
+		" \"keyword1\":{\"value\":\"" + fromUser + "\"}," +
+		" \"keyword2\":{\"value\":\"" + "待沟通" + "\"}," +
+		" \"keyword3\":{\"value\":\"" + "进行中" + "\" }," +
+		" \"keyword3\":{\"value\":\"" + time.Now().Format("2006-01-02 15:04:05") + "\"}," +
+		" \"remark\" : {\"value\":\"" + "沟通内容：" + content + "\"} }"
+	templatepost(access_token, reqdata, ConversationMessageTemplateID, openid)
 }
 
 //func ConversationMessagePush(openid, fromUser, content string) {

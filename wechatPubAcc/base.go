@@ -8,7 +8,9 @@ import (
 	"log"
 	"net/http"
 	"sanHeRecruitment/config"
+	"sanHeRecruitment/dao"
 	"strings"
+	"time"
 )
 
 var (
@@ -32,9 +34,11 @@ type sentence struct {
 
 // 获取微信accesstoken
 func getaccesstoken() string {
+	//url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%v&secret=%v", APPID, APPSECRET)
 	url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%v&secret=%v", APPID, APPSECRET)
-
 	//url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%v&secret=%v", config.WechatAppid, config.WechatSecret)
+	fmt.Println(url)
+
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Println("获取微信token失败", err)
@@ -52,6 +56,14 @@ func getaccesstoken() string {
 		fmt.Println("微信token解析json失败", err)
 		return ""
 	}
+	ATSaveTime := time.Duration(token.ExpiresIn) * time.Second
+	if errReSet := dao.Redis.Set("wechat_public_access_token", token.AccessToken, ATSaveTime).Err(); errReSet != nil {
+		log.Println("getaccesstoken set failed,err:", errReSet)
+		return ""
+	}
+
+	fmt.Println(token)
+	fmt.Println("微信token解析json", token.AccessToken, token.ExpiresIn)
 
 	return token.AccessToken
 }
@@ -103,7 +115,7 @@ func templatepostUrl(access_token string, reqdata string, fxurl string, template
 func templatepost(access_token string, reqdata string, templateid string, openid string) {
 	url := "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" + access_token
 	reqbody := "{\"touser\":\"" + openid + "\", \"template_id\":\"" + templateid + "\",\"data\": " + reqdata + "}"
-	//fmt.Println(reqbody)
+	fmt.Println(reqbody)
 	resp, err := http.Post(url,
 		"application/x-www-form-urlencoded",
 		strings.NewReader(string(reqbody)))
@@ -111,7 +123,7 @@ func templatepost(access_token string, reqdata string, templateid string, openid
 		log.Println("httpPostErr:", err)
 		return
 	}
-
+	fmt.Println("templatepost err:", err)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

@@ -660,6 +660,7 @@ func (u *UserController) UploadResume(c *gin.Context) {
 // WXLogin 这个函数以 code 作为输入, 返回调用微信接口得到的对象指针和异常情况,作为微信登录的调用函数
 func WXLogin(code string) (*wechatModel.WXLoginResp, error) {
 	url := "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code"
+	//url := "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=${code}&grant_type=authorization_code"
 	appId := config.WechatAppid
 	secret := config.WechatSecret
 	// 合成url, 这里的appId和secret是在微信公众平台上获取的
@@ -681,6 +682,15 @@ func WXLogin(code string) (*wechatModel.WXLoginResp, error) {
 		return nil, errors.New(fmt.Sprintf("ErrCode:%v  ErrMsg:%s", wxResp.ErrCode, wxResp.ErrMsg))
 	}
 
+	//src, err2 := wechatUtil.Dncrypt(encryptedData, wxResp.SessionKey, iv)
+	//if err2 != nil {
+	//	log.Println("wechatUtil.Dncrypt failed,err:", err2)
+	//}
+	//var s = map[string]interface{}{}
+	//json.Unmarshal([]byte(src), &s)
+	//fmt.Println(src)
+	//fmt.Println("unionId:", s["unionId"])
+	//wxResp.UnionId = s["unionId"].(string)
 	return &wxResp, nil
 }
 
@@ -690,7 +700,9 @@ func (u *UserController) WeChatLogin(c *gin.Context) {
 	_ = c.BindJSON(&recJson)
 	code := recJson["code"].(string)
 	rawData := recJson["rawData"].(string)
-
+	//iv := recJson["iv"].(string)
+	//encryptedData := recJson["encryptedData"].(string)
+	fmt.Println(recJson)
 	var recRowData wechatModel.RawData
 	_ = json.Unmarshal([]byte(rawData), &recRowData)
 	//fmt.Println(recRowData)
@@ -727,7 +739,7 @@ func (u *UserController) WeChatLogin(c *gin.Context) {
 		"token":    token,
 		"userData": userInfo,
 	})
-	//fmt.Println(tokenUtil)
+	////fmt.Println(tokenUtil)
 	//// 这里用openid和sessionkey的串接 进行MD5之后作为该用户的自定义登录态
 	//mySession := GetMD5Encode(wxLoginResp.OpenId + wxLoginResp.SessionKey)
 	//fmt.Println(wxLoginResp.OpenId)

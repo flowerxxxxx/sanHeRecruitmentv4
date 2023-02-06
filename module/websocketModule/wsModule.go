@@ -8,6 +8,7 @@ import (
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service"
 	"sanHeRecruitment/util/e"
+	"sanHeRecruitment/wechatPubAcc"
 )
 
 var userSer *service.UserService
@@ -188,11 +189,11 @@ func (ws *WsModule) WsStart() {
 					if findFlag == 0 {
 						//微信公众号推送
 						//TODO 暂时关闭公众号推送
-						//if messageType == 1 {
-						//	content = "[图片]"
-						//}
-						//fromUserNickname := userSer.QueryUserNickByUsername(fromUser)
-						//wechatPubAcc.ConversationMessagePush(broadcast.Client.ToUsername, fromUserNickname, content)
+						if messageType == 1 {
+							content = "[图片]"
+						}
+						fromUserNickname := userSer.QueryUserNickByUsername(fromUser)
+						wechatPubAcc.ConversationMessagePush(broadcast.Client.ToUsername, fromUserNickname, content)
 					}
 				}(broadcast.Client.FromUsername, message.Message, message.MessageType)
 				go websocketModel.Producer(newInsert)

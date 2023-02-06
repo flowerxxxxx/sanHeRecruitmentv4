@@ -69,7 +69,7 @@ var BackUpConfig = &BackupConf{
 // BackerExpireTime 备份存储时间（单位：月）
 const BackerExpireTime = 2
 
-//------------------------------------------wechat-小程序配置
+//------------------------------------------wechatUtil-小程序配置
 
 // WechatAppid appid
 const WechatAppid = "wxc4aca753deef16dc"
@@ -77,7 +77,7 @@ const WechatAppid = "wxc4aca753deef16dc"
 // WechatSecret secret
 const WechatSecret = "f808d019a853fd07e62301c725b53abe"
 
-// ------------------------------------------wechat-微信公众号配置
+// ------------------------------------------wechatUtil-微信公众号配置
 
 // WechatPublicAppid appid
 const WechatPublicAppid = "wx5f80a46aee1c9bdd"
