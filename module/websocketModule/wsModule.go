@@ -191,6 +191,7 @@ func (ws *WsModule) WsStart() {
 						//if messageType == 1 {
 						//	content = "[图片]"
 						//}
+						//TODO 查询role，msgpush，unionid 了解禁止推送推向和推送unionid
 						//fromUserNickname := userSer.QueryUserNickByUsername(fromUser)
 						//wechatPubAcc.ConversationMessagePush(broadcast.Client.ToUsername, fromUserNickname, content)
 					}
