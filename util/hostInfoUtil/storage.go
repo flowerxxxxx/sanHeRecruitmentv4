@@ -11,7 +11,7 @@ type storageInfo struct {
 	UsedPercent float64 `json:"used_percent"`
 }
 
-// GetStorageInfo 获取磁盘存储信息2
+// GetStorageInfo 获取磁盘存储信息
 func GetStorageInfo() *storageInfo {
 	sInfo, _ := disk.Usage(".")
 	return &storageInfo{
