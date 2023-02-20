@@ -255,12 +255,20 @@ func (ws *WsController) PostPic(c *gin.Context) {
 	//fmt.Println(realPicFormat)
 
 	var client *websocketModel.Client
-	for id, conn := range websocketModel.Manager.Clients {
-		if userid != id {
-			continue
-		}
+	//for id, conn := range websocketModel.Manager.Clients {
+	//	if userid != id {
+	//		continue
+	//	}
+	//	client = conn
+	//}
+
+	websocketModel.Manager.ClientsRWM.RLock()
+	conn, ok := websocketModel.Manager.Clients[userid]
+	websocketModel.Manager.ClientsRWM.RUnlock()
+	if ok {
 		client = conn
 	}
+
 	if client != nil {
 		dao.Redis.Incr(client.ID)
 		//3个月进行一次过期，防止过快分手
