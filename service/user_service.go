@@ -67,6 +67,7 @@ func (us *UserService) WechatRegister(username, nickname, headPic string) (err e
 	newUser.UserLevel = 0
 	newUser.IdentyPin = 0
 	newUser.CompanyID = 0
+	newUser.MsgPush = 1
 	newUser.MakeTime = timeUtil.GetMyTimeNowPtr()
 	err = dao.DB.Save(&newUser).Error
 	if err != nil {
