@@ -702,7 +702,7 @@ func (u *UserController) WeChatLogin(c *gin.Context) {
 	rawData := recJson["rawData"].(string)
 	//iv := recJson["iv"].(string)
 	//encryptedData := recJson["encryptedData"].(string)
-	fmt.Println(recJson)
+	//fmt.Println(recJson)
 	var recRowData wechatModel.RawData
 	_ = json.Unmarshal([]byte(rawData), &recRowData)
 	//fmt.Println(recRowData)
