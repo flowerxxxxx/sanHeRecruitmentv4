@@ -524,7 +524,7 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 	if ok {
 		recInfo := mysqlModel.OneArticleOut{}
 		errUmMar := json.Unmarshal(artInfoB.ByteSlice(), &recInfo)
-		fmt.Println("get from lru success")
+		//fmt.Println("get from lru success")
 		if errUmMar == nil {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 200,
@@ -563,7 +563,7 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 			return
 		}
 		lruEngine.LruEngine.Add("RecruitInfo_"+artId, lruEngine.ByteView{B: recInfoByte})
-		fmt.Println("lru add success")
+		//fmt.Println("lru add success")
 	}
 
 	go func(artId string) {
