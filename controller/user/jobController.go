@@ -10,6 +10,7 @@ import (
 	"sanHeRecruitment/models/BindModel/userBind"
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/module/controllerModule"
+	"sanHeRecruitment/module/lruEngine"
 	"sanHeRecruitment/module/recommendModule"
 	"sanHeRecruitment/module/websocketModule"
 	"sanHeRecruitment/service"
@@ -518,6 +519,35 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 		controller.ErrorResp(c, 201, "页码参数格式错误")
 		return
 	}
+
+	artInfoB, ok := lruEngine.LruEngine.Get("RecruitInfo_" + artId)
+	if ok {
+		recInfo := mysqlModel.OneArticleOut{}
+		errUmMar := json.Unmarshal(artInfoB.ByteSlice(), &recInfo)
+		fmt.Println("get from lru success")
+		if errUmMar == nil {
+			c.JSON(http.StatusOK, gin.H{
+				"status": 200,
+				"data":   recInfo,
+				"msg":    "文章信息获取成功",
+			})
+			go func(artId string) {
+				//ctx := context.Background()
+				//valueCtx := context.WithValue(ctx,artId,artId)
+				//fmt.Println(valueCtx.Value(artId))
+				jc.ArticleService.AddArtView(artIdInt)
+				errIn := jc.DailySaverService.AddDailyView(artIdInt)
+				if errIn != nil {
+					log.Println("[GoroutineErrLog]", errIn)
+				}
+				//重新处理权重
+				recommendModule.DealArtRecommendWeight(artId)
+			}(artId)
+			return
+		}
+		log.Println("lru err")
+	}
+
 	artInfo, errGet := jc.JobConModule.GetRecruitInfoFromRedis(artId)
 	if errGet != nil {
 		artInfo, err = jc.JobService.GetOneArtInfo(artId, c.Request.Host)
@@ -526,7 +556,16 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 			return
 		}
 		jc.JobConModule.SaveRecruitInfoToRedis(artId, artInfo)
+
+		recInfoByte, errMar := json.Marshal(artInfo)
+		if errMar != nil {
+			log.Println("SaveRecruitInfoToRedis Marshal failed,err:", errMar)
+			return
+		}
+		lruEngine.LruEngine.Add("RecruitInfo_"+artId, lruEngine.ByteView{B: recInfoByte})
+		fmt.Println("lru add success")
 	}
+
 	go func(artId string) {
 		//ctx := context.Background()
 		//valueCtx := context.WithValue(ctx,artId,artId)

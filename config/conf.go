@@ -9,6 +9,8 @@ const month = 60 * 60 * 24 * 30 //一个月30天
 const AdminUsername = "sanheRec@admin"
 const AdminPassword = "sanHeRecAdmin"
 
+const CacheBytes = 2 << 10
+
 //------------------------------------------https运行证书配置
 
 // TLSConfig tls配置

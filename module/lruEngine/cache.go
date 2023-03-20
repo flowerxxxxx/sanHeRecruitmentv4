@@ -1,26 +1,30 @@
-package geecache
+package lruEngine
 
 import (
 	"sanHeRecruitment/module/lruEngine/lru"
 	"sync"
 )
 
-type LruCache struct {
+type lruCache struct {
 	mu         sync.Mutex
 	lru        *lru.Cache
 	cacheBytes int64
 }
 
-func (c *LruCache) Add(key string, value ByteView) {
+var LruEngine = lruCache{
+	lru: lru.New(2<<20*10, nil),
+}
+
+func (c *lruCache) Add(key string, value ByteView) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.lru == nil {
-		c.lru = lru.New(c.cacheBytes, nil)
+		return
 	}
 	c.lru.Add(key, value)
 }
 
-func (c *LruCache) Get(key string) (value ByteView, ok bool) {
+func (c *lruCache) Get(key string) (value ByteView, ok bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.lru == nil {
@@ -33,7 +37,7 @@ func (c *LruCache) Get(key string) (value ByteView, ok bool) {
 	return
 }
 
-func (c *LruCache) Delete(key string) (ok bool) {
+func (c *lruCache) Delete(key string) (ok bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.lru == nil {
