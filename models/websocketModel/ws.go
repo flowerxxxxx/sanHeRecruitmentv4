@@ -75,9 +75,10 @@ type Client struct {
 
 // 用户登陆后的长连接结构体
 type ClientRecMsg struct {
-	ID     string
-	Socket *websocket.Conn
-	Send   chan []byte
+	ID          string
+	Socket      *websocket.Conn
+	SocketMutex sync.Mutex
+	Send        chan []byte
 }
 
 // 管理消息推送长连接
@@ -306,9 +307,11 @@ func (r *ClientRecMsg) PushMsg() {
 		select {
 		case msg, ok := <-r.Send:
 			if !ok {
+				r.SocketMutex.Lock()
 				_ = r.Socket.WriteMessage(websocket.CloseMessage, []byte{})
 				// TODO msgPusher closer printer
 				//fmt.Println("msgPush close succ")
+				r.SocketMutex.Unlock()
 				return
 			}
 			//RWMux.Lock()
@@ -335,11 +338,14 @@ func (c *ClientRecMsg) CheckOnline() {
 			HeartBeat int
 		}{1}
 		msg, _ := json.Marshal(PushMsg)
+		c.SocketMutex.Lock()
 		err := c.Socket.WriteMessage(websocket.TextMessage, msg)
 		if err != nil {
 			//fmt.Println("[CheckLogger]check websocket close")
+			c.SocketMutex.Unlock()
 			break
 		}
+		c.SocketMutex.Unlock()
 		//fmt.Println("[HeartbeatLogger]websocket heartbeat")
 		time.Sleep(10 * time.Second)
 	}
