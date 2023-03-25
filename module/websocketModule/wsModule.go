@@ -171,12 +171,16 @@ func (ws *WsModule) WsStart() {
 						}{1}
 						checkOnlineMsg, _ := json.Marshal(PushMsg)
 						//检查clients是否存在
+						websocketModel.ReceiveMsgManager.Clients[cliMap.ID].SocketMutex.Lock()
 						err := websocketModel.ReceiveMsgManager.Clients[cliMap.ID].
 							Socket.WriteMessage(websocket.TextMessage, checkOnlineMsg)
 						if err != nil {
 							//log.Println("Socket.WriteMessage failed,errInfo:", cliMap.ID)
+							websocketModel.ReceiveMsgManager.Clients[cliMap.ID].SocketMutex.Unlock()
 							return
 						}
+						websocketModel.ReceiveMsgManager.Clients[cliMap.ID].SocketMutex.Unlock()
+						//以下为经典的错误写法
 						select {
 						case websocketModel.ReceiveMsgManager.Clients[cliMap.ID].Send <- pubMsg:
 							findFlag = 1
