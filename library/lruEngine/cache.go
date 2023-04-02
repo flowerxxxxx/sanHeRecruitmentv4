@@ -1,7 +1,7 @@
 package lruEngine
 
 import (
-	"sanHeRecruitment/module/lruEngine/lru"
+	"sanHeRecruitment/library/lruEngine/lru"
 	"sync"
 )
 
