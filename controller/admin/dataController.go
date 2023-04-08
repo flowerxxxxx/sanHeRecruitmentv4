@@ -11,7 +11,7 @@ import (
 	"sanHeRecruitment/models/BindModel/adminBind"
 	"sanHeRecruitment/models/BindModel/userBind"
 	"sanHeRecruitment/module/controllerModule"
-	"sanHeRecruitment/service/mysql-service"
+	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/formatUtil"
 	"sanHeRecruitment/util/hostInfoUtil"
 	"sanHeRecruitment/util/osUtil"
@@ -31,19 +31,19 @@ import (
 type DataController struct {
 	controllerModule.DataControlModule
 
-	*mysql_service.DailySaverService
-	*mysql_service.CountService
-	*mysql_service.CompanyService
-	*mysql_service.DockService
-	*mysql_service.UserService
-	*mysql_service.JobService
-	*mysql_service.LabelService
-	*mysql_service.ArticleService
-	*mysql_service.PropagandaService
-	*mysql_service.NoticeService
-	*mysql_service.ConnectService
-	*mysql_service.DescribeService
-	*mysql_service.VipShowService
+	*mysqlService.DailySaverService
+	*mysqlService.CountService
+	*mysqlService.CompanyService
+	*mysqlService.DockService
+	*mysqlService.UserService
+	*mysqlService.JobService
+	*mysqlService.LabelService
+	*mysqlService.ArticleService
+	*mysqlService.PropagandaService
+	*mysqlService.NoticeService
+	*mysqlService.ConnectService
+	*mysqlService.DescribeService
+	*mysqlService.VipShowService
 }
 
 func DataControllerRouter(router *gin.RouterGroup) {
@@ -157,7 +157,7 @@ func (dc *DataController) ChangeLabelRecommend(c *gin.Context) {
 		}
 		errX := dc.LabelService.ChangeLabelRecommend(RecoBinder.Id, maxCount+1)
 		if errX != nil {
-			if err == mysql_service.NoRecord {
+			if err == mysqlService.NoRecord {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
@@ -169,7 +169,7 @@ func (dc *DataController) ChangeLabelRecommend(c *gin.Context) {
 	} else {
 		errX := dc.LabelService.ChangeLabelRecommend(RecoBinder.Id, 0)
 		if errX != nil {
-			if err == mysql_service.NoRecord {
+			if err == mysqlService.NoRecord {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
@@ -279,7 +279,7 @@ func (dc *DataController) EditVipStyle(c *gin.Context) {
 	}
 	errAdd := dc.VipShowService.EditVipShowInfo(vipSBinder.Id, newCoverUrl, vipSBinder.Content, tokenUtil.GetUsernameByToken(c), vipSBinder.Title)
 	if errAdd != nil {
-		if errAdd == mysql_service.NoRecord {
+		if errAdd == mysqlService.NoRecord {
 			controller.ErrorResp(c, 202, "无id对应内容")
 			return
 		}
@@ -362,7 +362,7 @@ func (dc *DataController) EditPlaDescription(c *gin.Context) {
 		editSaver.Id, editSaver.Content, editSaver.Module,
 		timeUtil.GetMyTimeNowPtr())
 	if err != nil {
-		if err == mysql_service.NoRecord {
+		if err == mysqlService.NoRecord {
 			controller.ErrorResp(c, 202, "修改失败，为找到匹配信息")
 			return
 		} else {
@@ -424,7 +424,7 @@ func (dc *DataController) EditPlatformConnection(c *gin.Context) {
 		editSaver.Id, editSaver.DesPerson, editSaver.Connect, editSaver.Type,
 		timeUtil.GetMyTimeNowPtr())
 	if err != nil {
-		if err == mysql_service.NoRecord {
+		if err == mysqlService.NoRecord {
 			controller.ErrorResp(c, 202, "修改失败，为找到匹配信息")
 			return
 		} else {
@@ -486,7 +486,7 @@ func (dc *DataController) EditNotice(c *gin.Context) {
 	err = dc.NoticeService.EditNotice(editSaver.Id, editSaver.Content, editSaver.Title,
 		timeUtil.GetMyTimeNowPtr())
 	if err != nil {
-		if err == mysql_service.NoRecord {
+		if err == mysqlService.NoRecord {
 			controller.ErrorResp(c, 202, "修改失败，为找到匹配信息")
 			return
 		} else {
@@ -601,7 +601,7 @@ func (dc *DataController) EditPropagandaContent(c *gin.Context) {
 		&timeUtil.MyTime{Time: time.Now()}, url,
 		uploader, edBinder.Content, edBinder.Title, edBinder.Type)
 	if err != nil {
-		if err == mysql_service.NoRecord {
+		if err == mysqlService.NoRecord {
 			controller.ErrorResp(c, 202, "无相关信息")
 			return
 		} else {

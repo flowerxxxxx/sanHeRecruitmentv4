@@ -8,6 +8,8 @@ const month = 60 * 60 * 24 * 30 //一个月30天
 
 const AdminUsername = "sanheRec@admin"
 const AdminPassword = "sanHeRecAdmin"
+const PageSize = 10
+const WebPageSize = 15
 
 const CacheBytes = 2 << 10
 
@@ -23,13 +25,22 @@ var TLSConfig = &TLSConf{
 //------------------------------------------mysql配置
 
 // MysqlConfig mysql配置
+//var MysqlConfig = &MysqlConf{
+//	Dsn:          "root:020804@(127.0.0.1:3306)/programcom?charset=utf8mb4&parseTime=True&loc=Local",
+//	Host:         "127.0.0.1",
+//	Port:         "3306",
+//	User:         "root",
+//	Password:     "020804",
+//	DataBaseName: "programcom",
+//}
+
 var MysqlConfig = &MysqlConf{
-	Dsn:          "root:020804@(127.0.0.1:3306)/programcom?charset=utf8mb4&parseTime=True&loc=Local",
-	Host:         "127.0.0.1",
+	Dsn:          "root:Ict_519519@(39.99.155.73:3306)/sanheRec?charset=utf8mb4&parseTime=True&loc=Local",
+	Host:         "39.99.155.73",
 	Port:         "3306",
 	User:         "root",
-	Password:     "020804",
-	DataBaseName: "programcom",
+	Password:     "Ict_519519",
+	DataBaseName: "sanheRec",
 }
 
 const MysqlConnMaxLivingTime = 300 * time.Second //根据服务器数据库的存活时间配置
@@ -37,6 +48,7 @@ const MysqlConnMaxLivingTime = 300 * time.Second //根据服务器数据库的�
 //------------------------------------------es配置
 
 const ESServerURL = "http://192.168.190.135:9200"
+const ArticleESIndex = "article-1"
 
 //------------------------------------------redis配置
 

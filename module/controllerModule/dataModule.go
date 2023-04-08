@@ -3,12 +3,12 @@ package controllerModule
 import (
 	"github.com/pkg/errors"
 	"sanHeRecruitment/models/moduleModel"
-	"sanHeRecruitment/service/mysql-service"
+	"sanHeRecruitment/service/mysqlService"
 	"sort"
 )
 
 type DataControlModule struct {
-	*mysql_service.DailySaverService
+	*mysqlService.DailySaverService
 }
 
 // GetDailyHotLabel 获取单日标签热度排序

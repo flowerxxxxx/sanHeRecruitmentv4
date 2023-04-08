@@ -6,11 +6,11 @@ import (
 	"log"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/models/websocketModel"
-	"sanHeRecruitment/service/mysql-service"
+	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/e"
 )
 
-var userSer *mysql_service.UserService
+var userSer *mysqlService.UserService
 
 type WsModule struct {
 }

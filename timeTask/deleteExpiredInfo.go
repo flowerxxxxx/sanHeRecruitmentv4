@@ -3,12 +3,12 @@ package timeTask
 import (
 	"log"
 	timeTaskModule2 "sanHeRecruitment/module/timeTaskModule"
-	"sanHeRecruitment/service/mysql-service"
+	"sanHeRecruitment/service/mysqlService"
 	"strconv"
 	"time"
 )
 
-var chatService *mysql_service.ChatService
+var chatService *mysqlService.ChatService
 var timeTaskModule *timeTaskModule2.TimeTaskModule
 
 // 删除过期消息，消息有效时长，三个月

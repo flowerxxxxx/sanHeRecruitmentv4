@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/controller"
-	"sanHeRecruitment/service/mysql-service"
+	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/formatUtil"
 	"sanHeRecruitment/util/saveUtil"
 	"sanHeRecruitment/util/timeUtil"
@@ -22,12 +22,12 @@ import (
 
 // IdentityController 主结构体引用器
 type IdentityController struct {
-	*mysql_service.UserService
-	*mysql_service.CompanyService
-	*mysql_service.UpgradeService
-	*mysql_service.JobService
-	*mysql_service.ArticleService
-	*mysql_service.VoucherService
+	*mysqlService.UserService
+	*mysqlService.CompanyService
+	*mysqlService.UpgradeService
+	*mysqlService.JobService
+	*mysqlService.ArticleService
+	*mysqlService.VoucherService
 }
 
 // IdentityControllerRouter 身份控制台

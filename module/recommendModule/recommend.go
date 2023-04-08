@@ -3,13 +3,13 @@ package recommendModule
 import (
 	"fmt"
 	"sanHeRecruitment/models/mysqlModel"
-	"sanHeRecruitment/service/mysql-service"
+	"sanHeRecruitment/service/mysqlService"
 	"strconv"
 	"time"
 )
 
-var JobService *mysql_service.JobService
-var ArticleService *mysql_service.ArticleService
+var JobService *mysqlService.JobService
+var ArticleService *mysqlService.ArticleService
 
 // CountArcHot 计算权重
 // 招聘 =(观看*0.4+收藏*0.3-投递量*2)*提权 {（最新发布（一天内发布）+公司规模）提权[总值*1.5*公司规模权重]}

@@ -1,4 +1,4 @@
-package mysql_service
+package mysqlService
 
 import (
 	"fmt"

@@ -13,7 +13,8 @@ import (
 	"sanHeRecruitment/module/controllerModule"
 	"sanHeRecruitment/module/recommendModule"
 	"sanHeRecruitment/module/websocketModule"
-	"sanHeRecruitment/service/mysql-service"
+	"sanHeRecruitment/service/esService"
+	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util"
 	"sanHeRecruitment/util/messageUtil"
 	"sanHeRecruitment/util/timeUtil"
@@ -23,19 +24,20 @@ import (
 )
 
 type JobController struct {
-	*mysql_service.JobService
-	*mysql_service.LabelService
-	*mysql_service.CountService
-	*mysql_service.CollectionService
-	*mysql_service.ArticleService
-	*mysql_service.DeliveryService
-	*mysql_service.UserService
-	*mysql_service.EducationService
-	*mysql_service.InvitationService
-	*mysql_service.CompanyService
-	*mysql_service.DailySaverService
-	*mysql_service.DockService
+	*mysqlService.JobService
+	*mysqlService.LabelService
+	*mysqlService.CountService
+	*mysqlService.CollectionService
+	*mysqlService.ArticleService
+	*mysqlService.DeliveryService
+	*mysqlService.UserService
+	*mysqlService.EducationService
+	*mysqlService.InvitationService
+	*mysqlService.CompanyService
+	*mysqlService.DailySaverService
+	*mysqlService.DockService
 	controllerModule.JobConModule
+	*esService.ArticleESservice
 }
 
 func JobControllerRouter(router *gin.RouterGroup) {
@@ -89,13 +91,14 @@ func (jc *JobController) FuzzyQueryJobInfos(c *gin.Context) {
 		controller.ErrorResp(c, 201, "参数绑定失败")
 		return
 	}
-	fuzzyJobInfo := jc.JobService.FuzzyQueryJobs(fBinder.FuzzyName, fBinder.QueryType, c.Request.Host, fBinder.PageNum, 0)
-	TotalPageNum := jc.CountService.GetFuzzyQueryJobsTP(fBinder.FuzzyName, fBinder.QueryType, 0)
+	jc.ArticleESservice.FuzzyArticlesQuery(fBinder.PageNum, fBinder.FuzzyName)
+	//fuzzyJobInfo := jc.JobService.FuzzyQueryJobs(fBinder.FuzzyName, fBinder.QueryType, c.Request.Host, fBinder.PageNum, 0)
+	//TotalPageNum := jc.CountService.GetFuzzyQueryJobsTP(fBinder.FuzzyName, fBinder.QueryType, 0)
 	c.JSON(http.StatusOK, gin.H{
-		"status":    200,
-		"data":      fuzzyJobInfo,
-		"totalPage": TotalPageNum,
-		"msg":       "模糊招聘信息获取成功",
+		"status": 200,
+		//"data":      fuzzyJobInfo,
+		//"totalPage": TotalPageNum,
+		"msg": "模糊招聘信息获取成功",
 	})
 }
 
@@ -647,7 +650,7 @@ func (jc *JobController) DeliverResume(c *gin.Context) {
 	}
 	err := jc.DeliveryService.AddDeliveryService(bossId, artId, fromUsername, deliveryTime)
 	if err != nil {
-		if err == mysql_service.HasFound {
+		if err == mysqlService.HasFound {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 201,
 				"msg":    "您已投递过简历，无法再次投递",

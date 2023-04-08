@@ -1,6 +1,7 @@
-package mysql_service
+package mysqlService
 
 import (
+	"sanHeRecruitment/config"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/mysqlModel"
 )
@@ -8,8 +9,8 @@ import (
 type CountService struct {
 }
 
-const pageSize = 10
-const webPageSize = 15
+const pageSize = config.PageSize
+const webPageSize = config.WebPageSize
 
 // GetFuzzyQueryJobsTP 模糊获取工作信息总页数
 func (c *CountService) GetFuzzyQueryJobsTP(fuzzyName, queryType string, ifAdmin int) (totalPage int) {

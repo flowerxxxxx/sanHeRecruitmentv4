@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/models/loginModel"
-	"sanHeRecruitment/service/mysql-service"
+	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/sqlUtil"
 	"sanHeRecruitment/util/tokenUtil"
 	"strconv"
@@ -14,8 +14,8 @@ import (
 //本文件的router包含管理员的的相关身份管理1
 
 type AdminController struct {
-	*mysql_service.UserService
-	*mysql_service.CountService
+	*mysqlService.UserService
+	*mysqlService.CountService
 }
 
 func AdminControllerRouter(router *gin.RouterGroup) {
@@ -136,14 +136,14 @@ func (ac *AdminController) AdminLogin(c *gin.Context) {
 	passwordMD5 := sqlUtil.GenMD5Password(password)
 	err := ac.UserService.Login(username, passwordMD5)
 	if err != nil {
-		if err == mysql_service.ErrorPasswordWrong {
+		if err == mysqlService.ErrorPasswordWrong {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 201,
 				"msg":    "密码错误",
 			})
 			return
 		}
-		if err == mysql_service.ErrorNotExisted {
+		if err == mysqlService.ErrorNotExisted {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 202,
 				"msg":    "登陆失败,不存在该用户名",
