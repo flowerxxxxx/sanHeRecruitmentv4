@@ -24,7 +24,7 @@ import (
 	"sanHeRecruitment/models/wechatModel"
 	"sanHeRecruitment/module/controllerModule"
 	"sanHeRecruitment/module/recommendModule"
-	"sanHeRecruitment/service"
+	"sanHeRecruitment/service/mysql-service"
 	"sanHeRecruitment/util"
 	"sanHeRecruitment/util/saveUtil"
 	"sanHeRecruitment/util/tokenUtil"
@@ -34,16 +34,16 @@ import (
 )
 
 type UserController struct {
-	*service.UserService
-	*service.CollectionService
-	*service.MsgObjService
-	*service.ChatService
+	*mysql_service.UserService
+	*mysql_service.CollectionService
+	*mysql_service.MsgObjService
+	*mysql_service.ChatService
 	*controllerModule.UserControllerModule
-	*service.LabelService
-	*service.JobService
-	*service.EducationService
-	*service.ArticleService
-	*service.CountService
+	*mysql_service.LabelService
+	*mysql_service.JobService
+	*mysql_service.EducationService
+	*mysql_service.ArticleService
+	*mysql_service.CountService
 }
 
 //var UserController = LoginController{
@@ -112,14 +112,14 @@ func (u *UserController) Login(c *gin.Context) {
 	//fmt.Println(username, password)
 	err := u.UserService.Login(username, password)
 	if err != nil {
-		if err == service.ErrorPasswordWrong {
+		if err == mysql_service.ErrorPasswordWrong {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 201,
 				"msg":    "登陆失败,密码错误",
 			})
 			return
 		}
-		if err == service.ErrorNotExisted {
+		if err == mysql_service.ErrorNotExisted {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 202,
 				"msg":    "登陆失败,不存在该用户名",
@@ -299,7 +299,7 @@ func (u *UserController) CollectArticle(c *gin.Context) {
 		recommendModule.DealArtRecommendWeight(artId)
 	}(ArtId)
 	if err != nil {
-		if err == service.MysqlErr {
+		if err == mysql_service.MysqlErr {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 216,
 				"msg":    "服务器错误",
@@ -307,7 +307,7 @@ func (u *UserController) CollectArticle(c *gin.Context) {
 			log.Println("CollectArticle", err, "recJson:", recJson)
 			return
 		}
-		if err == service.Existed {
+		if err == mysql_service.Existed {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 201,
 				"msg":    "收藏失败，该文章已被收藏",
@@ -716,7 +716,7 @@ func (u *UserController) WeChatLogin(c *gin.Context) {
 	}
 	err = u.UserService.WechatLogin(wxLoginResp.OpenId)
 	if err != nil {
-		if err == service.ErrorNotExisted {
+		if err == mysql_service.ErrorNotExisted {
 			_ = u.UserService.WechatRegister(wxLoginResp.OpenId, recRowData.NickName, recRowData.AvatarUrl)
 		} else {
 			c.JSON(215, gin.H{

@@ -34,6 +34,10 @@ var MysqlConfig = &MysqlConf{
 
 const MysqlConnMaxLivingTime = 300 * time.Second //根据服务器数据库的存活时间配置
 
+//------------------------------------------es配置
+
+const ESServerURL = "http://192.168.190.135:9200"
+
 //------------------------------------------redis配置
 
 // RedisConfig redis配置

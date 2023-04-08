@@ -8,7 +8,7 @@ import (
 	"sanHeRecruitment/models/BindModel/userBind"
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/module/websocketModule"
-	"sanHeRecruitment/service"
+	"sanHeRecruitment/service/mysql-service"
 	"sanHeRecruitment/util/formatUtil"
 	"sanHeRecruitment/util/messageUtil"
 	"sanHeRecruitment/util/saveUtil"
@@ -22,15 +22,15 @@ import (
 )
 
 type BossController struct {
-	*service.ArticleService
-	*service.JobService
-	*service.UserService
-	*service.DeliveryService
-	*service.EducationService
-	*service.CountService
-	*service.CompanyService
-	*service.InvitationService
-	*service.LabelService
+	*mysql_service.ArticleService
+	*mysql_service.JobService
+	*mysql_service.UserService
+	*mysql_service.DeliveryService
+	*mysql_service.EducationService
+	*mysql_service.CountService
+	*mysql_service.CompanyService
+	*mysql_service.InvitationService
+	*mysql_service.LabelService
 }
 
 func BossControllerRouter(router *gin.RouterGroup) {
@@ -119,7 +119,7 @@ func (boc *BossController) BossReadResume(c *gin.Context) {
 	bossInfo := tokenUtil.GetUserClaims(c)
 	err = boc.DeliveryService.SetDeliveryR1ead(deliverIdInt, bossInfo.User.Id)
 	if err != nil {
-		if err == service.NoRecord {
+		if err == mysql_service.NoRecord {
 			controller.ErrorResp(c, 202, "信息不存在")
 			return
 		} else {
@@ -458,7 +458,7 @@ func (boc *BossController) BossChangeArtStatus(c *gin.Context) {
 	ArtIdInt, _ := strconv.Atoi(ArtId)
 	err := boc.ArticleService.BossChangeArtShowStatus(bossId, ArtIdInt, action)
 	if err != nil {
-		if err == service.NoRecord {
+		if err == mysql_service.NoRecord {
 			controller.ErrorResp(c, 201, "文章状态修改失败，身份不符或文章不存在")
 			return
 		} else {

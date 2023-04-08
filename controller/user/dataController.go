@@ -8,19 +8,19 @@ import (
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/mysqlModel"
-	"sanHeRecruitment/service"
+	"sanHeRecruitment/service/mysql-service"
 	"strconv"
 )
 
 type DataController struct {
-	*service.PropagandaService
-	*service.NoticeService
-	*service.CountService
-	*service.ConnectService
-	*service.DescribeService
-	*service.LabelService
-	*service.UpgradeService
-	*service.VipShowService
+	*mysql_service.PropagandaService
+	*mysql_service.NoticeService
+	*mysql_service.CountService
+	*mysql_service.ConnectService
+	*mysql_service.DescribeService
+	*mysql_service.LabelService
+	*mysql_service.UpgradeService
+	*mysql_service.VipShowService
 }
 
 func DataControllerRouter(router *gin.RouterGroup) {

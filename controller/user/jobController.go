@@ -13,7 +13,7 @@ import (
 	"sanHeRecruitment/module/controllerModule"
 	"sanHeRecruitment/module/recommendModule"
 	"sanHeRecruitment/module/websocketModule"
-	"sanHeRecruitment/service"
+	"sanHeRecruitment/service/mysql-service"
 	"sanHeRecruitment/util"
 	"sanHeRecruitment/util/messageUtil"
 	"sanHeRecruitment/util/timeUtil"
@@ -23,18 +23,18 @@ import (
 )
 
 type JobController struct {
-	*service.JobService
-	*service.LabelService
-	*service.CountService
-	*service.CollectionService
-	*service.ArticleService
-	*service.DeliveryService
-	*service.UserService
-	*service.EducationService
-	*service.InvitationService
-	*service.CompanyService
-	*service.DailySaverService
-	*service.DockService
+	*mysql_service.JobService
+	*mysql_service.LabelService
+	*mysql_service.CountService
+	*mysql_service.CollectionService
+	*mysql_service.ArticleService
+	*mysql_service.DeliveryService
+	*mysql_service.UserService
+	*mysql_service.EducationService
+	*mysql_service.InvitationService
+	*mysql_service.CompanyService
+	*mysql_service.DailySaverService
+	*mysql_service.DockService
 	controllerModule.JobConModule
 }
 
@@ -647,7 +647,7 @@ func (jc *JobController) DeliverResume(c *gin.Context) {
 	}
 	err := jc.DeliveryService.AddDeliveryService(bossId, artId, fromUsername, deliveryTime)
 	if err != nil {
-		if err == service.HasFound {
+		if err == mysql_service.HasFound {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 201,
 				"msg":    "您已投递过简历，无法再次投递",

@@ -9,17 +9,17 @@ import (
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/module/backupModule"
 	"sanHeRecruitment/module/controllerModule"
-	"sanHeRecruitment/service"
+	"sanHeRecruitment/service/mysql-service"
 	"sanHeRecruitment/util/excelUtil"
 )
 
 //本层的逻辑全部用于统计以及系统静态存储操作
 
 type StatisticsController struct {
-	*service.UserService
-	*service.CompanyService
-	*service.UpgradeService
-	*service.JobService
+	*mysql_service.UserService
+	*mysql_service.CompanyService
+	*mysql_service.UpgradeService
+	*mysql_service.JobService
 	controllerModule.StatisticsModule
 }
 
@@ -74,7 +74,7 @@ func (sc StatisticsController) WaitingUpgradeExport(c *gin.Context) {
 	}
 	xlsInputer, err := sc.UpgradeService.QueryAllWaitingUpgradeXls(WUBinder.TargetLevel, -1)
 	if err != nil {
-		if err == service.NoRecord {
+		if err == mysql_service.NoRecord {
 			controller.ErrorResp(c, 202, "导出失败，暂无内容")
 			return
 		} else {

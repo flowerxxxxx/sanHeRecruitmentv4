@@ -8,7 +8,7 @@ import (
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/BindModel/adminBind"
 	"sanHeRecruitment/module/websocketModule"
-	"sanHeRecruitment/service"
+	"sanHeRecruitment/service/mysql-service"
 	"sanHeRecruitment/util/messageUtil"
 	"sanHeRecruitment/util/timeUtil"
 	"sanHeRecruitment/util/tokenUtil"
@@ -19,17 +19,17 @@ import (
 
 // ManageController 管理controller
 type ManageController struct {
-	*service.UserService
-	*service.LabelService
-	*service.UpgradeService
-	*service.ArticleService
-	*service.CountService
-	*service.DailySaverService
-	*service.VoucherService
-	*service.MassSendService
-	*service.PropagandaService
-	*service.NoticeService
-	*service.VipShowService
+	*mysql_service.UserService
+	*mysql_service.LabelService
+	*mysql_service.UpgradeService
+	*mysql_service.ArticleService
+	*mysql_service.CountService
+	*mysql_service.DailySaverService
+	*mysql_service.VoucherService
+	*mysql_service.MassSendService
+	*mysql_service.PropagandaService
+	*mysql_service.NoticeService
+	*mysql_service.VipShowService
 }
 
 func ManageControllerRouter(router *gin.RouterGroup) {
@@ -108,7 +108,7 @@ func (mc *ManageController) TopVipShow(c *gin.Context) {
 		}
 		errX := mc.VipShowService.ChangeVipShowStatus(TopBinder.Id, maxCount+1)
 		if errX != nil {
-			if err == service.NoRecord {
+			if err == mysql_service.NoRecord {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
@@ -120,7 +120,7 @@ func (mc *ManageController) TopVipShow(c *gin.Context) {
 	} else {
 		errX := mc.VipShowService.ChangeVipShowStatus(TopBinder.Id, 0)
 		if errX != nil {
-			if err == service.NoRecord {
+			if err == mysql_service.NoRecord {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
@@ -151,7 +151,7 @@ func (mc *ManageController) TopNotice(c *gin.Context) {
 		}
 		errX := mc.NoticeService.ChangeTopNoticeStatus(TopBinder.Id, maxCount+1)
 		if errX != nil {
-			if errX == service.NoRecord {
+			if errX == mysql_service.NoRecord {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
@@ -163,7 +163,7 @@ func (mc *ManageController) TopNotice(c *gin.Context) {
 	} else {
 		errX := mc.NoticeService.ChangeTopNoticeStatus(TopBinder.Id, 0)
 		if errX != nil {
-			if err == service.NoRecord {
+			if err == mysql_service.NoRecord {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
@@ -194,7 +194,7 @@ func (mc *ManageController) TopPropaganda(c *gin.Context) {
 		}
 		errX := mc.PropagandaService.ChangeTopProStatus(TopBinder.Id, maxCount+1)
 		if errX != nil {
-			if err == service.NoRecord {
+			if err == mysql_service.NoRecord {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
@@ -206,7 +206,7 @@ func (mc *ManageController) TopPropaganda(c *gin.Context) {
 	} else {
 		errX := mc.PropagandaService.ChangeTopProStatus(TopBinder.Id, 0)
 		if errX != nil {
-			if err == service.NoRecord {
+			if err == mysql_service.NoRecord {
 				controller.ErrorResp(c, 202, "无该内容相关信息")
 				return
 			} else {
@@ -238,7 +238,7 @@ func (mc *ManageController) TopPub(c *gin.Context) {
 		}
 		errX := mc.ArticleService.ChangeTopPubStatus(TopBinder.Id, maxCount+1)
 		if errX != nil {
-			if err == service.NoRecord {
+			if err == mysql_service.NoRecord {
 				controller.ErrorResp(c, 202, "无该文章相关信息")
 				return
 			} else {
@@ -250,7 +250,7 @@ func (mc *ManageController) TopPub(c *gin.Context) {
 	} else {
 		errX := mc.ArticleService.ChangeTopPubStatus(TopBinder.Id, 0)
 		if errX != nil {
-			if err == service.NoRecord {
+			if err == mysql_service.NoRecord {
 				controller.ErrorResp(c, 202, "无该文章相关信息")
 				return
 			} else {
@@ -276,7 +276,7 @@ func (mc *ManageController) DeleteComUser(c *gin.Context) {
 	}
 	err = mc.ArticleService.BatchKillUserAndPub(userIdInt)
 	if err != nil {
-		if err == service.NoRecord {
+		if err == mysql_service.NoRecord {
 			controller.ErrorResp(c, 202, "修改失败，无该用户信息")
 			return
 		} else {
@@ -442,7 +442,7 @@ func (mc *ManageController) EditLabel(c *gin.Context) {
 	}
 	err = mc.LabelService.EditLabel(labelIdInt, labelContent)
 	if err != nil {
-		if err == service.NoRecord {
+		if err == mysql_service.NoRecord {
 			controller.ErrorResp(c, 202, "数据库无匹配内容")
 			return
 		} else {
@@ -684,7 +684,7 @@ func (mc *ManageController) ManageArtStatus(c *gin.Context) {
 	}
 	err = mc.ArticleService.BossChangeArtShowStatus(artInfo.BossId, ArtIdInt, action)
 	if err != nil {
-		if err == service.NoRecord {
+		if err == mysql_service.NoRecord {
 			controller.ErrorResp(c, 202, "文章状态修改失败，身份不符或文章不存在")
 			return
 		} else {

@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sanHeRecruitment/dao"
-	"sanHeRecruitment/service"
+	"sanHeRecruitment/service/mysql-service"
 	"sanHeRecruitment/util/tokenUtil"
 	"strings"
 )
 
-var us *service.UserService
+var us *mysql_service.UserService
 
 func CheckToken(c *gin.Context) {
 	token := tokenUtil.GetTokenFromHeader(c.Request.Header)

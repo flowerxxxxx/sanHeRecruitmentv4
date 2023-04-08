@@ -1,4 +1,4 @@
-package service
+package mysql_service
 
 import (
 	"github.com/jinzhu/gorm"

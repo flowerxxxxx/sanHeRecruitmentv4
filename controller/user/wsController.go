@@ -12,7 +12,7 @@ import (
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/module/websocketModule"
-	"sanHeRecruitment/service"
+	"sanHeRecruitment/service/mysql-service"
 	"sanHeRecruitment/util"
 	"sanHeRecruitment/util/tokenUtil"
 	"sanHeRecruitment/util/uploadUtil"
@@ -22,10 +22,10 @@ import (
 )
 
 type WsController struct {
-	*service.UserService
-	*service.ChatService
+	*mysql_service.UserService
+	*mysql_service.ChatService
 	*websocketModule.WsModule
-	*service.MsgObjService
+	*mysql_service.MsgObjService
 }
 
 func WsControllerRouterToken(router *gin.RouterGroup) {

@@ -5,13 +5,13 @@ import (
 	"log"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/models/websocketModel"
-	"sanHeRecruitment/service"
+	"sanHeRecruitment/service/mysql-service"
 )
 
 //互斥锁
 
 var wsModule *WsModule
-var us *service.UserService
+var us *mysql_service.UserService
 
 // SysMsgPusher 定制化系统消息推送
 func SysMsgPusher(toUsername, sendMsg string) {
