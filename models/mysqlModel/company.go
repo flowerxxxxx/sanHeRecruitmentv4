@@ -21,6 +21,13 @@ type Company struct {
 	Applicant    string    `json:"-"`
 }
 
+type CompanyLite struct {
+	ComId       int    `json:"com_id" gorm:"primary_key"`
+	CompanyName string `json:"company_name"`
+	PersonScale string `json:"person_scale"` //人员规模
+	ComLevel    int    `json:"com_level"`
+}
+
 type CompanyName struct {
 	ComId       int    `json:"com_id" gorm:"primary_key"`
 	CompanyName string `json:"company_name"`

@@ -42,6 +42,13 @@ func (cs *CompanyService) QueryCompanyBasicInfoByName(CompanyName, host string) 
 	return companyInfo, err
 }
 
+// QueryBaseCom 根据工作id，地区，页码获取信息
+func (cs *CompanyService) QueryBaseCom(comId int) []mysqlModel.CompanyLite {
+	var ComLiteS []mysqlModel.CompanyLite
+	dao.DB.Debug().Table("companies").Select("com_id,company_name,person_scale,companies.com_level").Where("com_id = ? ", comId).Find(&ComLiteS)
+	return ComLiteS
+}
+
 func (cs *CompanyService) QueryCompanyInfoById(CompanyId int, host string) (companyInfo mysqlModel.CompanyOut, err error) {
 	err = dao.DB.Table("companies").
 		Select("com_id,pic_url,company_name,description,companies.phone,scale_tag,person_scale,address,update_time,update_person,com_level,vip,name").

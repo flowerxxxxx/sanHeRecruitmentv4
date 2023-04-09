@@ -16,7 +16,10 @@ import (
 	"sanHeRecruitment/service/esService"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util"
+	"sanHeRecruitment/util/copyUtil"
+	"sanHeRecruitment/util/formatUtil"
 	"sanHeRecruitment/util/messageUtil"
+	"sanHeRecruitment/util/sqlUtil"
 	"sanHeRecruitment/util/timeUtil"
 	"sanHeRecruitment/util/tokenUtil"
 	"strconv"
@@ -91,12 +94,72 @@ func (jc *JobController) FuzzyQueryJobInfos(c *gin.Context) {
 		controller.ErrorResp(c, 201, "参数绑定失败")
 		return
 	}
-	jc.ArticleESservice.FuzzyArticlesQuery(fBinder.PageNum, fBinder.FuzzyName)
+	fuzzyJobInfo, errEs := jc.ArticleESservice.FuzzyArticlesQuery(fBinder.PageNum, fBinder.FuzzyName, fBinder.QueryType)
+	if errEs != nil {
+		log.Println("FuzzyQueryJobInfos ArticleESservice.FuzzyArticlesQuery failed,err", errEs)
+	}
+	if len(fuzzyJobInfo) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 200,
+			"data":   []mysqlModel.UserComArticle{},
+			//"totalPage": TotalPageNum,
+			"msg": "模糊招聘信息获取成功",
+		})
+	}
+	UCAs := []mysqlModel.UserComArticle{}
+	uids := []int{}
+	cids := []int{}
+	for i, ul := 0, len(fuzzyJobInfo); i < ul; i++ {
+		uids = append(uids, fuzzyJobInfo[i].BossId)
+		cids = append(cids, fuzzyJobInfo[i].CompanyId)
+	}
+	//var uInfos []mysqlModel.UserNH
+	//var cInfos []mysqlModel.CompanyLite
+	//if len(uids) == 1 {
+	//	uInfos = jc.UserService.QueryUserLite(uids[0])
+	//}else {
+	uInfos := jc.JobService.FuzzyQueryBaseUser(uids)
+	//}
+	//if len(cids) == 1 {
+	//	cInfos = jc.CompanyService.QueryBaseCom(cids[0])
+	//}else {
+	cInfos := jc.JobService.FuzzyQueryBaseCom(cids)
+	//
+	//}
+	for i, ul := 0, len(fuzzyJobInfo); i < ul; i++ {
+		uca := mysqlModel.UserComArticle{}
+		uca.ArtID = fuzzyJobInfo[i].ArtId
+		errCF := copyUtil.CopyFields(&uca, fuzzyJobInfo[i])
+
+		if errCF != nil {
+			log.Println("FuzzyQueryJobInfos CopyFields err,", errCF)
+		}
+
+		for _, item := range uInfos {
+			if item.User_id == fuzzyJobInfo[i].BossId {
+				uca.Nickname = item.Nickname
+				uca.HeadPic = item.Head_pic
+			}
+		}
+		for _, item := range cInfos {
+			if item.ComId == fuzzyJobInfo[i].CompanyId {
+				uca.CompanyName = item.CompanyName
+				uca.PersonScale = item.PersonScale
+				uca.ComLevel = item.ComLevel
+			}
+		}
+		if fBinder.QueryType == "request" {
+			uca.CompanyName = fmt.Sprintf("%v*****", string([]rune(uca.CompanyName)[:1]))
+		}
+		uca.TagsOut = sqlUtil.SqlStringToSli(uca.Tags)
+		uca.HeadPic = formatUtil.GetPicHeaderBody(c.Request.Host, uca.HeadPic)
+		UCAs = append(UCAs, uca)
+	}
 	//fuzzyJobInfo := jc.JobService.FuzzyQueryJobs(fBinder.FuzzyName, fBinder.QueryType, c.Request.Host, fBinder.PageNum, 0)
 	//TotalPageNum := jc.CountService.GetFuzzyQueryJobsTP(fBinder.FuzzyName, fBinder.QueryType, 0)
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
-		//"data":      fuzzyJobInfo,
+		"data":   UCAs,
 		//"totalPage": TotalPageNum,
 		"msg": "模糊招聘信息获取成功",
 	})

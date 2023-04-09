@@ -32,6 +32,12 @@ type User struct {
 	MakeTime          *timeUtil.MyTime `json:"make_time"`
 }
 
+type UserNH struct {
+	User_id  int    `json:"user_id" map:"user_id" gorm:"primary_key" `
+	Nickname string `json:"nickname" map:"nickname"`
+	Head_pic string `json:"head_pic" map:"head_pic"`
+}
+
 // BasicUserInfo 用户基础信息
 type BasicUserInfo struct {
 	User_id  int    `json:"user_id" map:"user_id" gorm:"primary_key" `

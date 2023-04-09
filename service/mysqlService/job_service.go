@@ -36,6 +36,20 @@ func (j *JobService) GetRecommendJobs(jobId, host string, pageNum int) []mysqlMo
 	return userArt
 }
 
+// FuzzyQueryBaseUser 根据工作id，地区，页码获取信息
+func (j *JobService) FuzzyQueryBaseUser(userIdS []int) []mysqlModel.UserNH {
+	var UserNHS []mysqlModel.UserNH
+	dao.DB.Table("users").Select("user_id,nickname,head_pic").Where("user_id in (?) ", userIdS).Find(&UserNHS)
+	return UserNHS
+}
+
+// FuzzyQueryBaseCom 根据工作id，地区，页码获取信息
+func (j *JobService) FuzzyQueryBaseCom(comIdS []int) []mysqlModel.CompanyLite {
+	var ComLiteS []mysqlModel.CompanyLite
+	dao.DB.Table("companies").Select("com_id,company_name,person_scale,companies.com_level").Where("com_id in (?) ", comIdS).Find(&ComLiteS)
+	return ComLiteS
+}
+
 // FuzzyQueryJobs 根据工作id，地区，页码获取信息
 func (j *JobService) FuzzyQueryJobs(fuzzyName, queryType, host string, pageNum, ifAdmin int) []mysqlModel.UserComArticle {
 	var userArt []mysqlModel.UserComArticle

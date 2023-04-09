@@ -125,6 +125,13 @@ func (us *UserService) QueryBasicUserInfoByUserId(userId int) (userInfo mysqlMod
 	return
 }
 
+// QueryUserLite 根据工作id，地区，页码获取信息
+func (us *UserService) QueryUserLite(userId int) []mysqlModel.UserNH {
+	var UserNHS []mysqlModel.UserNH
+	dao.DB.Debug().Table("users").Select("user_id,nickname,head_pic").Where("user_id = ? ", userId).Find(&UserNHS)
+	return UserNHS
+}
+
 // ModifyHeadPic 修改头像
 func (us *UserService) ModifyHeadPic(username, headPicAddr, host string) (err error) {
 	userInfo, err := us.GetUserInfo(username, host)

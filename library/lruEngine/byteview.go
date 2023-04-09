@@ -10,12 +10,12 @@ func (v ByteView) Len() int {
 	return len(v.B)
 }
 
-// ByteSlice returns a copy of the data as a byte slice
+// ByteSlice returns a copyUtil of the data as a byte slice
 func (v ByteView) ByteSlice() []byte {
 	return cloneBytes(v.B)
 }
 
-// String returns the data as a string,making a copy is necessary
+// String returns the data as a string,making a copyUtil is necessary
 func (v ByteView) String() string {
 	return string(v.B)
 }

@@ -77,8 +77,8 @@ func fileCopy(from, to string) error {
 }
 
 func linuxFileCp(srcFolder, destFolder string) (err error) {
-	//srcFolder := "copy/from/path"
-	//destFolder := "copy/to/path"
+	//srcFolder := "copyUtil/from/path"
+	//destFolder := "copyUtil/to/path"
 	cpCmd := exec.Command("cp", "-rf", srcFolder, destFolder)
 	err = cpCmd.Run()
 	return
