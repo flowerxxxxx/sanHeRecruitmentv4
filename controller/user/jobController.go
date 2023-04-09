@@ -105,6 +105,7 @@ func (jc *JobController) FuzzyQueryJobInfos(c *gin.Context) {
 			//"totalPage": TotalPageNum,
 			"msg": "模糊招聘信息获取成功",
 		})
+		return
 	}
 	UCAs := []mysqlModel.UserComArticle{}
 	uids := []int{}

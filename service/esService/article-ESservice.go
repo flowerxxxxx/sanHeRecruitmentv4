@@ -21,18 +21,18 @@ func (aes *ArticleESservice) FuzzyArticlesQuery(pageNum int, fuzVal, typeVal str
 		elastic.NewMatchPhraseQuery("content", fuzVal),
 	)
 	//工作类型匹配
-	matchATQuery := elastic.NewMatchPhraseQuery("art_type", typeVal)
-	matchStatusQuery := elastic.NewMatchPhraseQuery("status", 1)
-	matchShowQuery := elastic.NewMatchPhraseQuery("show", 1)
+	//设置必须匹配且并列匹配
+	mustBoolQuery := elastic.NewBoolQuery().Must()
+	matchATQuery := elastic.NewTermQuery("art_type", typeVal)
+	matchStatusQuery := elastic.NewTermQuery("status", 1)
+	matchShowQuery := elastic.NewTermQuery("show", 1)
 	sortCreateTimeQuery := elastic.NewFieldSort("create_time").Desc()
+	mustBoolQuery.Must(matchATQuery, matchStatusQuery, matchShowQuery, multiMatchPhraseQuery)
 	//search
 	searchByPhrase, err := dao.ESClient.Search().Index(config.ArticleESIndex).
 		SortBy(sortCreateTimeQuery).
 		From(offSetter).Size(config.PageSize).
-		Query(matchATQuery).
-		Query(matchStatusQuery).
-		Query(matchShowQuery).
-		Query(multiMatchPhraseQuery).
+		Query(mustBoolQuery).
 		Do(context.Background())
 	articles := []mysqlModel.Article{}
 	if err != nil {
