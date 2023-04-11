@@ -155,7 +155,7 @@ func (cs *CompanyService) AddCompanyInfoTX(username, comHeadPic, companyName, de
 }
 
 // FuzzyQueryCompaniesPage 模糊查找
-func (cs *CompanyService) FuzzyQueryCompaniesPage(fuzzyComName, companyLevel string, desStatus, pageNum int) []mysqlModel.CompanyBasicInfo {
+func (cs *CompanyService) FuzzyQueryCompaniesPage(fuzzyComName, companyLevel, host string, desStatus, pageNum int) []mysqlModel.CompanyBasicInfo {
 	var CompanyBasicInfos []mysqlModel.CompanyBasicInfo
 	sqlPage := sqlUtil.PageNumToSqlPage(pageNum, config.PageSize)
 	queryQ := dao.DB.Table("companies").
@@ -167,6 +167,9 @@ func (cs *CompanyService) FuzzyQueryCompaniesPage(fuzzyComName, companyLevel str
 		queryQ = queryQ.Where("com_status = ?", desStatus)
 	}
 	queryQ.Offset(sqlPage).Limit(config.PageSize).Find(&CompanyBasicInfos)
+	for i, n := 0, len(CompanyBasicInfos); i < n; i++ {
+		CompanyBasicInfos[i].PicUrl = formatUtil.GetPicHeaderBody(host, CompanyBasicInfos[i].PicUrl)
+	}
 	return CompanyBasicInfos
 }
 
