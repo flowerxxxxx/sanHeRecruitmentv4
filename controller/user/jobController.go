@@ -61,6 +61,8 @@ func JobControllerRouter(router *gin.RouterGroup) {
 	router.POST("/GetCompanyPub", j.GetCompanyPub)
 	//首页模糊检索职位 招聘和需求可单独做
 	router.GET("/fuzzyQueryAll/:fuzzyName", j.FuzzyQuery)
+	//首页模糊检索公司
+	router.POST("/fuzzyQueryCompanies", j.FuzzyQueryCompanies)
 	//获取公司已经包含的工作/需求标签
 	router.GET("/getCompanyPubLabel/:companyId/:type", j.QueryCompanyPubLabel)
 	//获取公司信息
@@ -86,12 +88,30 @@ func JobControllerRouterToken(router *gin.RouterGroup) {
 	router.POST("/recordDockInfo", j.RecordDockInfo)
 }
 
+// FuzzyQueryCompanies 模糊
+func (jc *JobController) FuzzyQueryCompanies(c *gin.Context) {
+	var fBinder userBind.FuzzyQueryComs
+	err := c.ShouldBind(&fBinder)
+	if err != nil {
+		controller.ErrorResp(c, 201, "参数错误")
+		return
+	}
+	fuzzyCompanyList := jc.CompanyService.FuzzyQueryCompaniesPage(fBinder.FuzzyName, "1", 1, fBinder.PageNum)
+	totalPage := jc.CountService.QueryAllFuzzyCompaniesTP(fBinder.FuzzyName, "1", 1)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "公司模糊查询成功",
+		"data":   fuzzyCompanyList,
+		"total":  totalPage,
+	})
+}
+
 // FuzzyQueryJobInfos 模糊获取工作信息
 func (jc *JobController) FuzzyQueryJobInfos(c *gin.Context) {
 	var fBinder userBind.FuzzyQueryJobs
 	err := c.ShouldBind(&fBinder)
 	if err != nil {
-		controller.ErrorResp(c, 201, "参数绑定失败")
+		controller.ErrorResp(c, 201, "参数错误")
 		return
 	}
 	fuzzyJobInfo, errEs := jc.ArticleESservice.FuzzyArticlesQuery(fBinder.PageNum, fBinder.FuzzyName, fBinder.QueryType)

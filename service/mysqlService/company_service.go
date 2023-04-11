@@ -2,6 +2,7 @@ package mysqlService
 
 import (
 	"github.com/jinzhu/gorm"
+	"sanHeRecruitment/config"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/util/formatUtil"
@@ -151,6 +152,22 @@ func (cs *CompanyService) AddCompanyInfoTX(username, comHeadPic, companyName, de
 		return nil
 	})
 	return
+}
+
+// FuzzyQueryCompaniesPage 模糊查找
+func (cs *CompanyService) FuzzyQueryCompaniesPage(fuzzyComName, companyLevel string, desStatus, pageNum int) []mysqlModel.CompanyBasicInfo {
+	var CompanyBasicInfos []mysqlModel.CompanyBasicInfo
+	sqlPage := sqlUtil.PageNumToSqlPage(pageNum, config.PageSize)
+	queryQ := dao.DB.Table("companies").
+		Where("LOCATE(?,companies.company_name) > 0", fuzzyComName)
+	if companyLevel != "0" {
+		queryQ = queryQ.Where("com_level = ?", companyLevel)
+	}
+	if desStatus != -1 {
+		queryQ = queryQ.Where("com_status = ?", desStatus)
+	}
+	queryQ.Offset(sqlPage).Limit(config.PageSize).Find(&CompanyBasicInfos)
+	return CompanyBasicInfos
 }
 
 // FuzzyQueryCompanies 模糊查找

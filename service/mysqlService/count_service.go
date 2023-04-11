@@ -290,6 +290,20 @@ func (c *CountService) QueryAllCompaniesTP(comLevel int) int {
 	return getTotalPageWeb(Total)
 }
 
+func (c *CountService) QueryAllFuzzyCompaniesTP(fuzzyComName, companyLevel string, desStatus int) int {
+	var Total mysqlModel.Count
+	queryQ := dao.DB.Table("companies").Select("COUNT(*) AS total_num").
+		Where("LOCATE(?,companies.company_name) > 0", fuzzyComName)
+	if companyLevel != "0" {
+		queryQ = queryQ.Where("com_level = ?", companyLevel)
+	}
+	if desStatus != -1 {
+		queryQ = queryQ.Where("com_status = ?", desStatus)
+	}
+	queryQ.Find(&Total)
+	return getTotalPageWeb(Total)
+}
+
 func (c *CountService) GetDockInfosTP(comId int) int {
 	var Total mysqlModel.Count
 	dao.DB.Table("docks").Select("COUNT(*) AS total_num").
