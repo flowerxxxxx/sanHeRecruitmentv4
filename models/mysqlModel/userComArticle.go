@@ -10,7 +10,7 @@ type UserComArticle struct {
 	Nickname    string   `json:"nickname"`
 	JobLabel    string   `json:"job_label"`
 	HeadPic     string   `json:"head_pic"`
-	Region      string   `json:"-"`
+	Region      string   `json:"region"`
 	SalaryMin   int      `json:"salary_min"`
 	SalaryMax   int      `json:"salary_max"`
 	CompanyName string   `json:"company_name"`
