@@ -183,6 +183,34 @@ func (j *JobService) GetCollectArts(username, classification, host string, pageN
 	return userArts
 }
 
+// BossGetJobInfoByBossId 根据bossid获取工作信息
+func (j *JobService) BossGetJobInfoByBossId(bossId, queryType, host string, desStatus, desShow, pageNum int) []mysqlModel.UserComArtBoss {
+	var userArt []mysqlModel.UserComArtBoss
+	sqlPage := sqlUtil.PageNumToSqlPage(pageNum, 10)
+	// 链式查询，用于条件筛选
+	sqlQuery := dao.DB.Table("articles").
+		Select("`show`,status,com_level,art_id,job_label,tags,title,`view`,boss_id,nickname,head_pic,company_name,salary_min,salary_max,region,person_scale,articles.art_type").
+		Joins(" INNER JOIN users on articles.boss_id = users.user_id  " +
+			"INNER JOIN companies on companies.com_id = articles.company_id ")
+	if desStatus != -1 {
+		sqlQuery = sqlQuery.Where("`status`=?", desStatus)
+	}
+	if desShow != -1 {
+		sqlQuery = sqlQuery.Where("`show` = ?", desShow)
+	}
+	if queryType != "all" {
+		sqlQuery = sqlQuery.Where("articles.art_type = ?", queryType)
+	}
+	sqlQuery = sqlQuery.Where("boss_id=?", bossId).
+		Order("art_id desc").Limit(10).Offset(sqlPage)
+	sqlQuery.Find(&userArt)
+	for i, ul := 0, len(userArt); i < ul; i++ {
+		userArt[i].TagsOut = sqlUtil.SqlStringToSli(userArt[i].Tags)
+		userArt[i].HeadPic = formatUtil.GetPicHeaderBody(host, userArt[i].HeadPic)
+	}
+	return userArt
+}
+
 // GetJobInfoByBossId 根据bossid获取工作信息
 func (j *JobService) GetJobInfoByBossId(bossId, queryType, host string, desStatus, desShow, pageNum int) []mysqlModel.UserComArtBoss {
 	var userArt []mysqlModel.UserComArtBoss

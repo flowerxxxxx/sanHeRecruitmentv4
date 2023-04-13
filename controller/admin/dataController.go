@@ -680,12 +680,12 @@ func (dc *DataController) SaveStreamingOrPic(c *gin.Context) {
 	}
 	fileFormat := file.Filename[strings.LastIndex(file.Filename, "."):]
 	//fmt.Println(fileFormat)
-	judgeFlag := uploadUtil.FormatJudge(fileFormat, ".mp4", ".jpg", ".png", ".jpeg", "gif")
+	judgeFlag := uploadUtil.FormatJudge(fileFormat, ".mp4", ".jpg", ".png", ".jpeg", ".gif")
 	if judgeFlag == false {
 		//c.String(http.StatusBadRequest, "上传失败，支持格式：\".mp4\", \".jpg\", \".png\",\".jpeg\"")
 		c.JSON(http.StatusOK, gin.H{
 			"status":  201,
-			"message": "上传失败，支持格式：\".mp4\", \".jpg\", \".png\",\".jpeg\"",
+			"message": "上传失败，支持格式：\".mp4\", \".jpg\", \".png\",\".jpeg\",\".gif\" ",
 			"errno":   1,
 		})
 		return
