@@ -502,7 +502,7 @@ func (boc *BossController) BossGetPublish(c *gin.Context) {
 	claims := tokenUtil.GetUserClaims(c)
 	BossId := claims.User.Id
 	BossIdStr := strconv.Itoa(BossId)
-	pubInfo := boc.JobService.GetJobInfoByBossId(BossIdStr, queryType, c.Request.Host, desStatus, desShow, pageNumInt)
+	pubInfo := boc.JobService.BossGetJobInfoByBossId(BossIdStr, queryType, c.Request.Host, desStatus, desShow, pageNumInt)
 	totalPage := boc.CountService.BossJobInfoTP(BossIdStr, queryType, desStatus, desShow)
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
