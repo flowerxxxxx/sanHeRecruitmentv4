@@ -79,6 +79,7 @@ type ClientRecMsg struct {
 	Socket      *websocket.Conn
 	SocketMutex sync.Mutex
 	Send        chan []byte
+	SendOpen    bool
 }
 
 // 管理消息推送长连接
@@ -325,10 +326,11 @@ func (c *ClientRecMsg) CheckOnline() {
 	defer func() {
 		if flag := deleteMsgPusher(c); flag {
 			_ = c.Socket.Close()
-			//close(c.Send)
+			c.SendOpen = false
 			ReceiveMsgManager.Unregister <- c
 		} else {
 			_ = c.Socket.Close()
+			c.SendOpen = false
 			close(c.Send)
 		}
 	}()
