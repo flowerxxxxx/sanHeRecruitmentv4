@@ -17,7 +17,7 @@ const CacheBytes = 2 << 10
 
 // TLSConfig tls配置
 var TLSConfig = &TLSConf{
-	Addr:     ":9090", //开启端口
+	Addr:     ":9091", //开启端口
 	CertFile: "./ssl/server.pem",
 	KeyFile:  "./ssl/server.key",
 }
@@ -64,10 +64,10 @@ var RedisConfig = &RedisConf{
 // NsqConfig Nsq配置
 var NsqConfig = &NsqConf{
 	ProducerAddr:    "127.0.0.1:4150",
-	ProducerTopic:   "websocket",
+	ProducerTopic:   "websocket-service",
 	ConsumerAddr:    "127.0.0.1:4150",
-	ConsumerTopic:   "websocket",
-	ConsumerChannel: "websocketChannel",
+	ConsumerTopic:   "websocket-service",
+	ConsumerChannel: "websocketChannel-9090",
 }
 
 // NsqMainToService Web服务器 -> 会话服务器

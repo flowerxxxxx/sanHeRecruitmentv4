@@ -24,11 +24,5 @@ func InitProducer() (err error) {
 		panic(any(err))
 	}
 
-	mainToServiceProducer, err = nsq.NewProducer(config.NsqMainToService.ProducerAddr, nsq.NewConfig()) // 新建生产者
-	if err != nil {
-		fmt.Printf("create producer failed, err:%v\n", err)
-		panic(any(err))
-	}
-
 	return err
 }
