@@ -315,9 +315,9 @@ func (r *ClientRecMsg) PushMsg() {
 				r.SocketMutex.Unlock()
 				return
 			}
-			//RWMux.Lock()
+			r.SocketMutex.Lock()
 			_ = r.Socket.WriteMessage(websocket.TextMessage, msg)
-			//RWMux.Unlock()
+			r.SocketMutex.Unlock()
 		}
 	}
 }
