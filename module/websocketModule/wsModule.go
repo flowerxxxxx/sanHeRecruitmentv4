@@ -166,27 +166,9 @@ func (ws *WsModule) WsStart() {
 							MessageType:    messageType,
 						}
 						pubMsg, _ := json.Marshal(publishMsg)
-						PushMsg := struct {
-							HeartBeat int
-						}{1}
-						checkOnlineMsg, _ := json.Marshal(PushMsg)
-						//检查clients是否存在
-						websocketModel.ReceiveMsgManager.Clients[cliMap.ID].SocketMutex.Lock()
-						err := websocketModel.ReceiveMsgManager.Clients[cliMap.ID].
-							Socket.WriteMessage(websocket.TextMessage, checkOnlineMsg)
-						if err != nil {
-							//log.Println("Socket.WriteMessage failed,errInfo:", cliMap.ID)
-							websocketModel.ReceiveMsgManager.Clients[cliMap.ID].SocketMutex.Unlock()
-							return
-						}
-						websocketModel.ReceiveMsgManager.Clients[cliMap.ID].SocketMutex.Unlock()
-						//以下为经典的错误写法
-						select {
-						case websocketModel.ReceiveMsgManager.Clients[cliMap.ID].Send <- pubMsg:
+						if websocketModel.ReceiveMsgManager.Clients[cliMap.ID].SendOpen {
+							websocketModel.ReceiveMsgManager.Clients[cliMap.ID].Send <- pubMsg
 							findFlag = 1
-						default:
-							log.Println("Clients[", cliMap.ID, "].Send has err closed")
-							return
 						}
 					}
 					if findFlag == 0 {

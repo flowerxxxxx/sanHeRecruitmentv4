@@ -176,9 +176,10 @@ func (ws *WsController) ReceiveMsgWebsocket(c *gin.Context) {
 	}
 	//创建一个用户实例
 	recClient := &websocketModel.ClientRecMsg{
-		ID:     username,
-		Socket: conn,
-		Send:   make(chan []byte),
+		ID:       username,
+		Socket:   conn,
+		Send:     make(chan []byte),
+		SendOpen: true,
 	}
 	ws.WsModule.AddMsgPusher(username, recClient)
 	//models.ReceiveMsgManager.Clients[username] = recClient
