@@ -22,7 +22,7 @@ var RM = ReceiveMessage{
 }
 
 var FM = FromMainMsg{
-	ToServiceMiddleContent: make(chan *websocketModel.ToServiceMiddle, 1000),
+	ToServiceMiddleContent: make(chan *websocketModel.ToServiceMiddle),
 }
 
 var chatProducer *nsq.Producer

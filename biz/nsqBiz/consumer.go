@@ -13,7 +13,7 @@ type consumerT struct{}
 type toServiceConsumer struct{}
 
 // HandleMessage nsq消费者处理函数
-func (*toServiceConsumer) HandleMessage(msg *nsq.Message) error {
+func (*consumerT) HandleMessage(msg *nsq.Message) error {
 	var insertMsg *websocketModel.InsertMysql
 	_ = json.Unmarshal(msg.Body, &insertMsg)
 	RM.InsertContent <- insertMsg
@@ -21,7 +21,7 @@ func (*toServiceConsumer) HandleMessage(msg *nsq.Message) error {
 }
 
 // HandleMessage nsq消费者处理函数
-func (*consumerT) HandleMessage(msg *nsq.Message) error {
+func (*toServiceConsumer) HandleMessage(msg *nsq.Message) error {
 	var mainMsg *websocketModel.ToServiceMiddle
 	_ = json.Unmarshal(msg.Body, &mainMsg)
 	FM.ToServiceMiddleContent <- mainMsg
