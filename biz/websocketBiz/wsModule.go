@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"log"
+	"sanHeRecruitment/biz/nsqBiz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service/mysqlService"
@@ -130,7 +131,7 @@ func (ws *WsModule) WsStart() {
 					FromUsername: broadcast.Client.FromUsername,
 					ToUsername:   broadcast.Client.ToUsername,
 				}
-				go websocketModel.Producer(newInsert)
+				go nsqBiz.ChatProducer(newInsert)
 			} else {
 				//fmt.Println("对方不在线")
 				replyMsg := &websocketModel.ReplyMsg{
@@ -183,7 +184,7 @@ func (ws *WsModule) WsStart() {
 						wechatPubAcc.ConversationMessagePush(broadcast.Client.ToUsername, fromUserNickname, content)
 					}
 				}(broadcast.Client.FromUsername, message.Message, message.MessageType)
-				go websocketModel.Producer(newInsert)
+				go nsqBiz.ChatProducer(newInsert)
 			}
 		}
 	}
