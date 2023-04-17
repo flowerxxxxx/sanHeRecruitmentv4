@@ -64,10 +64,10 @@ var RedisConfig = &RedisConf{
 // NsqConfig Nsq配置
 var NsqConfig = &NsqConf{
 	ProducerAddr:    "127.0.0.1:4150",
-	ProducerTopic:   "websocket",
+	ProducerTopic:   "websocket-main",
 	ConsumerAddr:    "127.0.0.1:4150",
-	ConsumerTopic:   "websocket",
-	ConsumerChannel: "websocketChannel",
+	ConsumerTopic:   "websocket-main",
+	ConsumerChannel: "websocketChannel-9090",
 }
 
 // NsqMainToService Web服务器 -> 会话服务器
