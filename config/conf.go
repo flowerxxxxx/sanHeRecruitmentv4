@@ -11,7 +11,7 @@ const AdminPassword = "sanHeRecAdmin"
 const PageSize = 10
 const WebPageSize = 15
 
-const CacheBytes = 2 << 10
+const CacheBytes = 2 << 10 / 10
 
 //------------------------------------------https运行证书配置
 

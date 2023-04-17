@@ -16,7 +16,6 @@ var RM = ReceiveMessage{
 }
 
 var chatProducer *nsq.Producer
-var mainToServiceProducer *nsq.Producer //单独抽象 -> ws服务器广播
 
 //
 ////var nsqInsertMux sync.Mutex

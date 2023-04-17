@@ -37,23 +37,23 @@ func getaccesstoken() string {
 	//url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%v&secret=%v", APPID, APPSECRET)
 	url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%v&secret=%v", APPID, APPSECRET)
 	//url := fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%v&secret=%v", config.WechatAppid, config.WechatSecret)
-	fmt.Println(url)
+	//fmt.Println(url)
 
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Println("获取微信token失败", err)
+		log.Println("获取微信token失败", err)
 		return ""
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("微信token读取失败", err)
+		log.Println("微信token读取失败", err)
 		return ""
 	}
 	token := token{}
 	err = json.Unmarshal(body, &token)
 	if err != nil {
-		fmt.Println("微信token解析json失败", err)
+		log.Println("微信token解析json失败", err)
 		return ""
 	}
 	ATSaveTime := time.Duration(token.ExpiresIn) * time.Second
@@ -62,8 +62,8 @@ func getaccesstoken() string {
 		return ""
 	}
 
-	fmt.Println(token)
-	fmt.Println("微信token解析json", token.AccessToken, token.ExpiresIn)
+	//fmt.Println(token)
+	//fmt.Println("微信token解析json", token.AccessToken, token.ExpiresIn)
 
 	return token.AccessToken
 }
@@ -73,13 +73,13 @@ func getflist(access_token string) []gjson.Result {
 	url := "https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + access_token + "&next_openid="
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Println("获取关注列表失败", err)
+		log.Println("获取关注列表失败", err)
 		return nil
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("读取内容失败", err)
+		log.Println("读取内容失败", err)
 		return nil
 	}
 	flist := gjson.Get(string(body), "data.openid").Array()
@@ -97,18 +97,18 @@ func templatepostUrl(access_token string, reqdata string, fxurl string, template
 		"application/x-www-form-urlencoded",
 		strings.NewReader(string(reqbody)))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	_, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
-	fmt.Println(string(body))
+	//fmt.Println(string(body))
 }
 
 // 发送模板消息 //不携带访问url页面
