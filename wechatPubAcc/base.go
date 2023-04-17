@@ -115,7 +115,7 @@ func templatepostUrl(access_token string, reqdata string, fxurl string, template
 func templatepost(access_token string, reqdata string, templateid string, openid string) {
 	url := "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" + access_token
 	reqbody := "{\"touser\":\"" + openid + "\", \"template_id\":\"" + templateid + "\",\"data\": " + reqdata + "}"
-	fmt.Println(reqbody)
+	//fmt.Println(reqbody)
 	resp, err := http.Post(url,
 		"application/x-www-form-urlencoded",
 		strings.NewReader(string(reqbody)))
@@ -123,7 +123,7 @@ func templatepost(access_token string, reqdata string, templateid string, openid
 		log.Println("httpPostErr:", err)
 		return
 	}
-	fmt.Println("templatepost err:", err)
+	//fmt.Println("templatepost err:", err)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

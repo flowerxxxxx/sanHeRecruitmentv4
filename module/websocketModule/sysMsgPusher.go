@@ -2,10 +2,10 @@ package websocketModule
 
 import (
 	"encoding/json"
-	"log"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service/mysqlService"
+	"sanHeRecruitment/wechatPubAcc"
 )
 
 //互斥锁
@@ -81,24 +81,19 @@ func SysMsgPusher(toUsername, sendMsg string) {
 					MessageType:    messageType,
 				}
 				pubMsg, _ := json.Marshal(publishMsg)
-				//websocketModel.ReceiveMsgManager.Clients[cliMap.ID].Send <- pubMsg
-				//findFlag = 1
-				select {
-				case websocketModel.ReceiveMsgManager.Clients[cliMap.ID].Send <- pubMsg:
+				if websocketModel.ReceiveMsgManager.Clients[cliMap.ID].SendOpen {
+					websocketModel.ReceiveMsgManager.Clients[cliMap.ID].Send <- pubMsg
 					findFlag = 1
-				default:
-					log.Println("Clients[", cliMap.ID, "].Send has err closed")
-					return
 				}
 			}
 			if findFlag == 0 {
 				//微信公众号推送
 				//TODO 暂时关闭公众号推送
-				//if messageType == 1 {
-				//	content = "[图片]"
-				//}
-				//fromUserNickname := userSer.QueryUserNickByUsername(fromUser)
-				//wechatPubAcc.ConversationMessagePush(msgCast.Client.ToUsername, fromUserNickname, content)
+				if messageType == 1 {
+					content = "[图片]"
+				}
+				fromUserNickname := userSer.QueryUserNickByUsername(fromUser)
+				wechatPubAcc.ConversationMessagePush(msgCast.Client.ToUsername, fromUserNickname, content)
 			}
 		}(msgCast.Client.FromUsername, message.Message, message.MessageType)
 		go websocketModel.Producer(newInsert)
