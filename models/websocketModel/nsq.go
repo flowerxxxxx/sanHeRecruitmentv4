@@ -29,7 +29,8 @@ type InsertMysql struct {
 	ToUsername   string `json:"to_username"`
 }
 
-var producer *nsq.Producer
+var producer *nsq.Producer            //会话消息 -> 消息队列 -> 数据库
+var wsBroadcastProducer *nsq.Producer //单独抽象 -> ws服务器广播
 
 //
 ////var nsqInsertMux sync.Mutex
@@ -40,6 +41,13 @@ func InitProducer() (err error) {
 		fmt.Printf("create producer failed, err:%v\n", err)
 		panic(any(err))
 	}
+
+	wsBroadcastProducer, err = nsq.NewProducer(config.NsqConfigWsBroadcast.ProducerAddr, nsq.NewConfig()) // 新建生产者
+	if err != nil {
+		fmt.Printf("create producer failed, err:%v\n", err)
+		panic(any(err))
+	}
+
 	return err
 }
 

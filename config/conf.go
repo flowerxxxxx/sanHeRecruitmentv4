@@ -70,6 +70,15 @@ var NsqConfig = &NsqConf{
 	ConsumerChannel: "websocketChannel",
 }
 
+// NsqMainToService Web服务器 -> 会话服务器
+var NsqMainToService = &NsqConf{
+	ProducerAddr:    "127.0.0.1:4150",
+	ProducerTopic:   "WebToService",
+	ConsumerAddr:    "127.0.0.1:4150",
+	ConsumerTopic:   "WebToService",
+	ConsumerChannel: "WebToServiceChannel",
+}
+
 //------------------------------------------数据存储配置
 
 // PicSaverPath 图片存储地址
