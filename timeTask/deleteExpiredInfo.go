@@ -2,7 +2,7 @@ package timeTask
 
 import (
 	"log"
-	timeTaskModule2 "sanHeRecruitment/module/timeTaskModule"
+	timeTaskModule2 "sanHeRecruitment/biz/timeTaskBiz"
 	"sanHeRecruitment/service/mysqlService"
 	"strconv"
 	"time"

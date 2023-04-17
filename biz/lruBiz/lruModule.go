@@ -1,4 +1,4 @@
-package lruModule
+package lruBiz
 
 type LruModule struct {
 }

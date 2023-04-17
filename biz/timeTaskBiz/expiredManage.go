@@ -1,4 +1,4 @@
-package timeTaskModule
+package timeTaskBiz
 
 import (
 	"log"

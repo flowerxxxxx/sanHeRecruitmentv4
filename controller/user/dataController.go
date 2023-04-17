@@ -36,7 +36,7 @@ func DataControllerRouter(router *gin.RouterGroup) {
 	//获取平台联系方式
 	router.GET("/getPlaConnectionInfos", dc.GetPlatformConnectionInfos)
 	//获取平台简介
-	router.GET("/getPlaDescription/:module", dc.GetPlaDescription)
+	router.GET("/getPlaDescription/:biz", dc.GetPlaDescription)
 	//获取推荐导航
 	router.GET("/getRecommendLabels", dc.getRecommendLabels)
 	//获取会员风采
@@ -109,7 +109,7 @@ func (dc *DataController) GetOneNoticeInfo(c *gin.Context) {
 
 // GetPlaDescription 获取平台简介 平台简介：platform；普通用户：0；企业：1，服务机构：2
 func (dc *DataController) GetPlaDescription(c *gin.Context) {
-	module := c.Param("module")
+	module := c.Param("biz")
 	desInfos, err := dc.DescribeService.QueryModuleDescriptionInfo(module)
 	if err != nil {
 		nullDesInfo := mysqlModel.DescriptionOut{Module: module}

@@ -5,7 +5,7 @@ import "sanHeRecruitment/util/timeUtil"
 type Description struct {
 	Id         int              `json:"id" gorm:"primary_key"`
 	Content    string           `json:"content"`
-	Module     string           `json:"module"`
+	Module     string           `json:"biz"`
 	UploadTime *timeUtil.MyTime `json:"upload_time"`
 	UpdateTime *timeUtil.MyTime `json:"update_time"`
 	Uploader   string           `json:"uploader"`
@@ -14,6 +14,6 @@ type Description struct {
 type DescriptionOut struct {
 	Id         int              `json:"id" gorm:"primary_key"`
 	Content    string           `json:"content"`
-	Module     string           `json:"module"`
+	Module     string           `json:"biz"`
 	UpdateTime *timeUtil.MyTime `json:"update_time"`
 }

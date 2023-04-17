@@ -5,12 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sanHeRecruitment/biz/controllerBiz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/BindModel/adminBind"
 	"sanHeRecruitment/models/BindModel/userBind"
-	"sanHeRecruitment/module/controllerModule"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/formatUtil"
 	"sanHeRecruitment/util/hostInfoUtil"
@@ -29,7 +29,7 @@ import (
 
 // DataController 数据controller
 type DataController struct {
-	controllerModule.DataControlModule
+	controllerBiz.DataControlModule
 
 	*mysqlService.DailySaverService
 	*mysqlService.CountService

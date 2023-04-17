@@ -1,4 +1,4 @@
-package controllerModule
+package controllerBiz
 
 import (
 	"sanHeRecruitment/models/mysqlModel"

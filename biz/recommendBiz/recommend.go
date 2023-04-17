@@ -1,4 +1,4 @@
-package recommendModule
+package recommendBiz
 
 import (
 	"fmt"

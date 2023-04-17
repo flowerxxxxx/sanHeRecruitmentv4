@@ -4,14 +4,14 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sanHeRecruitment/biz/backupBiz"
 	"sanHeRecruitment/config"
-	"sanHeRecruitment/module/backupModule"
 	"strings"
 	"time"
 )
 
 func backer() {
-	backupModule.Backer()
+	backupBiz.Backer()
 }
 
 func expireBackerRemove() {

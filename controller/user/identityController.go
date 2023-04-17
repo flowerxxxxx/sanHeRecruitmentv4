@@ -218,7 +218,7 @@ func (bc *IdentityController) SaveUpgradeVouchers(c *gin.Context) {
 	//			applyUserBasicInfo.Gender,
 	//			upgradeInfo.ApplyTime,
 	//		)
-	//		websocketModule.SysMsgPusher(upgradeInfo.FromUsername, succTem)
+	//		websocketBiz.SysMsgPusher(upgradeInfo.FromUsername, succTem)
 	//	}()
 	//}
 	controller.SuccessResp(c, "凭证存储成功")

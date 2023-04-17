@@ -16,14 +16,14 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sanHeRecruitment/biz/controllerBiz"
+	"sanHeRecruitment/biz/recommendBiz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/models/loginModel"
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/models/wechatModel"
-	"sanHeRecruitment/module/controllerModule"
-	"sanHeRecruitment/module/recommendModule"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util"
 	"sanHeRecruitment/util/saveUtil"
@@ -38,7 +38,7 @@ type UserController struct {
 	*mysqlService.CollectionService
 	*mysqlService.MsgObjService
 	*mysqlService.ChatService
-	*controllerModule.UserControllerModule
+	*controllerBiz.UserControllerModule
 	*mysqlService.LabelService
 	*mysqlService.JobService
 	*mysqlService.EducationService
@@ -296,7 +296,7 @@ func (u *UserController) CollectArticle(c *gin.Context) {
 	err = u.CollectionService.CollectArticle(username, artIdInt, labelInfo.Type)
 	go func(artId string) {
 		u.ArticleService.AddArtCollectNum(artId)
-		recommendModule.DealArtRecommendWeight(artId)
+		recommendBiz.DealArtRecommendWeight(artId)
 	}(ArtId)
 	if err != nil {
 		if err == mysqlService.MysqlErr {

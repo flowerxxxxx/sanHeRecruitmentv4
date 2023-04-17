@@ -7,11 +7,11 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"sanHeRecruitment/biz/websocketBiz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/websocketModel"
-	"sanHeRecruitment/module/websocketModule"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util"
 	"sanHeRecruitment/util/tokenUtil"
@@ -24,7 +24,7 @@ import (
 type WsController struct {
 	*mysqlService.UserService
 	*mysqlService.ChatService
-	*websocketModule.WsModule
+	*websocketBiz.WsModule
 	*mysqlService.MsgObjService
 }
 

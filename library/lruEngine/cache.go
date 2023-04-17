@@ -12,7 +12,7 @@ type lruCache struct {
 }
 
 var LruEngine = lruCache{
-	lru: lru.New(2<<20*10, nil),
+	lru: lru.New(2<<20/10, nil),
 }
 
 func (c *lruCache) Add(key string, value ByteView) {

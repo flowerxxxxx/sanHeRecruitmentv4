@@ -1,4 +1,4 @@
-package recommendModule
+package recommendBiz
 
 // CompanyWeight 公司规模权重
 var companyWeight = map[string]float64{

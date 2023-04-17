@@ -6,13 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"sanHeRecruitment/biz/controllerBiz"
+	"sanHeRecruitment/biz/recommendBiz"
+	"sanHeRecruitment/biz/websocketBiz"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/library/lruEngine"
 	"sanHeRecruitment/models/BindModel/userBind"
 	"sanHeRecruitment/models/mysqlModel"
-	"sanHeRecruitment/module/controllerModule"
-	"sanHeRecruitment/module/recommendModule"
-	"sanHeRecruitment/module/websocketModule"
 	"sanHeRecruitment/service/esService"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util"
@@ -39,7 +39,7 @@ type JobController struct {
 	*mysqlService.CompanyService
 	*mysqlService.DailySaverService
 	*mysqlService.DockService
-	controllerModule.JobConModule
+	controllerBiz.JobConModule
 	*esService.ArticleESservice
 }
 
@@ -636,7 +636,7 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 					log.Println("[GoroutineErrLog]", errIn)
 				}
 				//重新处理权重
-				recommendModule.DealArtRecommendWeight(artId)
+				recommendBiz.DealArtRecommendWeight(artId)
 			}(artId)
 			return
 		}
@@ -671,7 +671,7 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 			log.Println("[GoroutineErrLog]", errIn)
 		}
 		//重新处理权重
-		recommendModule.DealArtRecommendWeight(artId)
+		recommendBiz.DealArtRecommendWeight(artId)
 	}(artId)
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
@@ -759,7 +759,7 @@ func (jc *JobController) DeliverResume(c *gin.Context) {
 	go func(artIdStr string) {
 		jc.ArticleService.AddDeliveryNum(artIdStr)
 		_ = jc.DailySaverService.AddDailyDelivery(artId)
-		recommendModule.DealArtRecommendWeight(artIdStr)
+		recommendBiz.DealArtRecommendWeight(artIdStr)
 	}(artIdStr)
 	//消息推送匿名函数
 	go func() {
@@ -775,7 +775,7 @@ func (jc *JobController) DeliverResume(c *gin.Context) {
 			fromUserNickname,
 			title,
 		)
-		websocketModule.SysMsgPusher(bossUsername, DeliveryTem)
+		websocketBiz.SysMsgPusher(bossUsername, DeliveryTem)
 
 	}()
 	c.JSON(http.StatusOK, gin.H{

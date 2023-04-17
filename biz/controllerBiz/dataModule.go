@@ -1,4 +1,4 @@
-package controllerModule
+package controllerBiz
 
 import (
 	"github.com/pkg/errors"

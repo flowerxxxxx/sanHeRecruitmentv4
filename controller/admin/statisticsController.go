@@ -4,11 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/url"
+	"sanHeRecruitment/biz/backupBiz"
+	"sanHeRecruitment/biz/controllerBiz"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/models/BindModel/adminBind"
 	"sanHeRecruitment/models/websocketModel"
-	"sanHeRecruitment/module/backupModule"
-	"sanHeRecruitment/module/controllerModule"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/excelUtil"
 )
@@ -20,7 +20,7 @@ type StatisticsController struct {
 	*mysqlService.CompanyService
 	*mysqlService.UpgradeService
 	*mysqlService.JobService
-	controllerModule.StatisticsModule
+	controllerBiz.StatisticsModule
 }
 
 // StatisticsControllerRouterToken 统计者控制层 本层的逻辑全部用于统计以及系统静态存储操作
@@ -99,7 +99,7 @@ func (sc StatisticsController) WaitingUpgradeExport(c *gin.Context) {
 
 // BackupData 手动备份数据
 func (sc StatisticsController) BackupData(c *gin.Context) {
-	ziperName, err := backupModule.Backer()
+	ziperName, err := backupBiz.Backer()
 	if err != nil {
 		controller.ErrorResp(c, 211, "服务器错误")
 		log.Println("admin BackupData failed,err:", err)

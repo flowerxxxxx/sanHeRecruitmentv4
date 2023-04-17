@@ -9,10 +9,10 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sanHeRecruitment/biz/websocketBiz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/websocketModel"
-	"sanHeRecruitment/module/websocketModule"
 	"sanHeRecruitment/router"
 	"sanHeRecruitment/timeTask"
 	"sanHeRecruitment/util/logUtil"
@@ -21,7 +21,7 @@ import (
 )
 
 // var MysqlModels = []interface{}{&mysqlModel.User{}}
-var ws *websocketModule.WsModule
+var ws *websocketBiz.WsModule
 
 func main() {
 	//main 主项
@@ -67,7 +67,7 @@ func main() {
 	//模型绑定
 	//dao.DB.AutoMigrate(MysqlModels...)
 	r := router.SetupRouter()
-	err = websocketModule.InitSystemAdminer()
+	err = websocketBiz.InitSystemAdminer()
 	if err != nil {
 		panic(any(err))
 	}
