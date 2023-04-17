@@ -4,10 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"sanHeRecruitment/biz/websocketBiz"
+	"sanHeRecruitment/biz/nsqBiz"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/models/BindModel/userBind"
 	"sanHeRecruitment/models/mysqlModel"
+	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/formatUtil"
 	"sanHeRecruitment/util/messageUtil"
@@ -310,7 +311,10 @@ func (boc *BossController) InviteDelivery(c *gin.Context) {
 			bossInfo.Name,
 			artInfo.Title,
 		)
-		websocketBiz.SysMsgPusher(desUsername, DeliveryManageTem)
+		//websocketBiz.SysMsgPusher(desUsername, DeliveryManageTem)
+		nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+			ToUsername: desUsername, MsgContent: DeliveryManageTem,
+		})
 	}()
 	controller.SuccessResp(c, "邀请投递操作成功")
 }
@@ -404,7 +408,10 @@ func (boc *BossController) ResumeGetManage(c *gin.Context) {
 			deliveryInfo.DeliveryTime,
 			qualification,
 		)
-		websocketBiz.SysMsgPusher(deliveryInfo.FromUsername, DeliveryManageTem)
+		//websocketBiz.SysMsgPusher(deliveryInfo.FromUsername, DeliveryManageTem)
+		nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+			ToUsername: deliveryInfo.FromUsername, MsgContent: DeliveryManageTem,
+		})
 	}()
 	controller.SuccessResp(c, action+"操作成功")
 	return

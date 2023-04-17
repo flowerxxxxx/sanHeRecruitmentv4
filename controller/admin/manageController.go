@@ -4,10 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"sanHeRecruitment/biz/nsqBiz"
 	"sanHeRecruitment/biz/websocketBiz"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/BindModel/adminBind"
+	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/messageUtil"
 	"sanHeRecruitment/util/timeUtil"
@@ -315,7 +317,10 @@ func (mc *ManageController) BatchPubAdmit(c *gin.Context) {
 			userInfo, _ := mc.UserService.QueryUserInfoByUserId(bossIdStr)
 			PubTem := messageUtil.BossPubPassOrNotTem(userInfo.Name, userInfo.Gender,
 				item.Title, "", item.CreateTime, 1)
-			websocketBiz.SysMsgPusher(userInfo.Username, PubTem)
+			//websocketBiz.SysMsgPusher(userInfo.Username, PubTem)
+			nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+				ToUsername: userInfo.Username, MsgContent: PubTem,
+			})
 		}
 	}()
 	controller.SuccessResp(c, "批量许可成功，批量同意数量："+strconv.Itoa(len(ComWaits)))
@@ -366,7 +371,10 @@ func (mc *ManageController) AdminDeletePubInfo(c *gin.Context) {
 		userInfo, _ := mc.UserService.QueryUserInfoByUserId(bossIdStr)
 		PubTem := messageUtil.AdminDeletePubInfo(userInfo.Name, userInfo.Gender,
 			artInfo.Title, deleteReason, artInfo.CreateTime, 2)
-		websocketBiz.SysMsgPusher(userInfo.Username, PubTem)
+		//websocketBiz.SysMsgPusher(userInfo.Username, PubTem)
+		nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+			ToUsername: userInfo.Username, MsgContent: PubTem,
+		})
 	}()
 	controller.SuccessResp(c, "删除成功")
 }
@@ -475,7 +483,10 @@ func (mc *ManageController) ApplyPassFail(c *gin.Context) {
 		userInfo, _ := mc.UserService.QueryUserInfoByUserId(bossIdStr)
 		PubTem := messageUtil.BossPubPassOrNotTem(userInfo.Name, userInfo.Gender,
 			artInfo.Title, failReason, artInfo.CreateTime, 2)
-		websocketBiz.SysMsgPusher(userInfo.Username, PubTem)
+		//websocketBiz.SysMsgPusher(userInfo.Username, PubTem)
+		nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+			ToUsername: userInfo.Username, MsgContent: PubTem,
+		})
 	}()
 	controller.SuccessResp(c, "操作成功")
 }
@@ -501,7 +512,10 @@ func (mc *ManageController) ApplyPassSuccess(c *gin.Context) {
 		userInfo, _ := mc.UserService.QueryUserInfoByUserId(bossIdStr)
 		PubTem := messageUtil.BossPubPassOrNotTem(userInfo.Name, userInfo.Gender,
 			artInfo.Title, "", artInfo.CreateTime, 1)
-		websocketBiz.SysMsgPusher(userInfo.Username, PubTem)
+		//websocketBiz.SysMsgPusher(userInfo.Username, PubTem)
+		nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+			ToUsername: userInfo.Username, MsgContent: PubTem,
+		})
 	}()
 	controller.SuccessResp(c, "操作成功")
 }
@@ -628,7 +642,10 @@ func (mc *ManageController) UpgradeAdmit(c *gin.Context) {
 			applyUserBasicInfo.Gender,
 			upgradeInfo.ApplyTime,
 		)
-		websocketBiz.SysMsgPusher(upgradeInfo.FromUsername, succTem)
+		//websocketBiz.SysMsgPusher(upgradeInfo.FromUsername, succTem)
+		nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+			ToUsername: upgradeInfo.FromUsername, MsgContent: succTem,
+		})
 	}()
 	controller.SuccessResp(c, "审核通过操作成功")
 	return
@@ -664,7 +681,10 @@ func (mc *ManageController) UpgradeDisAdmit(c *gin.Context) {
 			rejectReason,
 			upgradeInfo.ApplyTime,
 		)
-		websocketBiz.SysMsgPusher(upgradeInfo.FromUsername, ErrTem)
+		//websocketBiz.SysMsgPusher(upgradeInfo.FromUsername, ErrTem)
+		nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+			ToUsername: upgradeInfo.FromUsername, MsgContent: ErrTem,
+		})
 	}()
 	controller.SuccessResp(c, "审核不通过操作成功")
 	return

@@ -7,12 +7,14 @@ import (
 	"log"
 	"net/http"
 	"sanHeRecruitment/biz/controllerBiz"
+	"sanHeRecruitment/biz/nsqBiz"
 	"sanHeRecruitment/biz/recommendBiz"
 	"sanHeRecruitment/biz/websocketBiz"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/library/lruEngine"
 	"sanHeRecruitment/models/BindModel/userBind"
 	"sanHeRecruitment/models/mysqlModel"
+	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/service/esService"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util"
@@ -776,6 +778,9 @@ func (jc *JobController) DeliverResume(c *gin.Context) {
 			title,
 		)
 		websocketBiz.SysMsgPusher(bossUsername, DeliveryTem)
+		nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+			ToUsername: bossUsername, MsgContent: DeliveryTem,
+		})
 
 	}()
 	c.JSON(http.StatusOK, gin.H{

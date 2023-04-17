@@ -113,7 +113,10 @@ func MassSendMsg(sendRole int, msg string) (err error) {
 			//go func(toUsername string) {
 			//	SysMsgPusher(toUsername, msg)
 			//}(item.Username)
-			SysMsgPusher(item.Username, msg)
+			//SysMsgPusher(item.Username, msg)
+			nsqBiz.ToServiceProducer(websocketModel.ToServiceMiddle{
+				item.Username, msg,
+			})
 		}
 	}()
 	return
