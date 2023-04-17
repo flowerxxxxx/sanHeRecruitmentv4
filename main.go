@@ -9,10 +9,10 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sanHeRecruitment/biz/nsqBiz"
 	"sanHeRecruitment/biz/websocketBiz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/dao"
-	"sanHeRecruitment/models/websocketModel"
 	"sanHeRecruitment/router"
 	"sanHeRecruitment/timeTask"
 	"sanHeRecruitment/util/logUtil"
@@ -30,9 +30,9 @@ func main() {
 
 	logUtil.LogOutInit()
 	//nsq开启生产者
-	_ = websocketModel.InitProducer()
+	_ = nsqBiz.InitProducer()
 	//nsq开启消费者
-	websocketModel.Consumer()
+	nsqBiz.Consumer()
 
 	//将http写入config
 	//logfile, err := os.Create("./gin_http.log")
@@ -49,7 +49,7 @@ func main() {
 		//websocket监听及处理线程
 		go ws.WsStart()
 		//开启接收消费者动作的处理
-		go websocketModel.ReceiveToInsert()
+		go nsqBiz.ReceiveToInsert()
 		//开启消息推送的管理线程
 		go ws.RecMsgStart()
 	}
