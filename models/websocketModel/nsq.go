@@ -9,3 +9,8 @@ type InsertMysql struct {
 	FromUsername string `json:"from_username"`
 	ToUsername   string `json:"to_username"`
 }
+
+type ToServiceMiddle struct {
+	ToUsername string
+	MsgContent string
+}

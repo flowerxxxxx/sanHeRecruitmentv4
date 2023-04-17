@@ -102,6 +102,15 @@ func SysMsgPusher(toUsername, sendMsg string) {
 	}
 }
 
+func FromMainToPush() {
+	for {
+		select {
+		case MSG := <-nsqBiz.FM.ToServiceMiddleContent:
+			SysMsgPusher(MSG.ToUsername, MSG.MsgContent)
+		}
+	}
+}
+
 // MassSendMsg 系统定制化身份群发信息(ALL -1,usual 0,boss 1,service 2)
 func MassSendMsg(sendRole int, msg string) (err error) {
 	userColony, err := us.QueryUserColony(sendRole)

@@ -44,15 +44,6 @@ func main() {
 
 	//开启定时任务
 	timeTask.InitTimer()
-	//开启监听 双线程监听
-	for i := 0; i < config.GoroutineNum; i++ {
-		//websocket监听及处理线程
-		go ws.WsStart()
-		//开启接收消费者动作的处理
-		go nsqBiz.ReceiveToInsert()
-		//开启消息推送的管理线程
-		go ws.RecMsgStart()
-	}
 	//连接数据库
 	err := dao.InitMySQL()
 	if err != nil {
@@ -63,6 +54,16 @@ func main() {
 	err = dao.InitRedis()
 	if err != nil {
 		panic(any(err))
+	}
+	//开启监听 双线程监听
+	for i := 0; i < config.GoroutineNum; i++ {
+		//websocket监听及处理线程
+		go ws.WsStart()
+		//开启接收消费者动作的处理
+		go nsqBiz.ReceiveToInsert()
+		go websocketBiz.FromMainToPush()
+		//开启消息推送的管理线程
+		go ws.RecMsgStart()
 	}
 	//模型绑定
 	//dao.DB.AutoMigrate(MysqlModels...)
