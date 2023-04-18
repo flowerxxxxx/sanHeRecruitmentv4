@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package servicepb;
+option go_package = "./;servicepb";
+
+message Request {
+  string username = 1;
+  string message = 2;
+  int64  messageType = 3;
+}
+
+message Response {
+  int64 status = 1;
+  string msg = 2;
+}
+
+service GroupCache {
+  rpc ToServiceCall(Request) returns (Response);
+}

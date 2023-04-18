@@ -13,6 +13,7 @@ import (
 	"sanHeRecruitment/biz/websocketBiz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/dao"
+	"sanHeRecruitment/remote"
 	"sanHeRecruitment/router"
 	"sanHeRecruitment/timeTask"
 	"sanHeRecruitment/util/logUtil"
@@ -27,6 +28,8 @@ func main() {
 	//main 主项
 	gin.SetMode(gin.ReleaseMode)
 	gin.DefaultWriter = ioutil.Discard
+
+	go remote.StartBeToServer("0.0.0.0" + config.RemoteServer)
 
 	logUtil.LogOutInit()
 	//nsq开启生产者

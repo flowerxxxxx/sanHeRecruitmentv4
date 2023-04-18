@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/websocket"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/dao"
+	pb "sanHeRecruitment/remote/servicepb"
 	"sanHeRecruitment/util/e"
 	"sanHeRecruitment/util/formatUtil"
 	"strconv"
@@ -133,6 +134,14 @@ type PublishMsg struct {
 	MessageContent string `json:"message_content"`
 	MessageType    int    `json:"message_type"`
 	HeartBeat      int    `json:"HeartBeat"`
+}
+
+type ToServiceChannel struct {
+	ToServiceMiddleContent chan *pb.Request
+}
+
+var TSC = ToServiceChannel{
+	ToServiceMiddleContent: make(chan *pb.Request, 100),
 }
 
 // 管理

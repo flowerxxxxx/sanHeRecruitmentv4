@@ -20,5 +20,6 @@ func InitRedis() (err error) {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

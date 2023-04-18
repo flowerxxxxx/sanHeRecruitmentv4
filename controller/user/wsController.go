@@ -97,6 +97,8 @@ func (ws *WsController) Handler(c *gin.Context) {
 
 	go client.Read(c.Request.Host)
 	go client.Write(c.Request.Host)
+	dao.Redis.Do("SET", client.ID+"-remote", []byte(c.Request.Host[:strings.Index(c.Request.Host, ":")]+config.RemoteServer))
+
 	go func() {
 		//将trainers内的所有read设为已读
 		//ws.ChatService.BatchRead(toUid, uid)

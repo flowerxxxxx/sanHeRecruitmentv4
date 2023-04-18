@@ -17,7 +17,7 @@ const CacheBytes = 2 << 10
 
 // TLSConfig tls配置
 var TLSConfig = &TLSConf{
-	Addr:     ":9091", //开启端口
+	Addr:     ":9092", //开启端口
 	CertFile: "./ssl/server.pem",
 	KeyFile:  "./ssl/server.key",
 }
@@ -40,6 +40,14 @@ const MysqlConnMaxLivingTime = 300 * time.Second //根据服务器数据库的�
 
 const ESServerURL = "http://192.168.190.135:9200"
 const ArticleESIndex = "article-1"
+
+//------------------------------------------remoteService
+
+const DefaultBasePath = "/_sanheToservice/"
+
+var DefaultHttpIp = "0.0.0.0" + TLSConfig.Addr
+
+const RemoteServer = ":9998"
 
 //------------------------------------------redis配置
 

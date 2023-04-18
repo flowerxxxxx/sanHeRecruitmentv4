@@ -2,11 +2,15 @@ package websocketBiz
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"sanHeRecruitment/biz/nsqBiz"
 	"sanHeRecruitment/config"
+	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/websocketModel"
+	"sanHeRecruitment/remote"
+	pb "sanHeRecruitment/remote/servicepb"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/e"
 	"sanHeRecruitment/wechatPubAcc"
@@ -80,13 +84,26 @@ func (ws *WsModule) WsStart() {
 					delete(websocketModel.Manager.Clients, conn.ID)
 					close(conn.Send)
 					websocketModel.Manager.ClientsRWM.Unlock()
-
+					dao.Redis.Del(conn.ID + "-remote")
 				}
 				websocketModel.DelManagerCliCount(conn.ID)
 			} else {
 				log.Printf("[May fatal error]Manager cliCount unnormal: %v \n", cliCount)
 			}
-
+		case tsc := <-websocketModel.TSC.ToServiceMiddleContent:
+			//去用户管理里寻找sendid，如果有则证明是该被发送者是在线的，如果没有则不在线
+			//TODO 用户的send已经关闭 但是还能搜到用户
+			message := &websocketModel.BroadcastMsg{
+				Message:     tsc.Message,
+				MessageType: int(tsc.MessageType),
+			}
+			message2, _ := json.Marshal(message)
+			conn, ok := websocketModel.ReadManClient(tsc.Username)
+			if ok {
+				if conn.SendOpen {
+					conn.Send <- message2
+				}
+			}
 		case broadcast := <-websocketModel.Manager.Broadcast: //1->2
 			//start := time.Now()
 			broadcastMessage := string(broadcast.Message)
@@ -101,13 +118,35 @@ func (ws *WsModule) WsStart() {
 			//去用户管理里寻找sendid，如果有则证明是该被发送者是在线的，如果没有则不在线
 			//TODO 用户的send已经关闭 但是还能搜到用户
 			conn, ok := websocketModel.ReadManClient(SendId)
+			fmt.Println(ok)
 			if ok {
 				if conn.SendOpen {
 					conn.Send <- message2
 					flag = true
 				}
+			} else {
+				fmt.Println(SendId + "-remote")
+				host := dao.Redis.Get(SendId + "-remote").Val()
+				fmt.Println(host)
+				if host != "" {
+					var bb = remote.HttpToService{
+						BaseURL: host,
+					}
+					var Outer *pb.Response
+					Outer = &pb.Response{}
+					in := pb.Request{
+						Username:    SendId,
+						Message:     broadcastMessage,
+						MessageType: int64(broadcast.Type),
+					}
+					err := bb.ToService(&in, Outer)
+					if err != nil {
+						log.Println("ToService failed,err:", err)
+					}
+					fmt.Println(Outer)
+					flag = true
+				}
 			}
-
 			id := broadcast.Client.ID //1->2
 			if flag {
 				// TODO WS online Printer
