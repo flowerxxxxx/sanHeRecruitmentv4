@@ -57,13 +57,13 @@ type DeleteConBinder struct {
 
 type PlatDescriptionBinder struct {
 	Content string `json:"content"`
-	Module  string `json:"biz"`
+	Module  string `json:"module"`
 }
 
 type EditPlatDesBinder struct {
 	Id      int    `json:"id"`
 	Content string `json:"content"`
-	Module  string `json:"biz"`
+	Module  string `json:"module"`
 }
 
 type DelPlatDesBinder struct {

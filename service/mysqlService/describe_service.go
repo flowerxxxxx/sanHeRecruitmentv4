@@ -40,7 +40,7 @@ func (ds *DescribeService) EditDescription(
 // QueryDescriptionInfos 获取平台简介
 func (ds *DescribeService) QueryDescriptionInfos() []mysqlModel.DescriptionOut {
 	var desInfos []mysqlModel.DescriptionOut
-	dao.DB.Table("descriptions").Select("id,content,biz,update_time").
+	dao.DB.Table("descriptions").Select("id,content,module,update_time").
 		Find(&desInfos)
 	return desInfos
 }
@@ -48,8 +48,8 @@ func (ds *DescribeService) QueryDescriptionInfos() []mysqlModel.DescriptionOut {
 // QueryModuleDescriptionInfo 分模块获取平台简介
 func (ds *DescribeService) QueryModuleDescriptionInfo(module string) (mysqlModel.DescriptionOut, error) {
 	var desInfos mysqlModel.DescriptionOut
-	err := dao.DB.Table("descriptions").Select("id,content,biz,update_time").
-		Where("biz = ?", module).Find(&desInfos).Error
+	err := dao.DB.Table("descriptions").Select("id,content,module,update_time").
+		Where("module = ?", module).Find(&desInfos).Error
 	return desInfos, err
 }
 
