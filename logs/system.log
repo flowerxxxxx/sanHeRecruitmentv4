@@ -266,3 +266,9 @@ time="2023-04-17T22:59:19+08:00" level=info client_ip=127.0.0.1 latency_time=177
 time="2023-04-17T22:59:25+08:00" level=info client_ip=127.0.0.1 latency_time=181.8899ms req_method=POST req_uri=/adminMange/sendColonyMsg status_code=200
 time="2023-04-17T22:59:32+08:00" level=info client_ip=127.0.0.1 latency_time=183.7049ms req_method=POST req_uri=/adminMange/sendColonyMsg status_code=200
 time="2023-04-17T23:01:00+08:00" level=info client_ip=127.0.0.1 latency_time=381.7454ms req_method=POST req_uri=/adminMange/sendColonyMsg status_code=200
+time="2023-04-18T20:19:05+08:00" level=info client_ip=127.0.0.1 latency_time=1.6986ms req_method=POST req_uri=/adminMange/adminLogin status_code=200
+time="2023-04-18T20:19:56+08:00" level=info client_ip=127.0.0.1 latency_time=1.421ms req_method=POST req_uri=/adminMange/adminLogin status_code=200
+time="2023-04-18T20:20:04+08:00" level=info client_ip=127.0.0.1 latency_time="900.6µs" req_method=POST req_uri=/adminMange/adminLogin status_code=200
+time="2023-04-18T20:20:45+08:00" level=info client_ip=127.0.0.1 latency_time=125.3303ms req_method=POST req_uri=/adminMange/adminLogin status_code=200
+time="2023-04-18T20:21:35+08:00" level=info client_ip=127.0.0.1 latency_time=121.7371ms req_method=POST req_uri=/adminMange/adminLogin status_code=200
+time="2023-04-18T20:35:53+08:00" level=info client_ip=127.0.0.1 latency_time=227.9499ms req_method=POST req_uri=/adminMange/adminLogin status_code=200
