@@ -13,8 +13,9 @@ func TestHttpToService_ToService(t *testing.T) {
 	var Outer *pb.Response
 	Outer = &pb.Response{}
 	in := pb.Request{
-		Username: "yanmingyu",
-		Content:  "test_content",
+		Username:    "yanmingyu",
+		Message:     "test_content",
+		MessageType: 1,
 	}
 	err := bb.ToService(&in, Outer)
 	fmt.Println(err)

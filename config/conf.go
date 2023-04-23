@@ -17,7 +17,7 @@ const CacheBytes = 2 << 10
 
 // TLSConfig tls配置
 var TLSConfig = &TLSConf{
-	Addr:     ":9092", //开启端口
+	Addr:     ":9091", //开启端口
 	CertFile: "./ssl/server.pem",
 	KeyFile:  "./ssl/server.key",
 }
@@ -47,7 +47,7 @@ const DefaultBasePath = "/_sanheToservice/"
 
 var DefaultHttpIp = "0.0.0.0" + TLSConfig.Addr
 
-const RemoteServer = ":9998"
+const RemoteServer = ":9999"
 
 //------------------------------------------redis配置
 
@@ -98,10 +98,10 @@ const BackerExpireTime = 2
 //------------------------------------------wechatUtil-小程序配置
 
 // WechatAppid appid
-const WechatAppid = "wxc4aca753deef16dc"
+const WechatAppid = "wx2ac530acb64e9430"
 
 // WechatSecret secret
-const WechatSecret = "f808d019a853fd07e62301c725b53abe"
+const WechatSecret = "670681d1ee66345a19b93951220a17e2"
 
 // ------------------------------------------wechatUtil-微信公众号配置
 
