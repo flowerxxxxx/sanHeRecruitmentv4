@@ -6973,3 +6973,5 @@
 [logTool]2023/04/09 13:56:45 copyField.go:45:  CopyFields no such field or different kind, fieldName: Show
 [logTool]2023/04/09 13:56:45 copyField.go:45:  CopyFields no such field or different kind, fieldName: CompanyId
 [logTool]2023/04/09 13:56:45 copyField.go:45:  CopyFields no such field or different kind, fieldName: ArtType
+[logTool]2023/04/23 19:00:36 deleteExpiredInfo.go:25: timeTask delete MSG error: dial tcp 39.99.155.73:3306: connectex: A socket operation was attempted to an unreachable host.
+[logTool]2023/04/23 20:47:11 deleteExpiredInfo.go:25: timeTask delete MSG error: dial tcp 39.99.155.73:3306: connectex: A socket operation was attempted to an unreachable host.

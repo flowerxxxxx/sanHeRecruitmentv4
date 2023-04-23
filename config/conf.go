@@ -25,22 +25,13 @@ var TLSConfig = &TLSConf{
 //------------------------------------------mysql配置
 
 // MysqlConfig mysql配置
-//var MysqlConfig = &MysqlConf{
-//	Dsn:          "root:020804@(127.0.0.1:3306)/programcom?charset=utf8mb4&parseTime=True&loc=Local",
-//	Host:         "127.0.0.1",
-//	Port:         "3306",
-//	User:         "root",
-//	Password:     "020804",
-//	DataBaseName: "programcom",
-//}
-
 var MysqlConfig = &MysqlConf{
-	Dsn:          "root:Ict_519519@(39.99.155.73:3306)/sanheRec?charset=utf8mb4&parseTime=True&loc=Local",
+	Dsn:          "root:020804@(127.0.0.1:3306)/programcom?charset=utf8mb4&parseTime=True&loc=Local",
 	Host:         "127.0.0.1",
 	Port:         "3306",
 	User:         "root",
-	Password:     "Ict_519519",
-	DataBaseName: "sanheRec",
+	Password:     "020804",
+	DataBaseName: "programcom",
 }
 
 const MysqlConnMaxLivingTime = 300 * time.Second //根据服务器数据库的存活时间配置
@@ -99,10 +90,10 @@ const BackerExpireTime = 2
 //------------------------------------------wechatUtil-小程序配置
 
 // WechatAppid appid
-const WechatAppid = "wxc4aca753deef16dc"
+const WechatAppid = "wx2ac530acb64e9430"
 
 // WechatSecret secret
-const WechatSecret = "f808d019a853fd07e62301c725b53abe"
+const WechatSecret = "670681d1ee66345a19b93951220a17e2"
 
 // ------------------------------------------wechatUtil-微信公众号配置
 
