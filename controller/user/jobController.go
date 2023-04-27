@@ -619,7 +619,6 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 	if ok {
 		recInfo := mysqlModel.OneArticleOut{}
 		errUmMar := json.Unmarshal(artInfoB.ByteSlice(), &recInfo)
-		//fmt.Println("get from lru success")
 		if errUmMar == nil {
 			c.JSON(http.StatusOK, gin.H{
 				"status": 200,
@@ -627,9 +626,6 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 				"msg":    "文章信息获取成功",
 			})
 			go func(artId string) {
-				//ctx := context.Background()
-				//valueCtx := context.WithValue(ctx,artId,artId)
-				//fmt.Println(valueCtx.Value(artId))
 				jc.ArticleService.AddArtView(artIdInt)
 				errIn := jc.DailySaverService.AddDailyView(artIdInt)
 				if errIn != nil {
@@ -652,14 +648,13 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 		}
 		jc.JobConModule.SaveRecruitInfoToRedis(artId, artInfo)
 
-		recInfoByte, errMar := json.Marshal(artInfo)
-		if errMar != nil {
-			log.Println("SaveRecruitInfoToRedis Marshal failed,err:", errMar)
-			return
-		}
-		lruEngine.LruEngine.Add("RecruitInfo_"+artId, lruEngine.ByteView{B: recInfoByte})
-		//fmt.Println("lru add success")
 	}
+
+	recInfoByte, errMar := json.Marshal(artInfo)
+	if errMar != nil {
+		log.Println("SaveRecruitInfoToRedis Marshal failed,err:", errMar)
+	}
+	lruEngine.LruEngine.Add("RecruitInfo_"+artId, lruEngine.ByteView{B: recInfoByte})
 
 	go func(artId string) {
 		//ctx := context.Background()

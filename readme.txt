@@ -16,8 +16,7 @@
 --library //自创的各类引擎库
 --timeTask //时间任务
 --uploadPic //测试保存图片文件使用的，无实际意义
---util //工具层 但是忘记了很多次导致删除本地文件封装了多个函数
-分别位于saveUtil，osUtil
+--util //工具层
 --vendor //第三方依赖
 --wechatPubAcc //微信公众号推送
 --main.go //主函数
