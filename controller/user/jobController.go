@@ -10,16 +10,12 @@ import (
 	"sanHeRecruitment/biz/recommendBiz"
 	"sanHeRecruitment/biz/websocketBiz"
 	"sanHeRecruitment/controller"
-	"sanHeRecruitment/library/lruEngine"
 	"sanHeRecruitment/models/BindModel/userBind"
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/service/esService"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util"
-	"sanHeRecruitment/util/copyUtil"
-	"sanHeRecruitment/util/formatUtil"
 	"sanHeRecruitment/util/messageUtil"
-	"sanHeRecruitment/util/sqlUtil"
 	"sanHeRecruitment/util/timeUtil"
 	"sanHeRecruitment/util/tokenUtil"
 	"strconv"
@@ -111,86 +107,103 @@ func (jc *JobController) FuzzyQueryCompanies(c *gin.Context) {
 }
 
 // FuzzyQueryJobInfos 模糊获取工作信息
+//func (jc *JobController) FuzzyQueryJobInfos(c *gin.Context) {
+//	var fBinder userBind.FuzzyQueryJobs
+//	err := c.ShouldBind(&fBinder)
+//	if err != nil {
+//		controller.ErrorResp(c, 201, "参数错误")
+//		return
+//	}
+//	if fBinder.FuzzyName == "" {
+//		controller.ErrorResp(c, 203, "查询内容不能为空")
+//		return
+//	}
+//	fuzzyJobInfo, errEs := jc.ArticleESservice.FuzzyArticlesQuery(fBinder.PageNum, fBinder.FuzzyName, fBinder.QueryType)
+//	if errEs != nil {
+//		log.Println("FuzzyQueryJobInfos ArticleESservice.FuzzyArticlesQuery failed,err", errEs)
+//	}
+//	if len(fuzzyJobInfo) == 0 {
+//		c.JSON(http.StatusOK, gin.H{
+//			"status": 200,
+//			"data":   []mysqlModel.UserComArticle{},
+//			//"totalPage": TotalPageNum,
+//			"msg": "模糊招聘信息获取成功",
+//		})
+//		return
+//	}
+//	UCAs := []mysqlModel.UserComArticle{}
+//	uids := []int{}
+//	cids := []int{}
+//	for i, ul := 0, len(fuzzyJobInfo); i < ul; i++ {
+//		uids = append(uids, fuzzyJobInfo[i].BossId)
+//		cids = append(cids, fuzzyJobInfo[i].CompanyId)
+//	}
+//	//var uInfos []mysqlModel.UserNH
+//	//var cInfos []mysqlModel.CompanyLite
+//	//if len(uids) == 1 {
+//	//	uInfos = jc.UserService.QueryUserLite(uids[0])
+//	//}else {
+//	uInfos := jc.JobService.FuzzyQueryBaseUser(uids)
+//	//}
+//	//if len(cids) == 1 {
+//	//	cInfos = jc.CompanyService.QueryBaseCom(cids[0])
+//	//}else {
+//	cInfos := jc.JobService.FuzzyQueryBaseCom(cids)
+//	//
+//	//}
+//	for i, ul := 0, len(fuzzyJobInfo); i < ul; i++ {
+//		uca := mysqlModel.UserComArticle{}
+//		uca.ArtID = fuzzyJobInfo[i].ArtId
+//		errCF := copyUtil.CopyFields(&uca, fuzzyJobInfo[i])
+//
+//		if errCF != nil {
+//			log.Println("FuzzyQueryJobInfos CopyFields err,", errCF)
+//		}
+//
+//		for _, item := range uInfos {
+//			if item.User_id == fuzzyJobInfo[i].BossId {
+//				uca.Nickname = item.Nickname
+//				uca.HeadPic = item.Head_pic
+//			}
+//		}
+//		for _, item := range cInfos {
+//			if item.ComId == fuzzyJobInfo[i].CompanyId {
+//				uca.CompanyName = item.CompanyName
+//				uca.PersonScale = item.PersonScale
+//				uca.ComLevel = item.ComLevel
+//			}
+//		}
+//		if fBinder.QueryType == "request" {
+//			uca.CompanyName = fmt.Sprintf("%v*****", string([]rune(uca.CompanyName)[:1]))
+//		}
+//		uca.TagsOut = sqlUtil.SqlStringToSli(uca.Tags)
+//		uca.HeadPic = formatUtil.GetPicHeaderBody(c.Request.Host, uca.HeadPic)
+//		UCAs = append(UCAs, uca)
+//	}
+//	//fuzzyJobInfo := jc.JobService.FuzzyQueryJobs(fBinder.FuzzyName, fBinder.QueryType, c.Request.Host, fBinder.PageNum, 0)
+//	//TotalPageNum := jc.CountService.GetFuzzyQueryJobsTP(fBinder.FuzzyName, fBinder.QueryType, 0)
+//	c.JSON(http.StatusOK, gin.H{
+//		"status": 200,
+//		"data":   UCAs,
+//		//"totalPage": TotalPageNum,
+//		"msg": "模糊招聘信息获取成功",
+//	})
+//}
+
 func (jc *JobController) FuzzyQueryJobInfos(c *gin.Context) {
 	var fBinder userBind.FuzzyQueryJobs
 	err := c.ShouldBind(&fBinder)
 	if err != nil {
-		controller.ErrorResp(c, 201, "参数错误")
+		controller.ErrorResp(c, 201, "参数绑定失败")
 		return
 	}
-	if fBinder.FuzzyName == "" {
-		controller.ErrorResp(c, 203, "查询内容不能为空")
-		return
-	}
-	fuzzyJobInfo, errEs := jc.ArticleESservice.FuzzyArticlesQuery(fBinder.PageNum, fBinder.FuzzyName, fBinder.QueryType)
-	if errEs != nil {
-		log.Println("FuzzyQueryJobInfos ArticleESservice.FuzzyArticlesQuery failed,err", errEs)
-	}
-	if len(fuzzyJobInfo) == 0 {
-		c.JSON(http.StatusOK, gin.H{
-			"status": 200,
-			"data":   []mysqlModel.UserComArticle{},
-			//"totalPage": TotalPageNum,
-			"msg": "模糊招聘信息获取成功",
-		})
-		return
-	}
-	UCAs := []mysqlModel.UserComArticle{}
-	uids := []int{}
-	cids := []int{}
-	for i, ul := 0, len(fuzzyJobInfo); i < ul; i++ {
-		uids = append(uids, fuzzyJobInfo[i].BossId)
-		cids = append(cids, fuzzyJobInfo[i].CompanyId)
-	}
-	//var uInfos []mysqlModel.UserNH
-	//var cInfos []mysqlModel.CompanyLite
-	//if len(uids) == 1 {
-	//	uInfos = jc.UserService.QueryUserLite(uids[0])
-	//}else {
-	uInfos := jc.JobService.FuzzyQueryBaseUser(uids)
-	//}
-	//if len(cids) == 1 {
-	//	cInfos = jc.CompanyService.QueryBaseCom(cids[0])
-	//}else {
-	cInfos := jc.JobService.FuzzyQueryBaseCom(cids)
-	//
-	//}
-	for i, ul := 0, len(fuzzyJobInfo); i < ul; i++ {
-		uca := mysqlModel.UserComArticle{}
-		uca.ArtID = fuzzyJobInfo[i].ArtId
-		errCF := copyUtil.CopyFields(&uca, fuzzyJobInfo[i])
-
-		if errCF != nil {
-			log.Println("FuzzyQueryJobInfos CopyFields err,", errCF)
-		}
-
-		for _, item := range uInfos {
-			if item.User_id == fuzzyJobInfo[i].BossId {
-				uca.Nickname = item.Nickname
-				uca.HeadPic = item.Head_pic
-			}
-		}
-		for _, item := range cInfos {
-			if item.ComId == fuzzyJobInfo[i].CompanyId {
-				uca.CompanyName = item.CompanyName
-				uca.PersonScale = item.PersonScale
-				uca.ComLevel = item.ComLevel
-			}
-		}
-		if fBinder.QueryType == "request" {
-			uca.CompanyName = fmt.Sprintf("%v*****", string([]rune(uca.CompanyName)[:1]))
-		}
-		uca.TagsOut = sqlUtil.SqlStringToSli(uca.Tags)
-		uca.HeadPic = formatUtil.GetPicHeaderBody(c.Request.Host, uca.HeadPic)
-		UCAs = append(UCAs, uca)
-	}
-	//fuzzyJobInfo := jc.JobService.FuzzyQueryJobs(fBinder.FuzzyName, fBinder.QueryType, c.Request.Host, fBinder.PageNum, 0)
-	//TotalPageNum := jc.CountService.GetFuzzyQueryJobsTP(fBinder.FuzzyName, fBinder.QueryType, 0)
+	fuzzyJobInfo := jc.JobService.FuzzyQueryJobs(fBinder.FuzzyName, fBinder.QueryType, c.Request.Host, fBinder.PageNum, 0)
+	TotalPageNum := jc.CountService.GetFuzzyQueryJobsTP(fBinder.FuzzyName, fBinder.QueryType, 0)
 	c.JSON(http.StatusOK, gin.H{
-		"status": 200,
-		"data":   UCAs,
-		//"totalPage": TotalPageNum,
-		"msg": "模糊招聘信息获取成功",
+		"status":    200,
+		"data":      fuzzyJobInfo,
+		"totalPage": TotalPageNum,
+		"msg":       "模糊招聘信息获取成功",
 	})
 }
 
@@ -607,6 +620,75 @@ func (jc *JobController) checkResumeQualification(c *gin.Context) {
 }
 
 // GetRecruitInfo 获取详细的招聘信息
+//func (jc *JobController) GetRecruitInfo(c *gin.Context) {
+//	artId := c.Param("art_id")
+//	artIdInt, err := strconv.Atoi(artId)
+//	if err != nil {
+//		controller.ErrorResp(c, 201, "页码参数格式错误")
+//		return
+//	}
+//
+//	artInfoB, ok := lruEngine.LruEngine.Get("RecruitInfo_" + artId)
+//	if ok {
+//		recInfo := mysqlModel.OneArticleOut{}
+//		errUmMar := json.Unmarshal(artInfoB.ByteSlice(), &recInfo)
+//		if errUmMar == nil {
+//			c.JSON(http.StatusOK, gin.H{
+//				"status": 200,
+//				"data":   recInfo,
+//				"msg":    "文章信息获取成功",
+//			})
+//			go func(artId string) {
+//				jc.ArticleService.AddArtView(artIdInt)
+//				errIn := jc.DailySaverService.AddDailyView(artIdInt)
+//				if errIn != nil {
+//					log.Println("[GoroutineErrLog]", errIn)
+//				}
+//				//重新处理权重
+//				recommendBiz.DealArtRecommendWeight(artId)
+//			}(artId)
+//			return
+//		}
+//		log.Println("lru err")
+//	}
+//
+//	artInfo, errGet := jc.JobConModule.GetRecruitInfoFromRedis(artId)
+//	if errGet != nil {
+//		artInfo, err = jc.JobService.GetOneArtInfo(artId, c.Request.Host)
+//		if err != nil {
+//			controller.ErrorResp(c, 202, "该需求不存在")
+//			return
+//		}
+//		jc.JobConModule.SaveRecruitInfoToRedis(artId, artInfo)
+//
+//	}
+//
+//	recInfoByte, errMar := json.Marshal(artInfo)
+//	if errMar != nil {
+//		log.Println("SaveRecruitInfoToRedis Marshal failed,err:", errMar)
+//	}
+//	lruEngine.LruEngine.Add("RecruitInfo_"+artId, lruEngine.ByteView{B: recInfoByte})
+//
+//	go func(artId string) {
+//		//ctx := context.Background()
+//		//valueCtx := context.WithValue(ctx,artId,artId)
+//		//fmt.Println(valueCtx.Value(artId))
+//		jc.ArticleService.AddArtView(artIdInt)
+//		errIn := jc.DailySaverService.AddDailyView(artIdInt)
+//		if errIn != nil {
+//			log.Println("[GoroutineErrLog]", errIn)
+//		}
+//		//重新处理权重
+//		recommendBiz.DealArtRecommendWeight(artId)
+//	}(artId)
+//	c.JSON(http.StatusOK, gin.H{
+//		"status": 200,
+//		"data":   artInfo,
+//		"msg":    "文章信息获取成功",
+//	})
+//}
+
+// GetRecruitInfo 获取详细的招聘信息
 func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 	artId := c.Param("art_id")
 	artIdInt, err := strconv.Atoi(artId)
@@ -614,31 +696,6 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 		controller.ErrorResp(c, 201, "页码参数格式错误")
 		return
 	}
-
-	artInfoB, ok := lruEngine.LruEngine.Get("RecruitInfo_" + artId)
-	if ok {
-		recInfo := mysqlModel.OneArticleOut{}
-		errUmMar := json.Unmarshal(artInfoB.ByteSlice(), &recInfo)
-		if errUmMar == nil {
-			c.JSON(http.StatusOK, gin.H{
-				"status": 200,
-				"data":   recInfo,
-				"msg":    "文章信息获取成功",
-			})
-			go func(artId string) {
-				jc.ArticleService.AddArtView(artIdInt)
-				errIn := jc.DailySaverService.AddDailyView(artIdInt)
-				if errIn != nil {
-					log.Println("[GoroutineErrLog]", errIn)
-				}
-				//重新处理权重
-				recommendBiz.DealArtRecommendWeight(artId)
-			}(artId)
-			return
-		}
-		log.Println("lru err")
-	}
-
 	artInfo, errGet := jc.JobConModule.GetRecruitInfoFromRedis(artId)
 	if errGet != nil {
 		artInfo, err = jc.JobService.GetOneArtInfo(artId, c.Request.Host)
@@ -647,15 +704,7 @@ func (jc *JobController) GetRecruitInfo(c *gin.Context) {
 			return
 		}
 		jc.JobConModule.SaveRecruitInfoToRedis(artId, artInfo)
-
 	}
-
-	recInfoByte, errMar := json.Marshal(artInfo)
-	if errMar != nil {
-		log.Println("SaveRecruitInfoToRedis Marshal failed,err:", errMar)
-	}
-	lruEngine.LruEngine.Add("RecruitInfo_"+artId, lruEngine.ByteView{B: recInfoByte})
-
 	go func(artId string) {
 		//ctx := context.Background()
 		//valueCtx := context.WithValue(ctx,artId,artId)
