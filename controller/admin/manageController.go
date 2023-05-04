@@ -89,6 +89,8 @@ func ManageControllerRouterToken(router *gin.RouterGroup) {
 	router.POST("/ChangeNoticeStatus", mc.TopNotice)
 	//置顶会员风采
 	router.POST("/ChangeVipShowStatus", mc.TopVipShow)
+	//优先需求标签
+	router.POST("/TopLabel", mc.TopLabel)
 }
 
 // TopVipShow 置顶会员风采
@@ -218,6 +220,35 @@ func (mc *ManageController) TopPropaganda(c *gin.Context) {
 	}
 	dao.Redis.Del("PropagandaInfo")
 	controller.SuccessResp(c, "置顶状态修改成功")
+	return
+}
+
+// TopLabel 优先需求标签
+func (mc *ManageController) TopLabel(c *gin.Context) {
+	var TopBinder adminBind.TopLabel
+	err := c.ShouldBind(&TopBinder)
+	if err != nil {
+		controller.ErrorResp(c, 201, "参数绑定失败")
+		return
+	}
+	maxCount, err := mc.LabelService.QueryMaxLabelCount()
+	if err != nil {
+		log.Println("TopPub QueryMaxLabelCount failed,err:", TopBinder)
+		controller.ErrorResp(c, 211, "无发布内容")
+		return
+	}
+	errX := mc.LabelService.ChangeTopPubStatus(TopBinder.Id, maxCount+1)
+	if errX != nil {
+		if err == mysqlService.NoRecord {
+			controller.ErrorResp(c, 202, "无该标签")
+			return
+		} else {
+			log.Println("TopPub ChangeTopPubStatus failed,err:", TopBinder)
+			controller.ErrorResp(c, 212, "服务器错误")
+			return
+		}
+	}
+	controller.SuccessResp(c, "优先设置成功")
 	return
 }
 

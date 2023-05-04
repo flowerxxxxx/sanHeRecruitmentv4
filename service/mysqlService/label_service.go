@@ -15,10 +15,32 @@ type Label struct {
 	Children []interface{} `json:"children"`
 }
 
+func (ls *LabelService) QueryMaxLabelCount() (maxNum int, err error) {
+	var maxRecCount mysqlModel.MaxLabelCount
+	err = dao.DB.Table("labels").
+		Select("MAX(sort_num) as max_num").Find(&maxRecCount).Error
+	if err != nil {
+		return -1, err
+	}
+	return maxRecCount.MaxNum, nil
+}
+
+func (ls *LabelService) ChangeTopPubStatus(id, desSort int) (err error) {
+	var Labels mysqlModel.Label
+	err = dao.DB.Table("articles").
+		Where("art_id = ?", id).Find(&Labels).Error
+	if err != nil {
+		return NoRecord
+	}
+	Labels.SortNum = desSort
+	err = dao.DB.Table("articles").Save(&Labels).Error
+	return err
+}
+
 // GetLabelTree 获取标签的json树
 func (ls *LabelService) GetLabelTree(labelType string, value int) []interface{} {
 	var Labels []Label
-	dao.DB.Where("type = ?", labelType).Find(&Labels)
+	dao.DB.Where("type = ?", labelType).Order("sort_num desc").Find(&Labels)
 	data := makeLabelTree(Labels, 0, 0, value)
 	return data
 }
@@ -71,6 +93,8 @@ func (ls *LabelService) AddLabel(labelType, label string, parentId, parentLevel 
 	}
 	newLabel.Label = label
 	newLabel.Type = labelType
+	newLabel.SortNum = 0
+	newLabel.Recommend = 0
 	err := dao.DB.Save(&newLabel).Error
 	if err != nil {
 		return err

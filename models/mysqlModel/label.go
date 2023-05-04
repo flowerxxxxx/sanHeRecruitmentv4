@@ -13,6 +13,11 @@ type Label struct {
 	Label     string `json:"text"`
 	Type      string `json:"type"`
 	Recommend int    `json:"recommend"`
+	SortNum   int    `json:"sort_num"`
+}
+
+type MaxLabelCount struct {
+	MaxNum int `json:"max_num"`
 }
 
 type LabelOut struct {
