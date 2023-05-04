@@ -80,6 +80,28 @@ func JobControllerRouterToken(router *gin.RouterGroup) {
 	router.POST("/recordDockInfo", j.RecordDockInfo)
 }
 
+// FuzzyQueryCompanies 模糊
+func (jc *JobController) FuzzyQueryCompanies(c *gin.Context) {
+	var fBinder userBind.FuzzyQueryComs
+	err := c.ShouldBind(&fBinder)
+	if err != nil {
+		controller.ErrorResp(c, 201, "参数错误")
+		return
+	}
+	if fBinder.FuzzyName == "" {
+		controller.ErrorResp(c, 203, "查询内容不能为空")
+		return
+	}
+	fuzzyCompanyList := jc.CompanyService.FuzzyQueryCompaniesPage(fBinder.FuzzyName, "1", c.Request.Host, 1, fBinder.PageNum)
+	totalPage := jc.CountService.QueryAllFuzzyCompaniesTP(fBinder.FuzzyName, "1", 1)
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "公司模糊查询成功",
+		"data":   fuzzyCompanyList,
+		"total":  totalPage,
+	})
+}
+
 // FuzzyQueryJobInfos 模糊获取工作信息
 func (jc *JobController) FuzzyQueryJobInfos(c *gin.Context) {
 	var fBinder userBind.FuzzyQueryJobs

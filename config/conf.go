@@ -8,6 +8,8 @@ const month = 60 * 60 * 24 * 30 //一个月30天
 
 const AdminUsername = "sanheRec@admin"
 const AdminPassword = "sanHeRecAdmin"
+const PageSize = 10
+const WebPageSize = 15
 
 //------------------------------------------https运行证书配置
 

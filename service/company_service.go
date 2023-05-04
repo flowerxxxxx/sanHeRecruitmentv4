@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/jinzhu/gorm"
+	"sanHeRecruitment/config"
 	"sanHeRecruitment/dao"
 	"sanHeRecruitment/models/mysqlModel"
 	"sanHeRecruitment/util/formatUtil"
@@ -11,6 +12,25 @@ import (
 )
 
 type CompanyService struct {
+}
+
+// FuzzyQueryCompaniesPage 模糊查找
+func (cs *CompanyService) FuzzyQueryCompaniesPage(fuzzyComName, companyLevel, host string, desStatus, pageNum int) []mysqlModel.CompanyBasicInfo {
+	var CompanyBasicInfos []mysqlModel.CompanyBasicInfo
+	sqlPage := sqlUtil.PageNumToSqlPage(pageNum, config.PageSize)
+	queryQ := dao.DB.Table("companies").
+		Where("LOCATE(?,companies.company_name) > 0", fuzzyComName)
+	if companyLevel != "0" {
+		queryQ = queryQ.Where("com_level = ?", companyLevel)
+	}
+	if desStatus != -1 {
+		queryQ = queryQ.Where("com_status = ?", desStatus)
+	}
+	queryQ.Offset(sqlPage).Limit(config.PageSize).Find(&CompanyBasicInfos)
+	for i, n := 0, len(CompanyBasicInfos); i < n; i++ {
+		CompanyBasicInfos[i].PicUrl = formatUtil.GetPicHeaderBody(host, CompanyBasicInfos[i].PicUrl)
+	}
+	return CompanyBasicInfos
 }
 
 func (cs *CompanyService) TotalCount() (mysqlModel.CompaniesTotal, error) {

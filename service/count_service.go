@@ -11,6 +11,20 @@ type CountService struct {
 const pageSize = 10
 const webPageSize = 15
 
+func (c *CountService) QueryAllFuzzyCompaniesTP(fuzzyComName, companyLevel string, desStatus int) int {
+	var Total mysqlModel.Count
+	queryQ := dao.DB.Table("companies").Select("COUNT(*) AS total_num").
+		Where("LOCATE(?,companies.company_name) > 0", fuzzyComName)
+	if companyLevel != "0" {
+		queryQ = queryQ.Where("com_level = ?", companyLevel)
+	}
+	if desStatus != -1 {
+		queryQ = queryQ.Where("com_status = ?", desStatus)
+	}
+	queryQ.Find(&Total)
+	return getTotalPageWeb(Total)
+}
+
 // GetFuzzyQueryJobsTP 模糊获取工作信息总页数
 func (c *CountService) GetFuzzyQueryJobsTP(fuzzyName, queryType string, ifAdmin int) (totalPage int) {
 	var Total mysqlModel.Count
