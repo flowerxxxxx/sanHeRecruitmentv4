@@ -465,7 +465,7 @@ func (jc *JobController) GetRecommendJobInfos(c *gin.Context) {
 	username := tokenUtil.GetUsernameByToken(c)
 	userInfo, _ := jc.UserService.GetUserInfo(username, c.Request.Host)
 	if userInfo.Intended_position == "" {
-		controller.ErrorResp(c, 201, "请完善个人信息以激活智能推荐")
+		controller.ErrorResp(c, 201, "请填写求职意向以激活智能推荐")
 		return
 	}
 	labelInfo := jc.LabelService.QueryLabelByContent(userInfo.Intended_position)
@@ -600,7 +600,7 @@ func (jc *JobController) checkResumeQualification(c *gin.Context) {
 		if v == "" || v == 0 {
 			c.JSON(http.StatusOK, gin.H{
 				"qualification": false,
-				"msg":           "简历信息未完善",
+				"msg":           "简历或个人信息未完善",
 			})
 			return
 		}
@@ -609,7 +609,7 @@ func (jc *JobController) checkResumeQualification(c *gin.Context) {
 	if len(perEduInfo) == 0 {
 		c.JSON(http.StatusOK, gin.H{
 			"qualification": false,
-			"msg":           "简历信息未完善",
+			"msg":           "学历信息未完善",
 		})
 		return
 	}

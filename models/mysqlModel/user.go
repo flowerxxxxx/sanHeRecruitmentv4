@@ -54,7 +54,7 @@ type BasicUserInfo struct {
 // ResumeUserInfo 简历信息含个人基础信息
 type ResumeUserInfo struct {
 	BasicUserInfo
-	Intended_position string `json:"intended_position" map:"intended_position"` //意向岗位
+	//Intended_position string `json:"intended_position" map:"intended_position"` //意向岗位
 	PersonalSkill     string `json:"personal_skill" map:"personal_skill"`
 	ProjectExperience string `json:"project_experience" map:"project_experience"`
 	PersonalResume    string `json:"personal_resume" map:"personal_resume"`
