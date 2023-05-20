@@ -243,7 +243,7 @@ func (mc *ManageController) TopLabel(c *gin.Context) {
 			controller.ErrorResp(c, 202, "无该标签")
 			return
 		} else {
-			log.Println("TopPub ChangeTopPubStatus failed,err:", TopBinder)
+			log.Println("TopPub ChangeTopPubStatus failed,err:", TopBinder, "err:", errX)
 			controller.ErrorResp(c, 212, "服务器错误")
 			return
 		}

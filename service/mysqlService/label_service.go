@@ -27,13 +27,13 @@ func (ls *LabelService) QueryMaxLabelCount() (maxNum int, err error) {
 
 func (ls *LabelService) ChangeTopPubStatus(id, desSort int) (err error) {
 	var Labels mysqlModel.Label
-	err = dao.DB.Table("articles").
-		Where("art_id = ?", id).Find(&Labels).Error
+	err = dao.DB.Table("labels").
+		Where("id = ?", id).Find(&Labels).Error
 	if err != nil {
 		return NoRecord
 	}
 	Labels.SortNum = desSort
-	err = dao.DB.Table("articles").Save(&Labels).Error
+	err = dao.DB.Table("labels").Save(&Labels).Error
 	return err
 }
 
