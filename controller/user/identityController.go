@@ -337,23 +337,16 @@ func (bc *IdentityController) SaveCompanyInfo(c *gin.Context) {
 		controller.ErrorResp(c, 203, "公司已存在", companyInfo)
 		return
 	}
-	saveFlag := strings.Index(comHeadPic, "uploadPic/")
-	if saveFlag == -1 {
-		controller.ErrorResp(c, 204, "图片路径错误")
-		return
+
+	var newComHeadPic string
+	if comHeadPic != "" {
+		saveFlag := strings.Index(comHeadPic, "uploadPic/")
+		if saveFlag == -1 {
+			controller.ErrorResp(c, 204, "图片路径错误")
+			return
+		}
+		newComHeadPic = comHeadPic[saveFlag:]
 	}
-	newComHeadPic := comHeadPic[saveFlag:]
-	//err = bc.CompanyService.AddCompanyInfo(username, newComHeadPic, companyName, description,
-	//	scaleTag, personScale, address, phone, UpdateTime, TargetLevelInt)
-	//newCompanyInfo, err := bc.CompanyService.QueryCompanyInfoByName(companyName)
-	//TimeId := time.Now().Unix()
-	//err = bc.UpgradeService.AddUpgradeInfo(username, TargetLevelInt, newCompanyInfo.ComId, 0, UpdateTime, TimeId)
-	//go func() {
-	//	errx := bc.UserService.ModifyPersonalPresident(username, userPresident)
-	//	if errx != nil {
-	//		log.Println("SaveCompanyInfo ModifyPersonalPresident err.info:", recJson)
-	//	}
-	//}()
 
 	ea := bc.CompanyService.AddCompanyInfoTX(username, newComHeadPic, companyName, description,
 		scaleTag, personScale, address, phone, userPresident, UpdateTime, TargetLevelInt)
@@ -365,6 +358,18 @@ func (bc *IdentityController) SaveCompanyInfo(c *gin.Context) {
 	}
 	controller.SuccessResp(c, "公司信息上传成功")
 	return
+
+	//err = bc.CompanyService.AddCompanyInfo(username, newComHeadPic, companyName, description,
+	//	scaleTag, personScale, address, phone, UpdateTime, TargetLevelInt)
+	//newCompanyInfo, err := bc.CompanyService.QueryCompanyInfoByName(companyName)
+	//TimeId := time.Now().Unix()
+	//err = bc.UpgradeService.AddUpgradeInfo(username, TargetLevelInt, newCompanyInfo.ComId, 0, UpdateTime, TimeId)
+	//go func() {
+	//	errx := bc.UserService.ModifyPersonalPresident(username, userPresident)
+	//	if errx != nil {
+	//		log.Println("SaveCompanyInfo ModifyPersonalPresident err.info:", recJson)
+	//	}
+	//}()
 }
 
 // SavePicHeadVouchers 上传照片凭证（公司照片，凭证）
