@@ -81,6 +81,19 @@ func BossPubPassOrNotTem(name, gender, ReqTitle, reason string, pubTime time.Tim
 	return
 }
 
+func BossBeDel(name, gender string) (templateCall string) {
+	caller := ""
+	if gender == "男" {
+		caller = "先生"
+	} else {
+		caller = "女士"
+	}
+	templateCall = "亲爱的" + name + caller + "，" +
+		"您已被管理员重置为普通用户身份" +
+		"。处理时间：" + time.Now().Format("2006-01-02 15:04:05")
+	return
+}
+
 // AdminDeletePubInfo 管理员删除文章通知模板
 func AdminDeletePubInfo(name, gender, ReqTitle, reason string, pubTime time.Time, qualification int) (templateCall string) {
 	timeStr := timeUtil.TimeFormatToStr(pubTime)

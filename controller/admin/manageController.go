@@ -316,6 +316,12 @@ func (mc *ManageController) DeleteComUser(c *gin.Context) {
 			return
 		}
 	}
+
+	bossIdStr := strconv.Itoa(userIdInt)
+	userInfo, _ := mc.UserService.QueryUserInfoByUserId(bossIdStr)
+	PubTem := messageUtil.BossBeDel(userInfo.Name, userInfo.Gender)
+	websocketBiz.SysMsgPusher(userInfo.Username, PubTem)
+
 	controller.SuccessResp(c, "人员身份删除成功")
 }
 
