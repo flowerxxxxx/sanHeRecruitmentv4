@@ -477,10 +477,23 @@ func (mc *ManageController) EditLabel(c *gin.Context) {
 		controller.ErrorResp(c, 201, "不符合命名规则，不能存在'&'")
 		return
 	}
+
+	labelInfo, err := mc.LabelService.QueryLabelById(labelIdInt)
+	if err != nil {
+		controller.ErrorResp(c, 202, "数据库无匹配内容")
+		return
+	}
+
+	RepeatFlag := mc.LabelService.CheckDuplicateLabel(labelInfo.Label, labelInfo.Type, labelInfo.ParentId)
+	if RepeatFlag == false {
+		controller.ErrorResp(c, 201, "修改失败，标签重复")
+		return
+	}
+
 	err = mc.LabelService.EditLabel(labelIdInt, labelContent)
 	if err != nil {
 		if err == mysqlService.NoRecord {
-			controller.ErrorResp(c, 202, "数据库无匹配内容")
+			controller.ErrorResp(c, 203, "数据库无匹配内容")
 			return
 		} else {
 			controller.ErrorResp(c, 215, "修改失败，服务器错误")

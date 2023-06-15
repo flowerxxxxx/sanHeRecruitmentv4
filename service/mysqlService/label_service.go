@@ -105,7 +105,8 @@ func (ls *LabelService) AddLabel(labelType, label string, parentId, parentLevel 
 // CheckDuplicateLabel 标签查重
 func (ls *LabelService) CheckDuplicateLabel(label, labelType string, parentIdInt int) bool {
 	var RepeatLabel mysqlModel.Label
-	err := dao.DB.Table("labels").Where("`type` = ?", labelType).Where("parent_id = ?", parentIdInt).Where("label = ?", label).Find(&RepeatLabel).Error
+	err := dao.DB.Table("labels").Where("`type` = ?", labelType).Where("label = ?", label).Find(&RepeatLabel).Error
+	//err := dao.DB.Table("labels").Where("`type` = ?", labelType).Where("parent_id = ?", parentIdInt).Where("label = ?", label).Find(&RepeatLabel).Error
 	if err != nil {
 		return true
 	}
