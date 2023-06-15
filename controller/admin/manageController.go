@@ -484,7 +484,7 @@ func (mc *ManageController) EditLabel(c *gin.Context) {
 		return
 	}
 
-	RepeatFlag := mc.LabelService.CheckDuplicateLabel(labelInfo.Label, labelInfo.Type, labelInfo.ParentId)
+	RepeatFlag := mc.LabelService.CheckDuplicateLabel(labelContent, labelInfo.Type, labelInfo.ParentId)
 	if RepeatFlag == false {
 		controller.ErrorResp(c, 201, "修改失败，标签重复")
 		return
