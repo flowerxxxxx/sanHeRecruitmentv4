@@ -130,10 +130,11 @@ func (ls *LabelService) QueryLabelByContent(label string) (newLabel mysqlModel.L
 }
 
 func (ls *LabelService) QueryCompanyLabel(jobLabel string, companyId, status int) (label []mysqlModel.Label) {
-	dao.DB.Table("articles").Select("DISTINCT labels.id,labels.label,labels.`level`,labels.parent_id,labels.type,"+
+	dao.DB.Table("articles").Select("DISTINCT labels.id,articles.`show`,labels.label,labels.`level`,labels.parent_id,labels.type,"+
 		"articles.career_job_id").
 		Joins("INNER JOIN labels ON labels.id = articles.career_job_id ").
 		Where("company_id=?", companyId).
+		Where("articles.`show`=?", 1).
 		Where("articles.`status` = ?", status).
 		Where("type = ?", jobLabel).Find(&label)
 	return
