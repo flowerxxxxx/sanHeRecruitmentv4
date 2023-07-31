@@ -208,6 +208,30 @@ func (bc *IdentityController) SaveUpgradeVouchers(c *gin.Context) {
 			return
 		}
 	}
+
+	upgradeInfo, err := bc.UpgradeService.QueryUpgradeInfoByUsername(username)
+	if err != nil {
+		controller.ErrorResp(c, 204, "无对应信息")
+		return
+	}
+	if upgradeInfo.Qualification != 0 {
+		controller.ErrorResp(c, 201, "该申请已做出审核")
+		return
+	}
+
+	err = bc.UpgradeService.UpgradeInfoChanger(upgradeInfo.FromUsername,
+		upgradeInfo.CompanyId, upgradeInfo.TargetLevel, upgradeInfo.ID, upgradeInfo.CompanyExist)
+
+	go func() {
+		applyUserBasicInfo, _ := bc.UserService.QueryUserBasicInfo(username, c.Request.Host)
+		succTem := messageUtil.UpgradeApplySuccessTem(
+			applyUserBasicInfo.Name,
+			applyUserBasicInfo.Gender,
+			upgradeInfo.ApplyTime,
+		)
+		websocketBiz.SysMsgPusher(username, succTem)
+	}()
+
 	//upgradeInfo, err := bc.UpgradeService.QueryUpgradeInfoByTimeId(TimeId64, companyIdInt)
 	//if upgradeInfo.TargetLevel == 2 {
 	//	bc.UpgradeService.ModifyUpgradeQualification(upgradeInfo.ID, 1)
@@ -300,19 +324,18 @@ func (bc *IdentityController) SaveUpgradeRequest(c *gin.Context) {
 	NowTime := time.Now()
 	TimeId := NowTime.Unix()
 
-	//err := bc.UpgradeService.AddUpgradeInfo(username, TargetLevelInt, CompanyIdInt, 1, applyTime, TimeId)
-	err := bc.UpgradeService.UpgradeInfoChangerUser(username, userPresident, TargetLevelInt, CompanyIdInt, 1, applyTime, TimeId)
-	//_ = bc.UserService.ModifyPersonalPresident(username, userPresident)
+	err := bc.UpgradeService.AddUpgradeInfo(username, TargetLevelInt, CompanyIdInt, 1, applyTime, TimeId)
+	_ = bc.UserService.ModifyPersonalPresident(username, userPresident)
 
-	go func() {
-		applyUserBasicInfo, _ := bc.UserService.QueryUserBasicInfo(username, c.Request.Host)
-		succTem := messageUtil.UpgradeApplySuccessTem(
-			applyUserBasicInfo.Name,
-			applyUserBasicInfo.Gender,
-			NowTime,
-		)
-		websocketBiz.SysMsgPusher(username, succTem)
-	}()
+	//go func() {
+	//	applyUserBasicInfo, _ := bc.UserService.QueryUserBasicInfo(username, c.Request.Host)
+	//	succTem := messageUtil.UpgradeApplySuccessTem(
+	//		applyUserBasicInfo.Name,
+	//		applyUserBasicInfo.Gender,
+	//		NowTime,
+	//	)
+	//	websocketBiz.SysMsgPusher(username, succTem)
+	//}()
 
 	if err != nil {
 		controller.ErrorResp(c, 215, "升级凭证上传失败，服务器错误")
