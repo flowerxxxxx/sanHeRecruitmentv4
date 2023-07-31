@@ -47,7 +47,7 @@ func (uc *UpgradeService) UpgradeInfoChangerUser(username string, targetLevel, c
 		}
 
 		var UpgradeInfo = mysqlModel.Upgrade{
-			Qualification: 0,
+			Qualification: 1,
 			TargetLevel:   targetLevel,
 			FromUsername:  username,
 			CompanyId:     companyId,
