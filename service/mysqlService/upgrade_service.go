@@ -15,7 +15,7 @@ type UpgradeService struct {
 // AddUpgradeInfo 增加升级身份的记录
 func (uc *UpgradeService) AddUpgradeInfo(username string, targetLevel, companyId, CompanyExist int, applyTime time.Time, timeId int64) error {
 	var UpgradeInfo = mysqlModel.Upgrade{
-		Qualification: 0,
+		Qualification: 1,
 		TargetLevel:   targetLevel,
 		FromUsername:  username,
 		CompanyId:     companyId,

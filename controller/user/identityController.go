@@ -7,10 +7,12 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"sanHeRecruitment/biz/websocketBiz"
 	"sanHeRecruitment/config"
 	"sanHeRecruitment/controller"
 	"sanHeRecruitment/service/mysqlService"
 	"sanHeRecruitment/util/formatUtil"
+	"sanHeRecruitment/util/messageUtil"
 	"sanHeRecruitment/util/saveUtil"
 	"sanHeRecruitment/util/timeUtil"
 	"sanHeRecruitment/util/tokenUtil"
@@ -295,11 +297,22 @@ func (bc *IdentityController) SaveUpgradeRequest(c *gin.Context) {
 	CompanyIdInt, _ := strconv.Atoi(CompanyId)
 	TargetLevelInt, _ := strconv.Atoi(TargetLevel)
 	applyTime := timeUtil.GetNowTimeFormat()
-	TimeId := time.Now().Unix()
+	NowTime := time.Now()
+	TimeId := NowTime.Unix()
+
 	err := bc.UpgradeService.AddUpgradeInfo(username, TargetLevelInt, CompanyIdInt, 1, applyTime, TimeId)
+	_ = bc.UserService.ModifyPersonalPresident(username, userPresident)
+
 	go func() {
-		_ = bc.UserService.ModifyPersonalPresident(username, userPresident)
+		applyUserBasicInfo, _ := bc.UserService.QueryUserBasicInfo(username, c.Request.Host)
+		succTem := messageUtil.UpgradeApplySuccessTem(
+			applyUserBasicInfo.Name,
+			applyUserBasicInfo.Gender,
+			NowTime,
+		)
+		websocketBiz.SysMsgPusher(username, succTem)
 	}()
+
 	if err != nil {
 		controller.ErrorResp(c, 215, "升级凭证上传失败，服务器错误")
 		log.Println("cancelOrgIdentity", err, "recJson:", recJson)
