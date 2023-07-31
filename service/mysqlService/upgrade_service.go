@@ -15,7 +15,7 @@ type UpgradeService struct {
 // AddUpgradeInfo 增加升级身份的记录
 func (uc *UpgradeService) AddUpgradeInfo(username string, targetLevel, companyId, CompanyExist int, applyTime time.Time, timeId int64) error {
 	var UpgradeInfo = mysqlModel.Upgrade{
-		Qualification: 1,
+		Qualification: 0,
 		TargetLevel:   targetLevel,
 		FromUsername:  username,
 		CompanyId:     companyId,
@@ -29,6 +29,53 @@ func (uc *UpgradeService) AddUpgradeInfo(username string, targetLevel, companyId
 		return err
 	}
 	return err
+}
+
+// UpgradeInfoChangerUser user 应用gorm事务，自行处理身份升级需要修改的数据
+func (uc *UpgradeService) UpgradeInfoChangerUser(username string, targetLevel, companyId, CompanyExist int, applyTime time.Time, timeId int64) (err error) {
+	err = dao.DB.Transaction(func(tx *gorm.DB) error {
+		// 在事务中执行一些 db 操作
+		//
+		if err := tx.Table("users").Where("username = ?", username).
+			UpdateColumns(map[string]interface{}{
+				"company_id": companyId,
+				"user_level": targetLevel,
+			}).
+			Error; err != nil {
+			// 返回任何错误都会回滚事务
+			return err
+		}
+
+		var UpgradeInfo = mysqlModel.Upgrade{
+			Qualification: 0,
+			TargetLevel:   targetLevel,
+			FromUsername:  username,
+			CompanyId:     companyId,
+			ApplyTime:     applyTime,
+			CompanyExist:  CompanyExist,
+			Show:          0,
+			TimeId:        timeId,
+		}
+		if err := tx.Table("upgrades").Save(&UpgradeInfo).Error; err != nil {
+			return err
+		}
+		//if err := tx.Table("upgrades").Where("id = ?", upgradeIdInt).
+		//	UpdateColumns(map[string]interface{}{
+		//		"qualification": 1,
+		//	}).Error; err != nil {
+		//	return err
+		//}
+
+		if err := tx.Table("companies").Where("com_id = ?", companyId).
+			UpdateColumns(map[string]interface{}{
+				"com_status": 1,
+			}).Error; err != nil {
+			return err
+		}
+		// 返回 nil 提交事务
+		return nil
+	})
+	return
 }
 
 func (uc *UpgradeService) QueryUpgradeInfoByUsername(username string) (upgrade mysqlModel.Upgrade, err error) {

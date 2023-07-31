@@ -300,7 +300,8 @@ func (bc *IdentityController) SaveUpgradeRequest(c *gin.Context) {
 	NowTime := time.Now()
 	TimeId := NowTime.Unix()
 
-	err := bc.UpgradeService.AddUpgradeInfo(username, TargetLevelInt, CompanyIdInt, 1, applyTime, TimeId)
+	//err := bc.UpgradeService.AddUpgradeInfo(username, TargetLevelInt, CompanyIdInt, 1, applyTime, TimeId)
+	err := bc.UpgradeService.UpgradeInfoChangerUser(username, TargetLevelInt, CompanyIdInt, 1, applyTime, TimeId)
 	_ = bc.UserService.ModifyPersonalPresident(username, userPresident)
 
 	go func() {
