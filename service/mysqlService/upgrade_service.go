@@ -32,7 +32,7 @@ func (uc *UpgradeService) AddUpgradeInfo(username string, targetLevel, companyId
 }
 
 // UpgradeInfoChangerUser user 应用gorm事务，自行处理身份升级需要修改的数据
-func (uc *UpgradeService) UpgradeInfoChangerUser(username string, targetLevel, companyId, CompanyExist int, applyTime time.Time, timeId int64) (err error) {
+func (uc *UpgradeService) UpgradeInfoChangerUser(username, president string, targetLevel, companyId, CompanyExist int, applyTime time.Time, timeId int64) (err error) {
 	err = dao.DB.Transaction(func(tx *gorm.DB) error {
 		// 在事务中执行一些 db 操作
 		//
@@ -40,6 +40,7 @@ func (uc *UpgradeService) UpgradeInfoChangerUser(username string, targetLevel, c
 			UpdateColumns(map[string]interface{}{
 				"company_id": companyId,
 				"user_level": targetLevel,
+				"president":  president,
 			}).
 			Error; err != nil {
 			// 返回任何错误都会回滚事务
@@ -53,7 +54,7 @@ func (uc *UpgradeService) UpgradeInfoChangerUser(username string, targetLevel, c
 			CompanyId:     companyId,
 			ApplyTime:     applyTime,
 			CompanyExist:  CompanyExist,
-			Show:          0,
+			Show:          1,
 			TimeId:        timeId,
 		}
 		if err := tx.Table("upgrades").Save(&UpgradeInfo).Error; err != nil {
