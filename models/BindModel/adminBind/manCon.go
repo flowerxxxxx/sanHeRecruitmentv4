@@ -8,3 +8,7 @@ type TopPub struct {
 type TopLabel struct {
 	Id int `json:"id"`
 }
+
+type Token struct {
+	Token string `json:"token"`
+}

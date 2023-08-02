@@ -33,8 +33,8 @@ type ManageController struct {
 }
 
 func ManageControllerRouter(router *gin.RouterGroup) {
-	//mc := ManageController{}
-
+	mc := ManageController{}
+	router.POST("/renewToken", mc.RenewToken)
 }
 
 // TODO 2022.7.19 部分功能模块需要推送到公众号的协程尚未完成
@@ -91,6 +91,21 @@ func ManageControllerRouterToken(router *gin.RouterGroup) {
 	router.POST("/ChangeVipShowStatus", mc.TopVipShow)
 	//优先需求标签
 	router.POST("/TopLabel", mc.TopLabel)
+}
+func (mc *ManageController) RenewToken(c *gin.Context) {
+	var elderToken adminBind.Token
+	err := c.ShouldBind(&elderToken)
+	if err != nil {
+		controller.ErrorResp(c, 201, "参数绑定失败")
+		return
+	}
+	claims, err := tokenUtil.ParseToken(elderToken.Token)
+	newToken, errg := tokenUtil.GenerateToken(claims.User)
+	if errg != nil {
+		controller.ErrorResp(c, 202, "服务器错误")
+		return
+	}
+	controller.SuccessResp(c, "success", newToken)
 }
 
 // TopVipShow 置顶会员风采
